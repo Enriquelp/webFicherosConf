@@ -1,0 +1,854 @@
+features 
+    Kubernetes_manifest
+        mandatory
+            Boolean ApiVersion
+                mandatory
+                    Boolean Group {abstract} 
+                        alternative
+                            Boolean GROUP_admission_registration
+                            Boolean GROUP_apiextensions
+                            Boolean GROUP_apiregistration
+                            Boolean GROUP_apps
+                            Boolean GROUP_authentication
+                            Boolean GROUP_authorization
+                            Boolean GROUP_autoscaling
+                            Boolean GROUP_batch
+                            Boolean GROUP_certificates
+                            Boolean GROUP_coordination
+                            Boolean GROUP_core
+                            Boolean GROUP_discovery
+                            Boolean GROUP_events
+                            Boolean GROUP_flowcontrol_apiserver
+                            Boolean GROUP_internal_apiserver
+                            Boolean GROUP_networking
+                            Boolean GROUP_node
+                            Boolean GROUP_policy
+                            Boolean GROUP_rbac_authorization
+                            Boolean GROUP_resource
+                            Boolean GROUP_scheduling
+                            Boolean GROUP_storage
+                    Boolean Version {abstract}
+                        alternative
+                            Boolean VERSION_v1
+                            Boolean VERSION_v1beta1
+                            Boolean VERSION_v1beta3
+                            Boolean VERSION_v1alpha1
+                            Boolean VERSION_v1alpha2
+                            Boolean VERSION_v2
+            Boolean Kind
+                alternative
+                    Boolean Workloads_APIs {abstract}
+                        alternative
+                            Boolean KIND_Container
+                            Boolean KIND_CronJob
+                            Boolean KIND_DaemonSet
+                            Boolean KIND_Deployment
+                            Boolean KIND_Job
+                            Boolean KIND_Pod
+                            Boolean KIND_ReplicaSet
+                            Boolean KIND_ReplicationController
+                            Boolean KIND_StatefullSet
+                    Boolean Service_APIs {abstract}
+                        alternative
+                            Boolean KIND_Endpoints
+                            Boolean KIND_EndpointSlice
+                            Boolean KIND_Ingress
+                            Boolean KIND_IngressClass
+                            Boolean KIND_Service
+                    Boolean Confing_and_storage_APIs {abstract}
+                        alternative
+                            Boolean KIND_ConfigMap
+                            Boolean KIND_CSIDriver
+                            Boolean KIND_CSINode
+                            Boolean KIND_Secret
+                            Boolean KIND_PersistentVolumeClaim
+                            Boolean KIND_StorageClass
+                            Boolean KIND_CSIStorageCapacity
+                            Boolean KIND_Volume
+                            Boolean KIND_VolumeAttachment
+                            Boolean KIND_VolumeAttributesClass
+                    Boolean Metadata_APIs {abstract}
+                        alternative
+                            Boolean KIND_ClusterTrustBundle
+                            Boolean KIND_ControllerRevision
+                            Boolean KIND_CustomerResourceDefinition
+                            Boolean KIND_Event
+                            Boolean KIND_LimitRange
+                            Boolean KIND_HorizontalPodAutoscaler
+                            Boolean KIND_MutatingWebhookConfiguration
+                            Boolean KIND_ValidatingWebhookConfiguration
+                            Boolean KIND_PodSchedulingContext
+                            Boolean KIND_PodTemplate
+                            Boolean KIND_PodDisruptionBudget
+                            Boolean KIND_PriorityClass
+                            Boolean KIND_ResourceClaim
+                            Boolean KIND_ResourceClaimParameters {added_version 1.30}
+                            Boolean KIND_ResourceSlice {added_version 1.30}
+                            Boolean KIND_ResourceClaimTemplate
+                            Boolean KIND_ResourceClass
+                            Boolean KIND_ValidatingAdmissionPolicy
+                            Boolean KIND_ValidatingAdmissionPolicyBinding
+                    Boolean Cluster_APIs {abstract}
+                        alternative
+                            Boolean KIND_APIService
+                            Boolean KIND_Binding
+                            Boolean KIND_CertificateSigningRequest
+                            Boolean KIND_ClusterRole
+                            Boolean KIND_ClusterRoleBinding
+                            Boolean KIND_ComponentStatus
+                            Boolean KIND_FlowSchema
+                            Boolean KIND_IPAddress
+                            Boolean KIND_Lease
+                            Boolean KIND_LocalSubjectAccessReview
+                            Boolean KIND_Namespace
+                            Boolean KIND_Node
+                            Boolean KIND_PersistentVolume
+                            Boolean KIND_PriorityLevelConfiguration
+                            Boolean KIND_ResourceQuota
+                            Boolean KIND_Role
+                            Boolean KIND_RoleBinding
+                            Boolean KIND_RuntimeClass
+                            Boolean KIND_SelfSubjectAccessReview
+                            Boolean KIND_SelfSubjectReview
+                            Boolean KIND_SelfSubjectRulesReview
+                            Boolean KIND_ServiceAccount
+                            Boolean KIND_ServiceCIDR
+                            Boolean KIND_StorageVersion
+                            Boolean KIND_SubjectAccessReview
+                            Boolean KIND_TokenRequest
+                            Boolean KIND_TokenReview
+                            Boolean KIND_NetworkPolicy
+        optional
+            Boolean Metadata
+                mandatory
+                    String METADATA_name
+                optional
+                    Integer METADATA_deletionGracePeriodSeconds
+                    String METADATA_namespace
+                    Boolean METADATA_labels cardinality [0..*]
+                        mandatory
+                            String LABELS_key
+                            String LABELS_value
+                    Boolean METADATA_annotations cardinality [0..*]
+                        mandatory
+                            String ANNOTATIONS_key
+                            String ANNOTATIONS_value
+            Boolean Spec
+                optional 
+                    Boolean DeploymentSpec {abstract}
+                        optional   
+                            Integer DEPLOYMENTSPEC_minReadySeconds
+                            Boolean DEPLOYMENTSPEC_paused
+                            Integer DEPLOYMENTSPEC_progressDeadlineSeconds
+                            Integer DEPLOYMENTSPEC_Replicas
+                            Integer DEPLOYMENTSPEC_revisionHistoryLimit
+                            Boolean DEPLOYMENTSPEC_selector
+                                or 
+                                    Boolean LABELSELECTOR_matchLabels cardinality [0..*]
+                                        mandatory 
+                                            String MATCHLABELS_key
+                                            String MATCHLABELS_value
+                                    Boolean LABELSELECTOR_matchExpressions cardinality [0..*]
+                                        mandatory   
+                                            String MATCHEXPRESSIONS_key
+                                            Boolean MATCHEXPRESSIONS_values cardinality [0..*]
+                                                mandatory
+                                                    String MATCHEXPRESSIONS_value
+                                            Boolean MATCHEXPRESSIONS_operator
+                                                alternative
+                                                    Boolean OPERATOR_in
+                                                    Boolean OPERATOR_notIn
+                                                    Boolean OPERATOR_exist
+                                                    Boolean OPERATOR_doesNotExist
+                                                    Boolean OPERATOR_gt
+                                                    Boolean OPERATOR_lt
+                            Boolean DEPLOYMENTSPEC_strategy
+                                mandatory
+                                    Boolean STRATEGY_type
+                                        or
+                                            Boolean STRATEGY_TYPE_Recreate
+                                            Boolean STRATEGY_TYPE_RollingUpdate
+                                                mandatory
+                                                    Integer maxUnavailable
+                                                optional
+                                                    Integer maxSurge
+                            Boolean DEPLOYMENTSPEC_template
+                                mandatory
+                                    Boolean DEPLOYMENTSPEC_TEMPLATE_Metadata {NO_TERMINADO}    
+                                        optional
+                                            String TEMPLATE_METADATA_name
+                                            String TEMPLATE_METADATA_namespace
+                                            Integer TEMPLATE_METADATA_deletionGracePeriodSeconds
+                                            Boolean TEMPLATE_METADATA_labels cardinality [0..*]
+                                                mandatory
+                                                    String TEMPLATE_METADATA_LABELS_key
+                                                    String TEMPLATE_METADATA_LABELS_value
+                                            Boolean TEMPLATE_METADATA_annotations cardinality [0..*]
+                                                mandatory
+                                                    String TEMPLATE__METADATA_ANNOTATIONS_key
+                                                    String TEMPLATE__METADATA_ANNOTATIONS_value
+                                    Boolean DEPLOYMENTSPEC_TEMPLATE_Podspec
+                    Boolean PodSpec {abstract, NO_TERMINADO} 
+                        mandatory
+                            Boolean PODSPEC_Containers cardinality [0..*]
+                                mandatory   
+                                    String CONTAINER_name 
+                                optional     
+                                    Boolean CONTAINER_args cardinality [0..*]
+                                        mandatory   
+                                            String CONTAINER_ARGS_value 
+                                    Boolean CONTAINER_command cardinality [0..*]
+                                        mandatory   
+                                            String CONTAINER_COMMAND_value 
+                                    Boolean CONTAINER_env cardinality [0..*]
+                                        mandatory
+                                            String CONTAINER_ENV_name
+                                            String CONTAINER_ENV_value
+                                            Boolean CONTAINER_ENV_valueFrom
+                                                alternative   
+                                                    Boolean configMapKeyRef
+                                                        mandatory
+                                                            String CONFIGMAPKEYREF_key
+                                                            String CONFIGMAPKEYREF_name
+                                                        optional
+                                                            Boolean CONFIGMAPKEYREF_optional
+                                                    Boolean fieldRef
+                                                        mandatory
+                                                            String FIELDREF_fieldPath
+                                                        optional   
+                                                            String FIELDREF_apiversion
+                                                    Boolean resourceFieldRef
+                                                        mandatory
+                                                            String RESOURCEFIELDREF_containerName
+                                                            String RESOURCEFIELDREF_resource
+                                                        optional   
+                                                            String RESOURCEFIELDREF_divisor
+                                                    Boolean secretKeyRef
+                                                        mandatory
+                                                            String SECRETKEYREF_key
+                                                            String SECRETKEYREF_name
+                                                        optional
+                                                            Boolean SECRETKEYREF_optional
+                                    Boolean CONTAINER_envFrom cardinality [0..*]
+                                        alternative  
+                                            Boolean ENVFROM_configMapRef
+                                                mandatory   
+                                                    String CONFIGMAPREF_name
+                                                    Boolean CONFIGMAPREF_optional
+                                            String ENVFROM_prefix
+                                            Boolean ENVFROM_secretRef
+                                                mandatory   
+                                                    String SECRETREF_name
+                                                    Boolean SECRETREF_optional
+                                    String CONTAINER_image   
+                                    Boolean CONTAINER_imagePullPolicy
+                                        alternative   
+                                            Boolean IMAGEPULLPOLICY_always
+                                            Boolean IMAGEPULLPOLICY_never
+                                            Boolean IMAGEPULLPOLICY_ifNotPresent
+                                    Boolean CONTAINER_lifecycle
+                                        optional
+                                            Boolean LIFECYCLE_postStart
+                                                optional   
+                                                    Boolean POSTSTART_exec cardinality [0..*]
+                                                        mandatory   
+                                                            String POSTSTART_EXEC_command 
+                                                    Boolean POSTSTART_httpGet
+                                                        mandatory   
+                                                            String POSTSTART_HTTPGET_host
+                                                            Boolean POSTSTART_HTTPGET_httpHeaders cardinality [0..*]
+                                                                mandatory
+                                                                    String POSTSTART_HTTPHEADERS_name       
+                                                                    String POSTSTART_HTTPHEADERS_value
+                                                            Integer POSTSTART_HTTPGET_port
+                                                        optional
+                                                            String POSTSTART_HTTPGET_path
+                                                            String POSTSTART_HTTPGET_scheme
+                                                    Boolean POSTSTART_sleep
+                                                        mandatory
+                                                            Integer POSTSTART_SLEEP_seconds
+                                            Boolean LIFECYCLE_preStop
+                                                optional   
+                                                    Boolean PRESTOP_exec cardinality [0..*]
+                                                        mandatory   
+                                                            String PRESTOP_EXEC_command
+                                                    Boolean PRESTOP_httpGet
+                                                        mandatory   
+                                                            String PRESTOP_HTTPGET_host
+                                                            Boolean PRESTOP_HTTPGET_httpHeaders cardinality [0..*]
+                                                                mandatory
+                                                                    String PRESTOP_HTTPHEADERS_name       
+                                                                    String PRESTOP_HTTPHEADERS_value
+                                                            String PRESTOP_HTTPGET_path
+                                                            String PRESTOP_HTTPGET_port
+                                                            String PRESTOP_HTTPGET_scheme
+                                                    Boolean PRESTOP_sleep
+                                                        mandatory
+                                                            Integer PRESTOP_SLEEP_seconds
+                                    Boolean CONTAINER_livenessProbe
+                                        mandatory
+                                            Boolean LIVENESSPROBE_exec cardinality [0..*]
+                                                mandatory
+                                                    String LIVENESSPROBE_EXEC_command
+                                            Integer LIVENESSPROBE_failureThreshold
+                                            Boolean LIVENESSPROBE_grpc
+                                                mandatory   
+                                                    Integer LIVENESSPROBE_GRPC_port
+                                                optional
+                                                    String LIVENESSPROBE_GRPC_service
+                                            Boolean LIVENESSPROBE_httpGet
+                                                optional   
+                                                    String LIVENESSPROBE_HTTPGET_host
+                                                    Boolean LIVENESSPROBE_HTTPGET_httpHeaders cardinality [0..*]
+                                                        mandatory   
+                                                            String LIVENESSPROBE_HTTPHEADERS_name
+                                                            String LIVENESSPROBE_HTTPHEADERS_value
+                                                    String LIVENESSPROBE_HTTPGET_path
+                                                    Integer LIVENESSPROBE_HTTPGET_port
+                                                    String LIVENESSPROBE_HTTPGET_scheme
+                                            Integer LIVENESSPROBE_initialDelaySeconds
+                                            Integer LIVENESSPROBE_periodSeconds
+                                            Integer LIVENESSPROBE_successThreshold
+                                            Boolean LIVENESSPROBE_tcpSocket
+                                                mandatory   
+                                                    Boolean LIVENESSPROBE_TCPSOCKET_port
+                                                optional   
+                                                    Boolean LIVENESSPROBE_TCPSOCKET_host
+                                            Integer LIVENESSPROBE_timeoutSeconds
+                                        optional
+                                            Integer LIVENESSPROBE_terminationGracePeriodSeconds 
+                                    Boolean CONTAINER_ports cardinality [0..*]
+                                        mandatory   
+                                            Integer CONTAINER_PORTS_containerPort
+                                        optional 
+                                            String CONTAINER_PORTS_hostIP
+                                            Integer CONTAINER_PORTS_hostPort
+                                            String CONTAINER_PORTS_name
+                                            Boolean CONTAINER_PORTS_protocol
+                                                alternative   
+                                                    Boolean PROTOCOL_UDP
+                                                    Boolean PROTOCOL_TCP
+                                                    Boolean PROTOCOL_SCTP
+                                    Boolean CONTAINER_readinessProbe
+                                        mandatory
+                                            Boolean READINESSPROBE_exec cardinality [0..*]
+                                                mandatory
+                                                    String READINESSPROBE_EXEC_command
+                                            Integer READINESSPROBE_failureThreshold
+                                            Boolean READINESSPROBE_grpc
+                                                mandatory   
+                                                    Integer READINESSPROBE_GRPC_port
+                                                optional
+                                                    String READINESSPROBE_GRPC_service
+                                            Boolean READINESSPROBE_httpGet
+                                                optional   
+                                                    String READINESSPROBE_HTTPGET_host
+                                                    Boolean READINESSPROBE_HTTPGET_httpHeaders cardinality [0..*]
+                                                        mandatory   
+                                                            String READINESSPROBE_HTTPHEADERS_name
+                                                            String READINESSPROBE_HTTPHEADERS_value
+                                                    String READINESSPROBE_HTTPGET_path
+                                                    Integer READINESSPROBE_HTTPGET_port
+                                                    String READINESSPROBE_HTTPGET_scheme
+                                            Integer READINESSPROBE_initialDelaySeconds
+                                            Integer READINESSPROBE_periodSeconds
+                                            Integer READINESSPROBE_successThreshold
+                                            Boolean READINESSPROBE_tcpSocket
+                                                mandatory   
+                                                    Boolean READINESSPROBE_TCPSOCKET_port
+                                                optional   
+                                                    Boolean READINESSPROBE_TCPSOCKET_host                                     
+                                            Integer READINESSPROBE_timeoutSeconds
+                                        optional   
+                                            Integer READINESSPROBE_terminationGracePeriodSeconds
+                                    Boolean CONTAINER_resizePolicy cardinality [0..*]
+                                        mandatory   
+                                            Boolean RESIZEPOLICY_resourceName
+                                                alternative   
+                                                    Boolean CONTAINER_RESIZEPOLICY_RESTARTPOLICY_cpu
+                                                    Boolean CONTAINER_RESIZEPOLICY_RESTARTPOLICY_memory
+                                            String RESIZEPOLICY_restartPolicy
+                                    String CONTAINER_restartPolicy
+                                    Boolean CONTAINER_resources
+                                        or
+                                            Boolean RESOURCES_request
+                                                mandatory
+                                                    String REQUEST_cpu
+                                                    String REQUEST_memory
+                                            Boolean RESOURCES_limits
+                                                mandatory
+                                                    String LIMITS_cpu
+                                                    String LIMITS_memory
+                                            Boolean RESOURCES_claims
+                                                mandatory
+                                                    String RESOURCES_CLAIMS_name
+                                    Boolean CONTAINER_securityContext
+                                        optional   
+                                            Boolean CONTAINER_SECURITYCONTEXT_allowPrivilegeEscalation
+                                            Boolean CONTAINER_SECURITYCONTEXT_privileged
+                                            String CONTAINER_SECURITYCONTEXT_procMount
+                                            Boolean CONTAINER_SECURITYCONTEXT_readOnlyRootFilesystem
+                                            Integer CONTAINER_SECURITYCONTEXT_runAsGroup
+                                            Boolean CONTAINER_SECURITYCONTEXT_runAsNonRoot
+                                            Integer CONTAINER_SECURITYCONTEXT_runAsUser
+                                            Boolean CONTAINER_SECURITYCONTEXT_appArmorProfile
+                                                optional   
+                                                    String CONTAINER_APPARMORPROFILE_localhostProfile
+                                                    Boolean CONTAINER_APPARMORPROFILE_type
+                                                        alternative   
+                                                            Boolean CONTAINER_APPARMORPROFILE_Type_LocalHost
+                                                            Boolean CONTAINER_APPARMORPROFILE_Type_RuntimeDefault 
+                                                            Boolean CONTAINER_APPARMORPROFILE_Type_Unconfined 
+                                            Boolean CONTAINER_SECURITYCONTEXT_capabilities
+                                                optional   
+                                                    Boolean CONTAINER_CAPABILITIES_add cardinality [0..*] 
+                                                        mandatory   
+                                                            String CONTAINER_addedCapabilities
+                                                    Boolean CONTAINER_CAPABILITIES_drop cardinality [0..*] 
+                                                        mandatory   
+                                                                String CONTAINER_removedCapabilities
+                                            Boolean CONTAINER_SECURITYCONTEXT_seLinuxOptions
+                                                optional   
+                                                    String CONTAINER_SELINUXOPTIONS_level
+                                                    String CONTAINER_SELINUXOPTIONS_role
+                                                    String CONTAINER_SELINUXOPTIONS_type
+                                                    String CONTAINER_SELINUXOPTIONS_user
+                                            Boolean CONTAINER_SECURITYCONTEXT_seccompProfile
+                                                optional   
+                                                    String CONTAINER_SECCOMPROFILE_localhostProfile
+                                                    Boolean CONTAINER_SECCOMPROFILE_type
+                                                        alternative   
+                                                            Boolean CONTAINER_SECCOMPROFILE_Type_LocalHost
+                                                            Boolean CONTAINER_SECCOMPROFILE_Type_RuntimeDefault 
+                                                            Boolean CONTAINER_SECCOMPROFILE_Type_Unconfined
+                                            Boolean CONTAINER_SECURITYCONTEXT_windowsOptions
+                                                optional   
+                                                    String CONTAINER_WINDOWSOPTIONS_gmsaCredentialSpec
+                                                    String CONTAINER_WINDOWSOPTIONS_gmsaCredentialSpecName
+                                                    Boolean CONTAINER_WINDOWSOPTIONS_hostProcess
+                                                    String CONTAINER_WINDOWSOPTIONS_runAsUserName
+                                    Boolean CONTAINER_startupProbe
+                                        mandatory
+                                            Boolean STARTUPPROBE_exec cardinality [0..*]
+                                                mandatory
+                                                    String STARTUPPROBE_EXEC_command
+                                            Integer STARTUPPROBE_failureThreshold
+                                            Boolean STARTUPPROBE_grpc
+                                                mandatory   
+                                                    Integer STARTUPPROBE_GRPC_port
+                                                optional
+                                                    String STARTUPPROBE_GRPC_service
+                                            Boolean STARTUPPROBE_httpGet
+                                                optional   
+                                                    String STARTUPPROBE_HTTPGET_host
+                                                    Boolean STARTUPPROBE_HTTPGET_httpHeaders cardinality [0..*]
+                                                        mandatory   
+                                                            String STARTUPPROBE_HTTPHEADERS_name
+                                                            String STARTUPPROBE_HTTPHEADERS_value
+                                                    String STARTUPPROBE_HTTPGET_path
+                                                    Integer STARTUPPROBE_HTTPGET_port
+                                                    String STARTUPPROBE_HTTPGET_scheme
+                                            Integer STARTUPPROBE_initialDelaySeconds
+                                            Integer STARTUPPROBE_periodSeconds
+                                            Integer STARTUPPROBE_successThreshold
+                                            Boolean STARTUPPROBE_tcpSocket
+                                                mandatory   
+                                                    Boolean  STARTUPPROBE_TCPSOCKET_port
+                                                optional   
+                                                    Boolean  STARTUPPROBE_TCPSOCKET_host
+                                            Integer STARTUPPROBE_timeoutSeconds
+                                        optional   
+                                            Integer STARTUPPROBE_terminationGracePeriodSeconds
+                                    Boolean CONTAINER_stdin
+                                    Boolean CONTAINER_stdinOnce
+                                    String CONTAINER_terminationMessagePath
+                                    String CONTAINER_terminationMessagePolicy
+                                    Boolean CONTAINER_tty
+                                    Boolean CONTAINER_volumeDevices cardinality [0..*]
+                                        mandatory
+                                            String VOLUMEDEVICES_devicePath
+                                            String VOLUMEDEVICES_name
+                                    Boolean CONTAINER_volumeMounts cardinality [0..*]
+                                        mandatory   
+                                            String VOLUMEMOUNTS_mountPath
+                                            String VOLUMEMOUNTS_name
+                                        optional
+                                            Boolean VOLUMEMOUNTS_readonly
+                                            String VOLUMEMOUNTS_mountPropagation
+                                            String VOLUMEMOUNTS_recursiveReadOnly
+                                            String VOLUMEMOUNTS_subPath
+                                            String VOLUMEMOUNTS_subPathExpr
+                                    Boolean CONTAINER_workingDir
+                        optional 
+                            Boolean PODSPEC_initContainers cardinality [0..*] {NO_TERMINADO}
+                                mandatory   
+                                    String INITCONTAINER_name
+                                optional   
+                                    String INITCONTAINER_image
+                                    Boolean INITCONTAINER_securityContext
+                                        optional   
+                                            Boolean INITCONTAINER_SECURITYCONTEXT_allowPrivilegeEscalation
+                                            Boolean INITCONTAINER_SECURITYCONTEXT_privileged
+                                            String INITCONTAINER_SECURITYCONTEXT_procMount
+                                            Boolean INITCONTAINER_SECURITYCONTEXT_readOnlyRootFilesystem
+                                            Integer INITCONTAINER_SECURITYCONTEXT_runAsGroup
+                                            Boolean INITCONTAINER_SECURITYCONTEXT_runAsNonRoot
+                                            Integer INITCONTAINER_SECURITYCONTEXT_runAsUser
+                                            Boolean INITCONTAINER_SECURITYCONTEXT_appArmorProfile
+                                                optional   
+                                                    String INITCONTAINER_APPARMORPROFILE_localhostProfile
+                                                    Boolean INITCONTAINER_APPARMORPROFILE_type
+                                                        alternative   
+                                                            Boolean INITCONTAINER_APPARMORPROFILE_Type_LocalHost
+                                                            Boolean INITCONTAINER_APPARMORPROFILE_Type_RuntimeDefault 
+                                                            Boolean INITCONTAINER_APPARMORPROFILE_Type_Unconfined 
+                                            Boolean INITCONTAINER_SECURITYCONTEXT_capabilities
+                                                optional   
+                                                    Boolean INITCONTAINER_CAPABILITIES_add cardinality [0..*] 
+                                                        mandatory   
+                                                            String INITCONTAINER_addedCapabilities
+                                                    Boolean INITCONTAINER_CAPABILITIES_drop cardinality [0..*] 
+                                                        mandatory   
+                                                                String INITCONTAINER_removedCapabilities
+                                            Boolean INITCONTAINER_SECURITYCONTEXT_seLinuxOptions
+                                                optional   
+                                                    String INITCONTAINER_SELINUXOPTIONS_level
+                                                    String INITCONTAINER_SELINUXOPTIONS_role
+                                                    String INITCONTAINER_SELINUXOPTIONS_type
+                                                    String INITCONTAINER_SELINUXOPTIONS_user
+                                            Boolean INITCONTAINER_SECURITYCONTEXT_seccompProfile
+                                                optional   
+                                                    String INITCONTAINER_SECCOMPROFILE_localhostProfile
+                                                    Boolean INITCONTAINER_SECCOMPROFILE_type
+                                                        alternative   
+                                                            Boolean INITCONTAINER_SECCOMPROFILE_Type_LocalHost
+                                                            Boolean INITCONTAINER_SECCOMPROFILE_Type_RuntimeDefault 
+                                                            Boolean INITCONTAINER_SECCOMPROFILE_Type_Unconfined
+                                            Boolean INITCONTAINER_SECURITYCONTEXT_windowsOptions
+                                                optional   
+                                                    String INITCONTAINER_WINDOWSOPTIONS_gmsaCredentialSpec
+                                                    String INITCONTAINER_WINDOWSOPTIONS_gmsaCredentialSpecName
+                                                    Boolean INITCONTAINER_WINDOWSOPTIONS_hostProcess
+                                                    String INITCONTAINER_WINDOWSOPTIONS_runAsUserName
+                            Integer PODSPEC_activeDeadlineSeconds
+                            Boolean PODSPEC_affinity {NO_TERMINADO}
+                                optional
+                                    Boolean AFFINITY_nodeAffinity {NO_TERMINADO}
+                                    Boolean AFFINITY_podAffinity {NO_TERMINADO}
+                                    Boolean AFFINITY_podAntiAffinity {NO_TERMINADO}
+                            Boolean PODSPEC_automountServiceAccountToken                                    
+                            Boolean PODSPEC_dnsPolicy 
+                                alternative
+                                    Boolean DNSPOLICY_ClusterFirstWithHostNet
+                                    Boolean DNSPOLICY_ClusterFirst
+                                    Boolean DNSPOLICY_Default
+                                    Boolean DNSPOLICY_None
+                            Boolean PODSPEC_enableServiceLinks
+                            Boolean PODSPEC_hostIPC
+                            Boolean PODSPEC_hostNetwork
+                            Boolean PODSPEC_hostPID
+                            Boolean PODSPEC_hostUsers
+                            String PODSPEC_hostname
+                            String PODSPEC_nodeName
+                            Boolean PODSPEC_Volumes cardinality [0..*] {NO_TERMINADO}
+                                mandatory   
+                                    String VOLUMES_name
+                                    Boolean VOLUMES_type {abstract}
+                                        or   
+                                            Boolean emptyDir
+                                                optional
+                                                    Boolean EMPTYDIR_medium
+                                                        alternative   
+                                                            Boolean EMPTYDIR_MEDIUM_default
+                                                            Boolean EMPTYDIR_MEDIUM_memory
+                                                    String EMPTYDIR_sizeLimit
+                                            Boolean hostPath
+                                                optional
+                                                    String HOSTPATH_path
+                                                    String HOSTPATH_type
+                                            Boolean persistentVolumeClaim
+                                                optional   
+                                                    String PERSISTENTVOLUMECLAIM_claimName
+                                                    Boolean PERSISTENTVOLUMECLAIM_readOnly
+                                            Boolean configMap
+                                                optional
+                                                    String CONFIGMAP_secretName
+                                                    Integer CONFIGMAP_defaultMode
+                                                    Boolean CONFIGMAP_optional
+                                                    Boolean CONFIGMAP_items cardinality [0..*] 
+                                                        mandatory   
+                                                            String CONFIGMAP_ITEMS_key
+                                                            String CONFIGMAP_ITEMS_path
+                                                        optional 
+                                                            Integer CONFIGMAP_ITEMS_mode  
+
+                                            Boolean secret
+                                                optional   
+                                                    String SECRET_name
+                                                    Integer SECRET_defaultMode
+                                                    Boolean SECRET_optional
+                                                    Boolean SECRET_items cardinality [0..*] 
+                                                        mandatory   
+                                                            String SECRET_ITEMS_key
+                                                            String SECRET_ITEMS_path
+                                                        optional   
+                                                            Integer SECRET_ITEMS_mode
+                                            Boolean nfs
+                                            Boolean csi
+                                            Boolean downwardAPI
+                                            Boolean ephemeral
+                                            Boolean fc
+                                            Boolean flocker
+                                            Boolean iscsi
+                                            Boolean photonPersistentDisk
+                                            Boolean projected
+                                            Boolean quobyte
+                                            Boolean rbd
+                                            Boolean scaleIO
+                                            Boolean storageos
+                    Boolean ServiceSpec {abstract}
+                        optional
+                            Boolean SERVICESPEC_allocateLoadBalancerNodePorts
+                            Boolean SERVICESPEC_clusterIP {abstract}
+                                alternative
+                                    Boolean CLUSTERIP_none
+                                    Boolean CLUSTERIP_emptyString
+                                    String CLUSTERIP_IP
+                            Boolean SERVICESPEC_clusterIPs cardinality [0..*] {abstract} 
+                                alternative
+                                    Boolean CLUSTERIPS_none
+                                    Boolean CLUSTERIPS_emptyString
+                                    String CLUSTERIPS_IPs
+                            Boolean SERVICESPEC_externalIPs cardinality [0..*] 
+                                mandatory
+                                    SERVIDESPEC_EXTERNALIPS_ip
+                            String SERVICESPEC_externalName
+                            Boolean SERVICESPEC_externalTrafficPolicy
+                                alternative   
+                                    Boolean EXTERNALTRAFFICPOLICY_Local
+                                    Boolean EXTERNALTRAFFICPOLICY_Cluster
+                            Integer SERVICESPEC_healthCheckNodePort
+                            Boolean SERVICESPEC_internalTrafficPolicy
+                                alternative   
+                                    Boolean INTERNALTRAFFICPOLICY_Local
+                                    Boolean INTERNALTRAFFICPOLICY_Cluster
+                            Boolean SERVICESPEC_ipFamilies
+                                optional
+                                    Boolean IPFAMILIES_IPv4
+                                    Boolean IPFAMILIES_IPv6
+                            Boolean SERVICESPEC_ipFamilyPolicy
+                                alternative   
+                                    Boolean SingleStack
+                                    Boolean PreferDualStack
+                                    Boolean RequireDualStack
+                            String SERVICESPEC_loadBalancerClass
+                            Boolean SERVICESPEC_Ports cardinality [0..*]
+                                mandatory   
+                                    Integer SERVICESPEC_PORTS_port
+                                optional
+                                    String SERVICESPEC_PORTS_name
+                                    Boolean SERVICESPEC_PORTS_protocol {abstract}
+                                        alternative
+                                            Boolean PORTS_PROTOCOL_tcp
+                                            Boolean PORTS_PROTOCOL_udp
+                                            Boolean PORTS_PROTOCOL_sctp
+                                    Integer SERVICESPEC_PORTS_nodePort
+                                    String SERVICESPEC_PORTS_targetPort
+                                    String SERVICESPEC_PORTS_appProtocol
+                            Boolean publishNotReadyAddresses
+                            Boolean SERVICESPEC_Selector cardinality [0..*] 
+                                mandatory
+                                    String SELECTOR_key
+                                    String SELECTOR_value
+                            Boolean SERVICESPEC_sessionAffinity
+                                alternative   
+                                    Boolean SESSIONAFFINITY_ClientIP
+                                    Boolean SESSIONAFFINITY_None
+                            Boolean SERVICESPEC_sessionAffinityConfig
+                                mandatory
+                                    Boolean SESSIONAFFINITYCONFIG_clientIP
+                                        mandatory
+                                            Integer CLIENTIP_timeoutSeconds
+                            String SERVICESPEC_trafficDistribution
+                            Boolean SERVICESPEC_Type
+                                alternative   
+                                    Boolean TYPE_ExternalName
+                                    Boolean TYPE_ClusterIP
+                                    Boolean TYPE_NodePort
+                                    Boolean TYPE_LoadBalancer
+                    Boolean ConfigMapSpec {abstract}
+                        optional
+                            Boolean CONFIGMAPSPEC_BinaryData cardinality [0..*] 
+                                mandatory
+                                    String BINARYDATA_binaryFile_name
+                                    String BINARYDATA_binaryFile_value
+                            Boolean CONFIGMAPSPEC_Data cardinality [0..*]
+                                optional   
+                                    Boolean DATA_confSimple
+                                        mandatory
+                                            String CONFSIMPLE_key
+                                            String CONFSIMPLE_value
+                                    Boolean DATA_confFile
+                                        mandatory   
+                                            String CONFFILE_name
+                                            String CONFFILE_value
+                            Boolean CONFIGMAPSPEC_immutable
+                            String CONFIGMAPSPEC_kind
+                    Boolean EndpointsSpec {abstract}
+                        mandatory
+                            Boolean ENDPOINT_subsets 
+                                optional
+                                    Boolean SUBSETS_addresses
+                                        mandatory
+                                            String ADDRESSES_ip
+                                        optional
+                                            String ADDRESSES_hostname
+                                            String ADDRESSES_nodename
+                                            Boolean ADDRESSES_targetRef
+                                                optional
+                                                    String ADDRESSES_TARGETREF_apiVersion
+                                                    String ADDRESSES_TARGETREF_fieldPath
+                                                    String ADDRESSES_TARGETREF_kind
+                                                    String ADDRESSES_TARGETREF_name
+                                                    String ADDRESSES_TARGETREF_namespace
+                                                    String ADDRESSES_TARGETREF_resourceVersion
+                                                    String ADDRESSES_TARGETREF_uid
+                                    Boolean SUBSETS_notReadyAddresses
+                                        mandatory
+                                                String NOTREADYADDRESSES_ip
+                                            optional
+                                                String NOTREADYADDRESSES_hostname
+                                                String NOTREADYADDRESSES_nodename
+                                                Boolean NOTREADYADDRESSES_targetRef
+                                                    optional
+                                                        String NOTREADYADDRESSES_TARGETREF_apiVersion
+                                                        String NOTREADYADDRESSES_TARGETREF_fieldPath
+                                                        String NOTREADYADDRESSES_TARGETREF_kind
+                                                        String NOTREADYADDRESSES_TARGETREF_name
+                                                        String NOTREADYADDRESSES_TARGETREF_namespace
+                                                        String NOTREADYADDRESSES_TARGETREF_resourceVersion
+                                                        String NOTREADYADDRESSES_TARGETREF_uid
+                                    Boolean SUBSETS_ports
+                                        mandatory   
+                                            Integer SUBSETS_PORTS_port
+                                        optional   
+                                            String SUBSETS_PORTS_appProtocol
+                                            String SUBSETS_PORTS_name
+                                            Boolean SUBSETS_PORTS_protocol
+                                                alternative  
+                                                    Boolean SUBSETS_PORTS_UDP 
+                                                    Boolean SUBSETS_PORTS_TCP
+                                                    Boolean SUBSETS_PORTS_SCTP
+
+                    Boolean SecretSpec {abstract, NO_TERMINADO}
+            Boolean rules cardinality [0..*] {NO_TERMINADO} 
+                mandatory
+                    String RULES_apiGroups cardinality [0..*]
+                        mandatory
+                            String RULES_APIGROUPS_value
+                optional   
+                    String RULES_nonResourceURLs cardinality [0..*]
+                        mandatory
+                            String RULES_NONRESOURCEURLS_value
+                    String RULES_resourceNames cardinality [0..*]
+                        mandatory
+                            String RULES_RESOURCENAMES_value
+                    String RULES_resources cardinality [0..*]
+                        mandatory
+                            String RULES_RESOURCES_value
+                    String RULES_verbs cardinality [0..*]
+                        mandatory
+                            String RULES_VERBS_value
+
+constraints
+    // Restrincciones de Group
+    (GROUP_apiextensions | GROUP_apiregistration | GROUP_apps | GROUP_authorization | GROUP_batch | GROUP_coordination | GROUP_core | GROUP_discovery | GROUP_events | GROUP_node | GROUP_policy | GROUP_rbac_authorization | GROUP_scheduling) => VERSION_v1
+    (GROUP_admission_registration | GROUP_authentication) => VERSION_v1 | VERSION_v1beta1 | VERSION_v1alpha1
+    (GROUP_certificates | GROUP_internal_apiserver | GROUP_networking | GROUP_storage) => VERSION_v1 | VERSION_v1alpha1 
+    GROUP_autoscaling => VERSION_v2 | VERSION_v1 
+    GROUP_flowcontrol_apiserver => VERSION_v1beta3 | VERSION_v1
+    GROUP_resource => VERSION_v1alpha2 | VERSION_v1
+    // Restricciones de Kind
+    (KIND_DaemonSet | KIND_Deployment | KIND_ReplicaSet | KIND_StatefullSet | KIND_ControllerRevision) => GROUP_apps
+    (KIND_Container | KIND_Pod | KIND_ReplicationController | KIND_Service | KIND_Endpoints | KIND_ConfigMap | KIND_Secret | KIND_PersistentVolumeClaim | KIND_Volume | KIND_LimitRange | KIND_PodTemplate | KIND_Binding | KIND_ComponentStatus | KIND_Namespace | KIND_Node | KIND_PersistentVolume | KIND_ResourceQuota | KIND_ServiceAccount) => GROUP_core
+    (KIND_CronJob | KIND_Job) => GROUP_batch
+    KIND_EndpointSlice => GROUP_discovery
+    (KIND_Ingress | KIND_IngressClass | KIND_IPAddress | KIND_ServiceCIDR | KIND_NetworkPolicy) => GROUP_networking
+    (KIND_CSIDriver | KIND_CSINode | KIND_StorageClass | KIND_CSIStorageCapacity | KIND_VolumeAttachment | KIND_VolumeAttributesClass) => GROUP_storage
+    (KIND_ClusterTrustBundle | KIND_CertificateSigningRequest) => GROUP_certificates
+    KIND_CustomerResourceDefinition => GROUP_apiextensions
+    KIND_Event => GROUP_events
+    KIND_HorizontalPodAutoscaler => GROUP_autoscaling
+    (KIND_MutatingWebhookConfiguration | KIND_ValidatingWebhookConfiguration | KIND_ValidatingAdmissionPolicy | KIND_ValidatingAdmissionPolicyBinding) => GROUP_admission_registration
+    (KIND_PodSchedulingContext | KIND_ResourceClaim | KIND_ResourceClaimTemplate | KIND_ResourceClass | KIND_ResourceClaimParameters | KIND_ResourceSlice) => GROUP_resource
+    KIND_PodDisruptionBudget => GROUP_policy
+    KIND_PriorityClass => GROUP_scheduling
+    KIND_APIService => GROUP_apiregistration
+    (KIND_LocalSubjectAccessReview | KIND_SelfSubjectAccessReview | KIND_SelfSubjectRulesReview | KIND_SubjectAccessReview) => GROUP_authorization
+    (KIND_FlowSchema | KIND_PriorityLevelConfiguration) => GROUP_flowcontrol_apiserver
+    KIND_Lease => GROUP_coordination
+    KIND_RuntimeClass => GROUP_node
+    (KIND_SelfSubjectReview | KIND_TokenRequest | KIND_TokenReview) => GROUP_authentication
+    KIND_StorageVersion => GROUP_internal_apiserver
+    (KIND_ClusterRole | KIND_ClusterRoleBinding | KIND_Role | KIND_RoleBinding)=> GROUP_rbac_authorization
+    // Resto de restricciones
+    DeploymentSpec & PodSpec & ServiceSpec & SecretSpec & ConfigMapSpec & EndpointsSpec => Spec
+    (TYPE_NodePort | TYPE_LoadBalancer) => (SERVICESPEC_PORTS_nodePort > 0)
+    KIND_Pod => PodSpec
+    KIND_Deployment => DeploymentSpec & PodSpec
+    KIND_Service => ServiceSpec
+    KIND_ConfigMap => ConfigMapSpec
+    KIND_Secret => SecretSpec
+    KIND_Endpoints => EndpointsSpec
+    (maxUnavailable == 0) => (maxSurge > 0) 
+    DeploymentSpec => PodSpec
+    SERVICESPEC_clusterIP => !SERVICESPEC_clusterIPs
+    SERVICESPEC_clusterIPs => !SERVICESPEC_clusterIP
+    SERVICESPEC_clusterIP => !TYPE_ExternalName
+    (SERVICESPEC_externalName == '') => TYPE_ExternalName
+    SERVICESPEC_ipFamilyPolicy => !TYPE_ExternalName
+    SERVICESPEC_ipFamilies => TYPE_ClusterIP | TYPE_NodePort | TYPE_LoadBalancer
+    (SERVICESPEC_healthCheckNodePort > 0) => TYPE_LoadBalancer & EXTERNALTRAFFICPOLICY_Local
+    (SERVICESPEC_loadBalancerClass == '') => TYPE_LoadBalancer
+    SESSIONAFFINITY_ClientIP => (CLIENTIP_timeoutSeconds > 0) & (CLIENTIP_timeoutSeconds < 86401)
+    PODSPEC_activeDeadlineSeconds > 0
+    LIVENESSPROBE_GRPC_port > 0 & LIVENESSPROBE_GRPC_port < 65535
+    LIVENESSPROBE_HTTPGET_port > 0 & LIVENESSPROBE_HTTPGET_port < 65535
+    LIVENESSPROBE_failureThreshold > 0
+    LIVENESSPROBE_periodSeconds > 0
+    LIVENESSPROBE_successThreshold > 0
+    LIVENESSPROBE_terminationGracePeriodSeconds > 0
+    LIVENESSPROBE_timeoutSeconds > 0
+    CONTAINER_PORTS_hostPort > 0 & CONTAINER_PORTS_hostPort < 65535
+    PODSPEC_hostNetwork => CONTAINER_PORTS_hostPort == CONTAINER_PORTS_containerPort
+    READINESSPROBE_GRPC_port > 0 & READINESSPROBE_GRPC_port < 65535
+    READINESSPROBE_HTTPGET_port > 0 & READINESSPROBE_HTTPGET_port < 65535
+    READINESSPROBE_failureThreshold > 0
+    READINESSPROBE_periodSeconds > 0
+    READINESSPROBE_successThreshold > 0
+    READINESSPROBE_terminationGracePeriodSeconds > 0
+    READINESSPROBE_timeoutSeconds > 0
+    STARTUPPROBE_GRPC_port > 0 & STARTUPPROBE_GRPC_port < 65535
+    STARTUPPROBE_HTTPGET_port > 0 & STARTUPPROBE_HTTPGET_port < 65535
+    STARTUPPROBE_failureThreshold > 0
+    STARTUPPROBE_periodSeconds > 0
+    STARTUPPROBE_successThreshold > 0
+    STARTUPPROBE_terminationGracePeriodSeconds > 0
+    STARTUPPROBE_timeoutSeconds > 0
+    DEPLOYMENTSPEC_TEMPLATE_Podspec => PodSpec
+    CONTAINER_tty => CONTAINER_stdin
+    SERVICESPEC_allocateLoadBalancerNodePorts => TYPE_LoadBalancer
+    ServiceSpec => KIND_Service
+    (SERVICESPEC_healthCheckNodePort > 0) => TYPE_LoadBalancer & EXTERNALTRAFFICPOLICY_Local
+    SERVICESPEC_ipFamilyPolicy => TYPE_LoadBalancer | TYPE_ClusterIP | TYPE_NodePort
+    (SERVICESPEC_loadBalancerClass == '') => TYPE_LoadBalancer
+    (CONTAINER_APPARMORPROFILE_localhostProfile == '') => CONTAINER_APPARMORPROFILE_Type_LocalHost
+    CONTAINER_SECURITYCONTEXT_allowPrivilegeEscalation => CONTAINER_SECURITYCONTEXT_privileged
+    CONTAINER_WINDOWSOPTIONS_hostProcess => PODSPEC_hostNetwork
+    VOLUMEMOUNTS_recursiveReadOnly == 'ifPossible'| VOLUMEMOUNTS_recursiveReadOnly == 'Enabled'=> VOLUMEMOUNTS_mountPropagation == 'None'
+    (VOLUMEMOUNTS_subPath == '') => !(VOLUMEMOUNTS_subPathExpr == '')
+    (VOLUMEMOUNTS_subPathExpr == '') => !(VOLUMEMOUNTS_subPath == '')
+    CONFIGMAP_defaultMode > 0 & CONFIGMAP_defaultMode < 511
+    CONFIGMAP_defaultMode > 0 & CONFIGMAP_defaultMode < 511
+    rules => KIND_Role
+    (RULES_apiGroups == '') => (RULES_verbs == '')

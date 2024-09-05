@@ -1,0 +1,145 @@
+features
+	Dockerfile
+		mandatory
+			Boolean FROM 
+				mandatory
+					String FROM_image 
+				optional
+					String FROM_platform 
+					String FROM_name 
+				alternative
+					String FROM_tag 
+					String FROM_digest 
+		optional
+			Boolean LABEL
+				mandatory
+					String LABEL_key
+					String LABEL_value
+			Boolean ENV 
+				mandatory
+					String ENV_key
+					String ENV_value
+			Boolean ADD 
+				mandatory
+					String ADD_source
+					String ADD_destiny
+				alternative
+					Boolean ADD_keep_git_dir 
+					String ADD_checksum 
+					Boolean ADD_link
+					String ADD_exclude 
+					String ADD_chown //SOLO PARA SISTEMAS LINUX
+						optional
+							String ADD_CHOWN_group 
+							String ADD_chmod //SOLO PARA SISTEMAS LINUX
+			Boolean COPY 
+				mandatory
+					String COPY_source
+					String COPY_destiny
+				alternative
+					String COPY_from
+					Boolean COPY_link
+					Boolean COPY_parents
+					String COPY_exclude
+					String COPY_chown //SOLO PARA SISTEMAS LINUX
+						optional
+							String COPY_CHOWN_group
+							String COPY_chmod //SOLO PARA SISTEMAS LINUX
+			String EXPOSE 
+				optional
+					Boolean EXPOSE_protocol {abstract}
+						or
+							Boolean PROTOCOL_udp
+							Boolean PROTOCOL_tcp
+			String WORKDIR 			
+			String VOLUME 
+			String RUN 
+				optional
+					Boolean mount 
+						mandatory
+							Boolean MOUNT_option {abstract}
+								or
+									Boolean MOUNT_target
+										mandatory 
+											String MOUNT_TARGET_value
+									Boolean MOUNT_source
+										mandatory 
+											String MOUNT_SOURCE_value
+									Boolean MOUNT_from 
+										mandatory 
+											String MOUNT_FROM_value
+									Boolean MOUNT_readwrite
+									Boolean MOUNT_id
+										mandatory
+											Integer MOUNT_ID_value
+									Boolean MOUNT_readonly 
+									Boolean MOUNT_mode
+										mandatory 
+											String MOUNT_MODE_value
+									Boolean MOUNT_uid 
+										mandatory 
+											String MOUNT_UID_value
+									Boolean MOUNT_gid 
+										mandatory 
+											String MOUNT_GID_value
+									Boolean MOUNT_size 
+										mandatory
+											String MOUNT_SIZE_value
+									Boolean MOUNT_required 
+									Boolean MOUNT_sharing 
+										alternative
+											Boolean MOUNT_SHARING_shared 
+											Boolean MOUNT_SHARING_private 
+											Boolean MOUNT_SHARING_locked 
+							Boolean MOUNT_type {abstract}
+								alternative
+									Boolean Mount_Type_bind
+									Boolean Mount_Type_cache
+									Boolean Mount_Type_tmpfs
+									Boolean Mount_Type_secret
+									Boolean Mount_Type_ssh
+					Boolean network
+						alternative
+							Boolean NETWORK_default
+							Boolean NETWORK_none
+							Boolean NETWORK_host
+				 	Boolean security 
+						alternative
+							Boolean SECURITY_sandbox
+							Boolean SECURITY_insecure
+			Boolean ARG 
+				mandatory
+					String ARG_name
+					String ARG_value
+			String CMD
+				optional
+					String CMD_param1
+					String CMD_param2
+			String ENTRYPOINT
+				optional
+					String ENTRYPOINT_param1
+					String ENTRYPOINT_param2
+			String USER
+				optional
+					String USER_group
+			String ONBUILD
+			String STOPSIGNAL
+			Boolean HEALTHCHECK
+				alternative
+					Boolean HEALTHCHECK_none
+					Boolean HEALTHCHECK_options {abstract}
+						mandatory
+							String HEALTHCHECK_cmdCommand
+						optional
+							String HEALTHCHECK_interval
+							String HEALTHCHECK_timeout
+							String HEALTHCHECK_startPeriod
+							String HEALTHCHECK_startInterval
+							String HEALTHCHECK_retries
+			String SHELL
+constraints
+	Mount_Type_bind => (MOUNT_target | MOUNT_source | MOUNT_from | MOUNT_readwrite)
+	Mount_Type_cache => (MOUNT_id | MOUNT_target | MOUNT_readonly | MOUNT_sharing | MOUNT_from | MOUNT_source | MOUNT_mode | MOUNT_uid | MOUNT_gid)
+	Mount_Type_tmpfs => (MOUNT_target | MOUNT_size)
+	(Mount_Type_secret | Mount_Type_ssh) => (MOUNT_id | MOUNT_target | MOUNT_required | MOUNT_mode | MOUNT_uid | MOUNT_gid)
+	
