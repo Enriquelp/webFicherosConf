@@ -142,4 +142,3 @@ constraints
 	Mount_Type_cache => (MOUNT_id | MOUNT_target | MOUNT_readonly | MOUNT_sharing | MOUNT_from | MOUNT_source | MOUNT_mode | MOUNT_uid | MOUNT_gid)
 	Mount_Type_tmpfs => (MOUNT_target | MOUNT_size)
 	(Mount_Type_secret | Mount_Type_ssh) => (MOUNT_id | MOUNT_target | MOUNT_required | MOUNT_mode | MOUNT_uid | MOUNT_gid)
-	

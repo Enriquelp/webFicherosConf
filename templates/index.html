@@ -6,20 +6,28 @@
 
   <h1>Select a feature model</h1>
   <div class="btn-group" role="group">
-    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-    <label class="btn btn-outline-primary" for="btnradio1" onclick="loadPage('kubernetes')">Kubernetes</label>
-  
+    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btnradio1" onclick="loadFM('kubernetes')">Kubernetes</label>
+    <!-- <label class="btn btn-outline-primary" for="btnradio1" onclick="loadPage('kubernetes')">Kubernetes</label> -->
     <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-    <label class="btn btn-outline-primary" for="btnradio2" onclick="loadPage('docker')">Docker</label>
+    <label class="btn btn-outline-primary" for="btnradio2" onclick="loadFM('docker')">Docker</label>
+    <!-- <label class="btn btn-outline-primary" for="btnradio2" onclick="loadPage('docker')">Docker</label>-->
   </div>
 
-  <!-- Contenedor para el contenido del FM elegido -->
-  <div id="contentArea" class="mt-3">
-    <!-- El contenido se cargará aquí -->
+  <!-- Spinner de carga -->
+  <div id="spinner" class="mt-3" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
   </div>
+  
+  <!-- div dodne se mosntrará el arbol del FM -->
+  <div id="contentArea" class="mt-3"></div>
 
-  <!-- JavaScript para manejar la solicitud AJAX -->
+
   <script>
+
+    /*
       function loadPage(page) {
           fetch(`/load_page/${page}`)
               .then(response => response.text())
@@ -28,6 +36,54 @@
               })
               .catch(error => console.error('Error:', error));
       }
+    */
+
+    function loadFM(model) {
+      // Limpiar el contenido actual
+      document.getElementById('contentArea').innerHTML = '';
+      // Mostrar el spinner
+      document.getElementById('spinner').style.display = 'block';
+
+      fetch(`/load_fm/${model}`)
+      .then(response => response.json()) 
+      .then(data => {
+        // Renderizar el contenido que llega del backend
+        const contentArea = document.getElementById('contentArea');
+        contentArea.innerHTML = createTree(data);
+
+        // Ocultar el spinner
+        document.getElementById('spinner').style.display = 'none';
+      })
+      .catch(error => {
+        console.error('Error al cargar el contenido:', error);
+        // Ocultar el spinner aunque ocurra un error
+        document.getElementById('spinner').style.display = 'none';
+      });
+    }
+
+    function createTree(data) {
+      // Función recursiva para crear elementos de lista a partir del JSON
+      function createListItem(feature) {
+        const li = document.createElement('li');
+        li.textContent = feature.name;
+
+        if (feature.relations && feature.relations.length > 0) {
+          const ul = document.createElement('ul');
+          for (const relation of feature.relations) {
+            for (const child of relation.children) {
+              ul.appendChild(createListItem(child));
+            }
+          }
+          li.appendChild(ul);
+        }
+        return li;
+      }
+
+      const ul = document.createElement('ul');
+      ul.appendChild(createListItem(data.features));
+      return ul.outerHTML;
+    }
+
   </script>
 
 {% endblock %}
