@@ -1,0 +1,18 @@
+  
+name: {{METADATA_name}}
+
+{%if METADATA_deletionGracePeriodSeconds %}deletionGracePeriodSeconds: {{METADATA_deletionGracePeriodSeconds}} {%endif%}
+
+{%if METADATA_namespace %}namespace: {{METADATA_namespace}} {%endif%}
+
+{%if METADATA_labels%}labels:
+  {%for label in METADATA_labels%}  
+  {{label.LABELS_key}}: {{label.LABELS_value}}
+  {%endfor%}
+{%endif%}
+
+{%if METADATA_annotations%}annotations:
+  {%for annotation in METADATA_annotations%}  
+  {{annotation.ANNOTATIONS_key}}: {{annotation.ANNOTATIONS_value}}
+  {%endfor%}
+{%endif%}

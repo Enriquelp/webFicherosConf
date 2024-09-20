@@ -1,0 +1,38 @@
+{# Comando From #}
+FROM {% if platform %}--platform={{platform}} {% endif %}{{image}}{% if tag %}:{{tag}}{% endif %}{% if digest %}@{{digest}}{% endif %}{% if name %} AS {{name}}{% endif %}
+{# Comando WORKDIR #}
+{% if WORKDIR %}WORKDIR {{WORKDIR}}{% endif %}
+{# Comando COPY #}
+{% if COPY %}COPY {% if COPY_from%}--from={{COPY_from}} {% endif %}{% if COPY_exclude%}--exclude={{COPY_exclude}} {% endif %}{% if COPY_chown %}--chown={{COPY_chown}}{% if COPY_CHOWN_group %}:{{COPY_CHOWN_group}}{% endif %} {% if COPY_chmod %}--chmod={{COPY_chmod}} {% endif %}{% endif %}{% if COPY_link %}{{COPY_link}} {% endif %}{% if COPY_parents %}{{COPY_parents}} {% endif %}{{COPY_source}} {{COPY_destiny}}{% endif %}
+{# Comando ADD #}
+{% if ADD %}ADD {% if ADD_keep_git_dir %}{{ADD_keep_git_dir}} {% endif %}{% if ADD_checksum %}--checksum={{ADD_checksum}} {% endif %}{% if ADD_exclude%}{{ADD_exclude}}{{ADD_EXCLUDE_path}} {% endif %}{% if ADD_exclude%}{{ADD_exclude}}{{ADD_EXCLUDE_path}} {% endif %}{% if ADD_chown %}--chown={{ADD_chown}}{% if ADD_CHOWN_group %}:{{ADD_CHOWN_group}}{% endif %} {% if ADD_chmod %}--chmod=={{ADD_chmod}} {% endif %}{% endif %}{% if ADD_link %}{{ADD_link}} {% endif %}{{ADD_source}} {{ADD_destiny}}{% endif %}
+{# Comando LABEL #}
+{% if LABEL%}LABEL {{LABEL_key}}="{{LABEL_value}}"{% endif %}
+{# Comando ENV #}
+{% if ENV%}ENV {{ENV_key}}={{ENV_value}}{% endif %}
+{# Comando ARG #}
+{% if ARG %}ARG {{ARG_name}}{% if ARG_value %}={{ARG_value}}{% endif %} {% endif %}
+{# Comando ENTRYPOINT #}
+{% if ENTRYPOINT %}ENTRYPOINT {{ENTRYPOINT}} {{ENTRYPOINT_param1}} {{ENTRYPOINT_param2}}{% endif %}
+{# Comando USER #}
+{% if USER %}USER {{USER}}{% if USER_group %}:{{USER_group}}{% endif %}{% endif %}
+{# Comando ONBUILD #}
+{% if ONBUILD %}ONBUILD {{ONBUILD}}{% endif %}
+{# Comando STOPSIGNAL #}
+{% if STOPSIGNAL %}STOPSIGNAL {{STOPSIGNAL}} {% endif %}
+{# Comando SHELL #}
+{% if SHELL %}SHELL [{{SHELL}}]{% endif %}
+{# Comando EXPOSE #}
+{% if EXPOSE %}EXPOSE {% if not EXPOSE_protocol %}{{EXPOSE}} {% elif EXPOSE_protocol %}{% if PROTOCOL_udp %}{{EXPOSE}}/udp {% endif %}{% if PROTOCOL_tcp %}{{EXPOSE}}/tcp{% endif %}{% endif %}{% endif %}
+{# Comando RUN #}
+{% if RUN %}Run{% if mount %} {{mount}}{{bind}}{{cache}}{{tmpfs}}{{secret}}{{ssh}}{% if MOUNT_target %},{{MOUNT_target}}{{MOUNT_TARGET_value}}{% endif %}{% if MOUNT_source %},{{MOUNT_source}}{{MOUNT_SOURCE_value}}{% endif %}{% if MOUNT_from %},{{MOUNT_from}}{{MOUNT_FROM_value}}{% endif %}{% if MOUNT_readwrite %},{{MOUNT_readwrite}}{% endif %}{% if MOUNT_readonly %},{{MOUNT_readonly}}{% endif %}{% if MOUNT_id %},{{MOUNT_id}}{{MOUNT_ID_value}}{% endif %}{% if MOUNT_required %},{{MOUNT_required}}{% endif %}{% if MOUNT_mode %},{{MOUNT_mode}}{{MOUNT_MODE_value}}{% endif %}{% if MOUNT_uid %},{{MOUNT_uid}}{{MOUNT_UID_value}}{% endif %}{% if MOUNT_gid %},{{MOUNT_gid}}{{MOUNT_GID_value}}{% endif %}{% if MOUNT_size %},{{MOUNT_size}}{{MOUNT_SIZE_value}}{% endif %}{% if MOUNT_sharing %},{{MOUNT_sharing}}{{MOUNT_SHARING_shared}}{{MOUNT_SHARING_private}}{{MOUNT_SHARING_locked}}{% endif %}{% endif %}{% if network %} {{network}}{{default}}{{none_}}{{host}}{% endif %}{% if security %} {{security}}{{sandbox}}{{insecure}}{% endif %} {{RUN}}{% endif %}
+{# Comando HEALTHCHECK #}
+{% if HEALTHCHECK %}HEALTHCHECK{%if HEALTHCHECK_none %} {{HEALTHCHECK_none}}{% elif HEALTHCHECK_options%}{% if HEALTHCHECK_interval %} --interval={{HEALTHCHECK_interval}}{% endif %}{% if HEALTHCHECK_timeout %} --timeout={{HEALTHCHECK_timeout}}{% endif %}{% if HEALTHCHECK_startPeriod%} --start-period={{HEALTHCHECK_startPeriod}}{% endif %}{% if HEALTHCHECK_startInterval %} --start-interval={{HEALTHCHECK_startInterval}}{% endif %}{% if HEALTHCHECK_retries %} --retries={{HEALTHCHECK_retries}}{% endif %} \
+    CMD{{HEALTHCHECK_cmdCommand}}{% endif %}{% endif %}
+{# Comando VOLUME #}
+{% if VOLUME %}VOLUME {{VOLUME}}{% endif %}
+{# Comando CMD #}
+{% if CMD %}CMD {{CMD}} {{CMD_param1}} {{CMD_param2}} {% endif %}
+
+
+

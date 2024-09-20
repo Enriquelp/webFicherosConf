@@ -47,6 +47,7 @@
       fetch(`/load_fm/${model}`)
       .then(response => response.json()) 
       .then(data => {
+        console.log(data)
         // Renderizar el contenido que llega del backend
         const contentArea = document.getElementById('contentArea');
         contentArea.innerHTML = createTree(data);

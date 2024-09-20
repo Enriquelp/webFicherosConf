@@ -1,0 +1,97 @@
+Feature, Handler, Value
+FROM_image, image,
+FROM_platform, platform,
+FROM_tag, tag,
+FROM_name, name,
+FROM_digest, digest,
+CMD, CMD,
+CMD_param1, CMD_param1,
+CMD_param2, CMD_param2,
+EXPOSE, EXPOSE,
+EXPOSE_protocol, EXPOSE_protocol, -
+PROTOCOL_udp, PROTOCOL_udp, udp 
+PROTOCOL_tcp, PROTOCOL_tcp, tcp
+WORKDIR, WORKDIR,
+COPY, COPY, -
+COPY_source, COPY_source,
+COPY_destiny, COPY_destiny,
+COPY_link, COPY_link, --link
+COPY_parents, COPY_parents, --parents
+COPY_from, COPY_from, 
+COPY_exclude, COPY_exclude, 
+COPY_chown, COPY_chown,
+COPY_CHOWN_group, COPY_CHOWN_group,
+COPY_chmod, COPY_chmod, 
+ADD, ADD, -
+ADD_source, ADD_source,
+ADD_destiny, ADD_destiny,
+ADD_link, ADD_link, --link
+ADD_chown, ADD_chown,
+ADD_CHOWN_group, ADD_CHOWN_group, 
+ADD_chmod, ADD_chmod, 
+ADD_keep_git_dir, ADD_keep_git_dir, --keep-git-dir=true
+ADD_checksum, ADD_checksum,
+LABEL, LABEL, -
+LABEL_key,LABEL_key,
+LABEL_value, LABEL_value,
+ENV, ENV, -
+ENV_key, ENV_key,
+ENV_value, ENV_value,
+VOLUME, VOLUME,
+ARG, ARG, -
+ARG_name, ARG_name,
+ARG_value, ARG_value,
+ENTRYPOINT, ENTRYPOINT,
+ENTRYPOINT_param1, ENTRYPOINT_param1,
+ENTRYPOINT_param2, ENTRYPOINT_param2,
+USER, USER,
+USER_group, USER_group,
+ONBUILD, ONBUILD,
+STOPSIGNAL, STOPSIGNAL,
+SHELL, SHELL,
+HEALTHCHECK, HEALTHCHECK, -
+HEALTHCHECK_none, HEALTHCHECK_none,
+HEALTHCHECK_options, HEALTHCHECK_options, -
+HEALTHCHECK_cmdCommand, HEALTHCHECK_cmdCommand,
+HEALTHCHECK_interval, HEALTHCHECK_interval,
+HEALTHCHECK_timeout, HEALTHCHECK_timeout,
+HEALTHCHECK_startPeriod, HEALTHCHECK_startPeriod,
+HEALTHCHECK_startInterval, HEALTHCHECK_startInterval,
+HEALTHCHECK_retries, HEALTHCHECK_retries,
+RUN, RUN,
+Mount_Type_mount, mount, --mount=type=
+Mount_Type_bind, bind, bind
+Mount_Type_cache, cache, cache
+Mount_Type_tmpfs, tmpfs, tmpfs
+Mount_Type_secret, secret, secret
+Mount_Type_ssh, ssh, ssh
+MOUNT_target, MOUNT_target, target=
+MOUNT_TARGET_value, MOUNT_TARGET_value,
+MOUNT_source, MOUNT_source, source=
+MOUNT_SOURCE_value, MOUNT_SOURCE_value,
+MOUNT_from, MOUNT_from, from=
+MOUNT_FROM_value, MOUNT_FROM_value,
+MOUNT_readwrite, MOUNT_readwrite, readwrite
+MOUNT_readonly,MOUNT_readonly, readonly
+MOUNT_id, MOUNT_id, id=
+MOUNT_ID_value, MOUNT_ID_value,
+MOUNT_required, MOUNT_required, required=true
+MOUNT_mode, MOUNT_mode, mode=
+MOUNT_MODE_value, MOUNT_MODE_value,
+MOUNT_uid, MOUNT_uid, uid=
+MOUNT_UID_value, MOUNT_UID_value,
+MOUNT_gid, MOUNT_gid, gid=
+MOUNT_GID_value,MOUNT_GID_value,
+MOUNT_size, MOUNT_size, size=
+MOUNT_SIZE_value, MOUNT_SIZE_value,
+MOUNT_sharing, MOUNT_sharing, sharing=
+MOUNT_SHARING_shared, MOUNT_SHARING_shared, shared
+MOUNT_SHARING_private,MOUNT_SHARING_private, private
+MOUNT_SHARING_locked, MOUNT_SHARING_locked, locked
+network, network, --network=
+NETWORK_default, default, default
+NETWORK_none, none_, none
+NETWORK_host, host, host
+security, security, --security=
+SECURITY_sandbox, sandbox, sandbox
+SECURITY_insecure, insecure, insecure
