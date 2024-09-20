@@ -4,48 +4,77 @@
 
 {% block content %}
 
-  <h1>Select a feature model</h1>
-  <div class="btn-group" role="group">
-    <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off">
-    <label class="btn btn-outline-primary" for="btnradio1" onclick="loadFM('kubernetes')">Kubernetes</label>
-    <!-- <label class="btn btn-outline-primary" for="btnradio1" onclick="loadPage('kubernetes')">Kubernetes</label> -->
-    <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-    <label class="btn btn-outline-primary" for="btnradio2" onclick="loadFM('docker')">Docker</label>
-    <!-- <label class="btn btn-outline-primary" for="btnradio2" onclick="loadPage('docker')">Docker</label>-->
+<h1>Select a feature model</h1>
+<div class="btn-group" role="group">
+  <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off">
+  <label class="btn btn-outline-primary" for="btnradio1"
+    onclick="loadFM('kubernetes');setFeatureModel('kubernetes')">Kubernetes</label>
+
+  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+  <label class="btn btn-outline-primary" for="btnradio2"
+    onclick="loadFM('docker');setFeatureModel('docker')">Docker</label>
+</div>
+
+<!-- Subir el archivo de configuración -->
+<form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data" onsubmit="return submitForm()">
+  <div class="mb-3">
+    <label for="file" class="form-label">Upload Configuration file (JSON)</label>
+    <input class="form-control" type="file" id="file" name="file" required>
   </div>
+  <!-- Campo oculto para el feature model -->
+  <input type="hidden" id="featureModel" name="feature_model">
+  <button type="submit" class="btn btn-primary">Generate file</button>
+</form>
 
-  <!-- Spinner de carga -->
-  <div id="spinner" class="mt-3" style="display: none;">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
+<!-- Spinner de carga -->
+<div id="spinner" class="mt-3" style="display: none;">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
   </div>
-  
-  <!-- div dodne se mosntrará el arbol del FM -->
-  <div id="contentArea" class="mt-3"></div>
+</div>
 
+<!-- div dodne se mosntrará el arbol del FM -->
+<div id="contentArea" class="mt-3"></div>
 
-  <script>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="alert alert-info" role="alert">
+  {{ messages[0] }}
+</div>
+{% endif %}
+{% endwith %}
 
-    /*
-      function loadPage(page) {
-          fetch(`/load_page/${page}`)
-              .then(response => response.text())
-              .then(data => {
-                  document.getElementById('contentArea').innerHTML = data;
-              })
-              .catch(error => console.error('Error:', error));
-      }
-    */
+<!-- Script para manejar la selección de un feature model -->
+<script>
+  // Función para establecer el valor del feature model
+  function setFeatureModel(model) {
+    document.getElementById('featureModel').value = model;
+  }
 
-    function loadFM(model) {
-      // Limpiar el contenido actual
-      document.getElementById('contentArea').innerHTML = '';
-      // Mostrar el spinner
-      document.getElementById('spinner').style.display = 'block';
+  // Función para manejar el envío del formulario
+  function submitForm() {
+    // Verificar si se ha seleccionado un feature model
+    const featureModel = document.getElementById('featureModel').value;
+    if (!featureModel) {
+      alert('Please select a feature model.');
+      return false;  // Evita que el formulario se envíe
+    }
 
-      fetch(`/load_fm/${model}`)
-      .then(response => response.json()) 
+    // El formulario se enviará normalmente
+    return true;
+  }
+</script>
+
+<!-- Script para cargar el contenido del FM seleccionado-->
+<script>
+  function loadFM(model) {
+    // Limpiar el contenido actual
+    document.getElementById('contentArea').innerHTML = '';
+    // Mostrar el spinner
+    document.getElementById('spinner').style.display = 'block';
+
+    fetch(`/load_fm/${model}`)
+      .then(response => response.json())
       .then(data => {
         console.log(data)
         // Renderizar el contenido que llega del backend
@@ -60,32 +89,30 @@
         // Ocultar el spinner aunque ocurra un error
         document.getElementById('spinner').style.display = 'none';
       });
-    }
+  }
 
-    function createTree(data) {
-      // Función recursiva para crear elementos de lista a partir del JSON
-      function createListItem(feature) {
-        const li = document.createElement('li');
-        li.textContent = feature.name;
+  function createTree(data) {
+    // Función recursiva para crear elementos de lista a partir del JSON
+    function createListItem(feature) {
+      const li = document.createElement('li');
+      li.textContent = feature.name;
 
-        if (feature.relations && feature.relations.length > 0) {
-          const ul = document.createElement('ul');
-          for (const relation of feature.relations) {
-            for (const child of relation.children) {
-              ul.appendChild(createListItem(child));
-            }
+      if (feature.relations && feature.relations.length > 0) {
+        const ul = document.createElement('ul');
+        for (const relation of feature.relations) {
+          for (const child of relation.children) {
+            ul.appendChild(createListItem(child));
           }
-          li.appendChild(ul);
         }
-        return li;
+        li.appendChild(ul);
       }
-
-      const ul = document.createElement('ul');
-      ul.appendChild(createListItem(data.features));
-      return ul.outerHTML;
+      return li;
     }
 
-  </script>
+    const ul = document.createElement('ul');
+    ul.appendChild(createListItem(data.features));
+    return ul.outerHTML;
+  }
+</script>
 
 {% endblock %}
-

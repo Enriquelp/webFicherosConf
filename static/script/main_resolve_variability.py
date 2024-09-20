@@ -33,7 +33,7 @@ def main(config, map, template, kubernetes, details, dockerfile):
 
     result = vengine.resolve_variability()
 
-    with open("salida.yaml", "w") as f: # Guarda el resultado en un fichero 
+    with open("uploads/config.yaml", "w") as f: # Guarda el resultado en un fichero 
         print('\n')
         print_without_blank_lines(result, f)
         print('\n')
@@ -48,6 +48,9 @@ def main(config, map, template, kubernetes, details, dockerfile):
     if (dockerfile):
          rdo = subprocess.run([hadolint, "salida.yaml"], capture_output=True, text=True)
          print(f"\033[91m ERROR: {rdo.stdout} \033[0m") # Imprime el resultado de la comprobacion en rojo
+    return result, rdo.stdout
+
+
 def print_without_blank_lines(text, file):
     for line in text.splitlines():
         if line.strip():  # Verifica si la línea no está en blanco
