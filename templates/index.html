@@ -36,14 +36,6 @@
 <!-- div dodne se mosntrará el arbol del FM -->
 <div id="contentArea" class="mt-3"></div>
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<div class="alert alert-info" role="alert">
-  {{ messages[0] }}
-</div>
-{% endif %}
-{% endwith %}
-
 <!-- Script para manejar la selección de un feature model -->
 <script>
   // Función para establecer el valor del feature model
@@ -63,6 +55,7 @@
     // El formulario se enviará normalmente
     return true;
   }
+
 </script>
 
 <!-- Script para cargar el contenido del FM seleccionado-->
