@@ -14,9 +14,12 @@ app = Flask(__name__)
 pathFM = 'static/feature_models/' # Ruta hacia los FM
 app.config['UPLOAD_FOLDER'] = 'uploads' # Configurar el folder donde se guardarán los archivos subidos
 app.secret_key = 'supersecretkey'  # Para habilitar mensajes flash
+error = ''  # Variable para almacenar errores
 
 @app.route('/')
 def index():
+    global error 
+    error = ''
     return render_template('index.html')
 
 @app.route('/about')
@@ -51,6 +54,8 @@ def upload_file():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         dest = os.path.join(app.config['UPLOAD_FOLDER'], 'config')
         file.save(filepath)
+        global error 
+        error = ''
 
         # Eliminar el archivo de configuración si existe antes de generar el nuevo
         if os.path.exists(dest):
@@ -63,8 +68,8 @@ def upload_file():
                 mapping = 'static/mapping_models/dockerfile_conf_mapping.csv'
 
                 # Procesar el archivo subido y crear el archivo de config.txt
-                configuration = generate_conf(filepath, mapping, template, False, False, True, dest)
-
+                configuration, error = generate_conf(filepath, mapping, template, False, False, True, dest)
+                print(error)
                 # Eliminar el archivo JSON después de procesarlo
                 os.remove(filepath)
                 return send_file(dest, as_attachment=True, download_name='Dockerfile')
@@ -74,8 +79,8 @@ def upload_file():
                 mapping = 'static/mapping_models/Kubernetes_manifest_mapping_v2.csv'
 
                 # Procesar el archivo subido y crear el archivo de config.yaml
-                configuration = generate_conf(filepath, mapping, template, True, False, False, dest)
-                
+                configuration, error = generate_conf(filepath, mapping, template, True, False, False, dest)
+                print(error)
                 # Eliminar el archivo JSON después de procesarlo
                 os.remove(filepath)
                 return send_file(dest, as_attachment=True, download_name='config.yaml')
@@ -87,6 +92,12 @@ def upload_file():
                 os.remove(filepath)
             return jsonify({"error": f"Error al procesar el archivo: {str(e)}"}), 500
     
+@app.route('/check', methods=['GET'])
+def check_errors():
+    if error != '':
+        return jsonify(f"error: {error}"), 200
+    else:
+        return jsonify(f"There are no errors"), 200
 
 # Manejo de errores 404
 @app.errorhandler(404)

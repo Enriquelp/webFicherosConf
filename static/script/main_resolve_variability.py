@@ -12,20 +12,36 @@ import subprocess
 
 def main(config, map, template, kubernetes, details, dockerfile, dest):
     kubeconform = "static/validators/kubeconform.exe"
-    kube_score = "static/validators/kube-score.exe"
     hadolint = 'static/validators/hadolint.exe'
-    vengine = VEngine()
+    error = ''
+    
 
+    # Carga los archivos necesarios
+    vengine = VEngine()
     vengine.load_configuration(config)
     vengine.load_mapping_model(map)
     vengine.load_template(template)
 
+    # Resuelve la variabilidad
     result = vengine.resolve_variability()
 
-    with open(dest, "w") as f: # Guarda el resultado en un fichero 
+    # Guarda el resultado en un fichero 
+    with open(dest, "w") as f: 
         print_without_blank_lines(result, f)
 
-    return result
+
+    # Comprueba si existe algun error en el YAML de kubernetes
+    if(kubernetes): 
+        rdo = subprocess.run([kubeconform, dest], capture_output=True, text=True)
+        if (rdo.stdout != ''):
+            error = f"ERROR: {rdo.stdout}" 
+    # Comprueba si existe algun error en el Dockerfile
+    if (dockerfile):
+         rdo = subprocess.run([hadolint, dest], capture_output=True, text=True)
+         if (rdo.stdout != ''):
+            error = f"ERROR: {rdo.stdout}"     
+
+    return result, error
 
 def print_without_blank_lines(text, file):
     for line in text.splitlines():

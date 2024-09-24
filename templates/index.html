@@ -17,13 +17,16 @@
 
 <!-- Subir el archivo de configuración -->
 <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data" onsubmit="return submitForm()">
-  <div class="mb-3">
-    <label for="file" class="form-label">Upload Configuration file (JSON)</label>
+  <div class="mb-3 col-md-4">
+    <label for="file" class="form-label mt-2">Upload Configuration file (JSON)</label>
     <input class="form-control" type="file" id="file" name="file" required>
   </div>
   <!-- Campo oculto para el feature model -->
   <input type="hidden" id="featureModel" name="feature_model">
-  <button type="submit" class="btn btn-primary">Generate file</button>
+  <div>
+    <button id="upload-form-btn" type="submit" class="btn btn-info">Generate file</button>
+    <button id="check-errors-btn" type="button"  class="btn btn-warning d-none ms-1">Check errors</button>
+  </div>
 </form>
 
 <!-- Spinner de carga -->
@@ -34,18 +37,65 @@
 </div>
 
 <!-- div dodne se mosntrará el arbol del FM -->
-<div id="contentArea" class="mt-3"></div>
+<container class="container-fluid ">
+  <div id="contentArea" class="border border-primary overflow-auto"></div>
+</container>
+
+
+<!-- Modal HTML (Bootstrap) para mostrar el error de la configuracion -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="errorModalLabel">Error Check</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modal-message">
+        <!-- Aquí se insertará el mensaje de error -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Script para manejar la selección de un feature model -->
 <script>
+  canCheck = false;
   // Función para establecer el valor del feature model
   function setFeatureModel(model) {
     document.getElementById('featureModel').value = model;
   }
 
+
+  // Cambiamos el funcionamiento del segundo boton para que no envie el formulario
+  document.getElementById('check-errors-btn').addEventListener('click', function(event) {
+    event.preventDefault(); // Evita que el formulario se envíe
+    // Llamamos a la funcion para comprobar la validez de la configuracion
+    checkErrors();
+  });
+
+  // Función para comprobar la validez de la configuración
+  function checkErrors(){
+    if (canCheck = true) {
+      fetch('/check')
+      .then(response => response.json())
+      .then(data => {
+        // Actualizar el contenido del modal con el mensaje recibido
+        document.getElementById('modal-message').textContent = data;
+
+        // Mostrar el modal
+        var myModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        myModal.show();
+      })
+      .catch(error => console.error(error));
+    }
+  }
   // Función para manejar el envío del formulario
   function submitForm() {
     // Verificar si se ha seleccionado un feature model
+    canCheck = true;
     const featureModel = document.getElementById('featureModel').value;
     if (!featureModel) {
       alert('Please select a feature model.');
@@ -53,6 +103,7 @@
     }
 
     // El formulario se enviará normalmente
+    document.getElementById('check-errors-btn').classList.remove('d-none');
     return true;
   }
 
@@ -69,7 +120,6 @@
     fetch(`/load_fm/${model}`)
       .then(response => response.json())
       .then(data => {
-        console.log(data)
         // Renderizar el contenido que llega del backend
         const contentArea = document.getElementById('contentArea');
         contentArea.innerHTML = createTree(data);
