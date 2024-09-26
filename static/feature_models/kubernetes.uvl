@@ -699,10 +699,10 @@ features
                                         mandatory      
                                             SCHEMA_openAPIV3Schema {doc 'OpenAPIV3Schema is the OpenAPI v3 schema to use for validation and pruning_'}
                                                 optional   
-                                                    OPENAPIV3SCHEMA_type {doc ''}        
-                                                    OPENAPIV3SCHEMA_properties {doc ''}
-                                                    OPENAPIV3SCHEMA_description {doc ''}
-                                                    OPENAPIV3SCHEMA_required {doc ''}                              
+                                                    OPENAPIV3SCHEMA_type       
+                                                    OPENAPIV3SCHEMA_properties 
+                                                    OPENAPIV3SCHEMA_description 
+                                                    OPENAPIV3SCHEMA_required                              
                                     VERSIONS_additionalPrinterColumns {doc 'AdditionalPrinterColumns are additional columns shown e_g_ in kubectl next to the name_ Defaults to a created-at column_ More info: https://kubernetes_io/docs/reference/using-api/api-concepts/#additionalprintercolumns'}
                                         optional
                                             ADDITIONALPRINTERCOLUMNS_name {doc 'name is a human readable name for the column_'}

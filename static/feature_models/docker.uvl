@@ -1,142 +1,150 @@
 features
 	Dockerfile
 		mandatory
-			Boolean FROM 
+			FROM {doc 'The FROM instruction initializes a new build stage and sets the base image for subsequent instructions_ As such, a valid Dockerfile must start with a FROM instruction_ The image can be any valid image_'}
 				mandatory
-					String FROM_image 
+					FROM_image {doc 'The base image for the build stage_'}
 				optional
-					String FROM_platform 
-					String FROM_name 
+					FROM_platform {doc 'The optional --platform flag can be used to specify the platform of the image in case FROM references a multi-platform image_ For example, linux/amd64, linux/arm64, or windows/amd64_ By default, the target platform of the build request is used_'}
+					FROM_name {doc 'The name of the build stage_'}
 				alternative
-					String FROM_tag 
-					String FROM_digest 
+					FROM_tag {doc 'The tag of the base image_'}
+					FROM_digest {doc 'The digest of the base image_'}
 		optional
-			Boolean LABEL
+			LABEL {doc 'The LABEL instruction adds metadata to an image_ A LABEL is a key-value pair_ To include spaces within a LABEL value, use quotes and backslashes as you would in command-line parsing_'}
 				mandatory
-					String LABEL_key
-					String LABEL_value
-			Boolean ENV 
+					LABEL_key {doc 'The key of the metadata_'}
+					LABEL_value {doc 'The value of the metadata_'}
+			ENV {doc 'The ENV instruction sets the environment variable <key> to the value <value>_ This value will be in the environment for all subsequent instructions in the build stage and can be replaced inline in many as well_'}
 				mandatory
-					String ENV_key
-					String ENV_value
-			Boolean ADD 
+					ENV_key {doc 'The key of the environment variable_'}
+					ENV_value {doc 'The value of the environment variable_'}
+			ADD {doc 'The ADD instruction copies new files or directories from <src> and adds them to the filesystem of the image at the path <dest>_ Files and directories can be copied from the build context, a remote URL, or a Git repository_'}
 				mandatory
-					String ADD_source
-					String ADD_destiny
-				alternative
-					Boolean ADD_keep_git_dir 
-					String ADD_checksum 
-					Boolean ADD_link
-					String ADD_exclude 
-					String ADD_chown //SOLO PARA SISTEMAS LINUX
-						optional
-							String ADD_CHOWN_group 
-							String ADD_chmod //SOLO PARA SISTEMAS LINUX
-			Boolean COPY 
-				mandatory
-					String COPY_source
-					String COPY_destiny
-				alternative
-					String COPY_from
-					Boolean COPY_link
-					Boolean COPY_parents
-					String COPY_exclude
-					String COPY_chown //SOLO PARA SISTEMAS LINUX
-						optional
-							String COPY_CHOWN_group
-							String COPY_chmod //SOLO PARA SISTEMAS LINUX
-			String EXPOSE 
+					ADD_source {doc 'The source path_'}
+					ADD_destiny {doc 'The destination path_'}
 				optional
-					Boolean EXPOSE_protocol {abstract}
+					ADD_keep_git_dir {doc 'The --keep-git-dir=true flag lets you preserve the _git directory_ when the source is a git repository_'}
+					ADD_checksum {doc 'The --checksum flag lets you verify the checksum of a remote resource_ The checksum is formatted as <algorithm>:<hash>_ The supported algorithms are sha256, sha384, and sha512_'}
+					ADD_link {doc 'Enabling this flag in ADD commands allows you to copy files with enhanced semantics where your files remain independent on their own layer and don`t get invalidated when commands on previous layers are changed_ When --link is used your source files are copied into an empty destination directory_ That directory is turned into a layer that is linked on top of your previous state_'}
+					ADD_exclude {doc 'The --exclude flag lets you specify a path expression for files to be excluded_'}
+					ADD_chown {doc '(Linux system only) The --chown=<user>:<group> flag is used to set the owner (user and group) of the files copied into the container_ This is useful to prevent the copied files from being owned by the root user by default_'}
+						mandatory
+							ADD_CHOWN_user {doc 'The user of the owner_'}
+						optional
+							ADD_CHOWN_group {doc 'The group of the owner_'}
+					ADD_chmod {doc '(Linux system only) The --chmod=<permissions> flag sets the permissions of the copied files (similar to the chmod command in Linux)_ It is useful to configure access permissions, such as making a file executable or limiting who can read/write to it_'}
+			COPY {doc 'The COPY instruction copies new files or directories from <src> and adds them to the filesystem of the image at the path <dest>_ Files and directories can be copied from the build context, build stage, named context, or an image_'}
+				mandatory
+					COPY_source {doc 'The source path_'}
+					COPY_destiny {doc 'The destination path_'}
+				optional
+					COPY_from {doc 'By default, the COPY instruction copies files from the build context_ The COPY --from flag lets you copy files from an image, a build stage, or a named context instead_'}
+					COPY_link {doc 'Enabling this flag in COPY commands allows you to copy files with enhanced semantics where your files remain independent on their own layer and don`t get invalidated when commands on previous layers are changed_ When --link is used your source files are copied into an empty destination directory_ That directory is turned into a layer that is linked on top of your previous state_'}
+					COPY_parents
+					COPY_exclude {doc 'The --exclude flag lets you specify a path expression for files to be excluded_'}
+					COPY_chown {doc ' (Linux system only) The --chown=<user>:<group> flag is used to set the owner (user and group) of the files copied into the container_ This is useful to prevent the copied files from being owned by the root user by default_'}
+						mandatory
+							COPY_CHOWN_user {doc 'The user of the owner_'}
+						optional
+							COPY_CHOWN_group {doc 'The group of the owner_'}
+					COPY_chmod {doc '(Linux system only) The --chmod=<permissions> flag sets the permissions of the copied files (similar to the chmod command in Linux)_ It is useful to configure access permissions, such as making a file executable or limiting who can read/write to it_'}
+			EXPOSE {doc 'The EXPOSE instruction informs Docker that the container listens on the specified network ports at runtime_ You can specify whether the port listens on TCP or UDP, and the default is TCP if you don`t specify a protocol__'}
+				optional
+					EXPOSE_protocol {doc 'The protocol of the port_ Can be either udp or tcp_'} 
 						or
-							Boolean PROTOCOL_udp
-							Boolean PROTOCOL_tcp
-			String WORKDIR 			
-			String VOLUME 
-			String RUN 
+							PROTOCOL_udp
+							PROTOCOL_tcp
+			WORKDIR {doc 'The WORKDIR instruction sets the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow it in the Dockerfile_ If the WORKDIR doesn`t exist, it will be created even if it`s not used in any subsequent Dockerfile instruction_'}
+			VOLUME {doc 'The VOLUME instruction creates a mount point with the specified name and marks it as holding externally mounted volumes from native host or other containers_'}
+			RUN {doc 'The RUN instruction will execute any commands to create a new layer on top of the current image_ The added layer is used in the next step in the Dockerfile_'}
 				optional
-					Boolean mount 
+					mount {doc 'RUN --mount allows you to create filesystem mounts that the build can access_'}
 						mandatory
-							Boolean MOUNT_option {abstract}
+							MOUNT_option {doc 'The options to configure depending on the chosen MOUNT_type_'}
 								or
-									Boolean MOUNT_target
+									MOUNT_target {doc 'Mount path_'}
 										mandatory 
-											String MOUNT_TARGET_value
-									Boolean MOUNT_source
+											MOUNT_TARGET_value
+									MOUNT_source {doc 'Source path in the from_ Defaults to the root of the from_'}
 										mandatory 
-											String MOUNT_SOURCE_value
-									Boolean MOUNT_from 
+											MOUNT_SOURCE_value
+									MOUNT_from {doc 'Build stage, context, or image name for the root of the source_ Defaults to the build context_'}
 										mandatory 
-											String MOUNT_FROM_value
-									Boolean MOUNT_readwrite
-									Boolean MOUNT_id
+											MOUNT_FROM_value
+									MOUNT_readwrite {doc 'Allow writes on the mount_ Written data will be discarded_'}
+									MOUNT_id {doc 'Optional ID to identify separate/different caches_ Defaults to value of target_'}
 										mandatory
-											Integer MOUNT_ID_value
-									Boolean MOUNT_readonly 
-									Boolean MOUNT_mode
+											MOUNT_ID_value
+									MOUNT_readonly {doc 'Read-only if set_'}
+									MOUNT_mode {doc 'File mode for new cache directory in octal_ Default 0755_'}
 										mandatory 
-											String MOUNT_MODE_value
-									Boolean MOUNT_uid 
+											MOUNT_MODE_value
+									MOUNT_uid {doc 'User ID for new cache directory_ Default 0_'}
 										mandatory 
-											String MOUNT_UID_value
-									Boolean MOUNT_gid 
+											MOUNT_UID_value
+									MOUNT_gid {doc 'Group ID for new cache directory_ Default 0_'}
 										mandatory 
-											String MOUNT_GID_value
-									Boolean MOUNT_size 
+											MOUNT_GID_value
+									MOUNT_size {doc '	Specify an upper limit on the size of the filesystem_'}
 										mandatory
-											String MOUNT_SIZE_value
-									Boolean MOUNT_required 
-									Boolean MOUNT_sharing 
+											MOUNT_SIZE_value
+									MOUNT_required {doc 'If set to true, the instruction errors out when the secret is unavailable_ Defaults to false_'}
+									MOUNT_sharing {doc 'One of shared, private, or locked_ Defaults to shared_'}
 										alternative
-											Boolean MOUNT_SHARING_shared 
-											Boolean MOUNT_SHARING_private 
-											Boolean MOUNT_SHARING_locked 
-							Boolean MOUNT_type {abstract}
+											MOUNT_SHARING_shared {doc 'A shared cache mount can be used concurrently by multiple writers'}
+											MOUNT_SHARING_private {doc 'private creates a new mount if there are multiple writers_'}
+											MOUNT_SHARING_locked {doc 'locked pauses the second writer until the first one releases the mount_'}
+							MOUNT_type {doc 'The supported mount types'}
 								alternative
-									Boolean Mount_Type_bind
-									Boolean Mount_Type_cache
-									Boolean Mount_Type_tmpfs
-									Boolean Mount_Type_secret
-									Boolean Mount_Type_ssh
-					Boolean network
+									Mount_Type_bind {doc 'This mount type allows binding files or directories to the build container_ A bind mount is read-only by default_'}
+									Mount_Type_cache {doc 'This mount type allows the build container to cache directories for compilers and package managers_'}
+									Mount_Type_tmpfs {doc 'This mount type allows mounting tmpfs in the build container_'}
+									Mount_Type_secret {doc 'This mount type allows the build container to access secret values, such as tokens or private keys, without baking them into the image_ By default, the secret is mounted as a file_ You can also mount the secret as an environment variable by setting the env option_'}
+									Mount_Type_ssh {doc 'This mount type allows the build container to access SSH keys via SSH agents, with support for passphrases_'}
+					network {doc 'RUN --network allows control over which networking environment the command is run in_'}
 						alternative
-							Boolean NETWORK_default
-							Boolean NETWORK_none
-							Boolean NETWORK_host
-				 	Boolean security 
+							NETWORK_default {doc 'uivalent to not supplying a flag at all, the command is run in the default network for the build_'}
+							NETWORK_none {doc 'The command is run with no network access (lo is still available, but is isolated to this process)'}
+							NETWORK_host {doc 'The command is run in the host`s network environment (similar to docker build --network=host, but on a per-instruction basis)'}
+				 	security {doc 'The default security mode is sandbox_'}
 						alternative
-							Boolean SECURITY_sandbox
-							Boolean SECURITY_insecure
-			Boolean ARG 
+							SECURITY_sandbox {doc 'Default security mode_'}
+							SECURITY_insecure {doc 'With --security=insecure, the builder runs the command without sandbox in insecure mode, which allows to run flows requiring elevated privileges (e_g_ containerd)_ This is equivalent to running docker run --privileged_'}
+			ARG {doc 'The ARG instruction defines a variable that users can pass at build-time to the builder with the docker build command using the --build-arg <varname>=<value> flag_'}
 				mandatory
-					String ARG_name
-					String ARG_value
-			String CMD
+					ARG_name {doc 'The name of the variable_'}
+					ARG_value {doc 'The value of the variable_'}
+			CMD {doc 'The CMD instruction sets the command to be executed when running a container from an image_ You can specify CMD instructions using shell or exec forms'}
+				mandatory   
+					CMD_command {doc 'The command to be executed_'}
 				optional
-					String CMD_param1
-					String CMD_param2
-			String ENTRYPOINT
+					CMD_param1 {doc 'The first parameter of the command_'}
+					CMD_param2 {doc 'The second parameter of the command_'}
+			ENTRYPOINT {doc 'An ENTRYPOINT allows you to configure a container that will run as an executable_'}
+				mandatory   
+					ENTRYPOINT_command {doc 'The command to be executed_'}
 				optional
-					String ENTRYPOINT_param1
-					String ENTRYPOINT_param2
-			String USER
+					ENTRYPOINT_param1 {doc 'The first parameter of the executable_'}
+					ENTRYPOINT_param2 {doc 'The second parameter of the executable_'}
+			USER {doc 'The USER instruction sets the user name (or UID) and optionally the user group (or GID) to use as the default user and group for the remainder of the current stage_ The specified user is used for RUN instructions and at runtime, runs the relevant ENTRYPOINT and CMD commands_'}
 				optional
-					String USER_group
-			String ONBUILD
-			String STOPSIGNAL
-			Boolean HEALTHCHECK
+					USER_group {doc 'The group of the user (or GID)_'}
+			ONBUILD {doc 'Specify instructions for when the image is used in a build_'}
+			STOPSIGNAL {doc 'Specify the system call signal for exiting a container_'}
+			HEALTHCHECK {doc 'Check a container`s health on startup_'}
 				alternative
-					Boolean HEALTHCHECK_none
-					Boolean HEALTHCHECK_options {abstract}
+					HEALTHCHECK_none {doc 'Disables any healthcheck inherited from the base image_'}
+					HEALTHCHECK_options {doc 'The options of the healthcheck_'}
 						mandatory
-							String HEALTHCHECK_cmdCommand
+							HEALTHCHECK_cmdCommand {doc 'The HEALTHCHECK instruction tells Docker how to test a container to check that it`s still working_ This can detect cases such as a web server stuck in an infinite loop and unable to handle new connections, even though the server process is still running_'}
 						optional
-							String HEALTHCHECK_interval
-							String HEALTHCHECK_timeout
-							String HEALTHCHECK_startPeriod
-							String HEALTHCHECK_startInterval
-							String HEALTHCHECK_retries
-			String SHELL
+							HEALTHCHECK_interval {doc 'The time to wait between checks_'}
+							HEALTHCHECK_timeout {doc 'The time to allow the check to run_'}
+							HEALTHCHECK_startPeriod {doc 'start period provides initialization time for containers that need time to bootstrap_ Probe failure during that period will not be counted towards the maximum number of retries_ However, if a health check succeeds during the start period, the container is considered started and all consecutive failures will be counted towards the maximum number of retries_'}
+							HEALTHCHECK_startInterval {doc 'start interval is the time between health checks during the start period_'}
+							HEALTHCHECK_retries {doc 'The number of consecutive failures needed to consider a container as unhealthy_'}
+			SHELL {doc 'The SHELL instruction allows the default shell used for the shell form of commands to be overridden_ The default shell on Linux is ["/bin/sh", "-c"], and on Windows is ["cmd", "/S", "/C"]_ The SHELL instruction must be written in JSON form in a Dockerfile_'}
 constraints
 	Mount_Type_bind => (MOUNT_target | MOUNT_source | MOUNT_from | MOUNT_readwrite)
 	Mount_Type_cache => (MOUNT_id | MOUNT_target | MOUNT_readonly | MOUNT_sharing | MOUNT_from | MOUNT_source | MOUNT_mode | MOUNT_uid | MOUNT_gid)
