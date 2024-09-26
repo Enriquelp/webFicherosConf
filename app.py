@@ -1,19 +1,17 @@
 import sys
 sys.path.append('./static/script')  # Agrega el directorio al path para importar el módulo main_resolve_variability
-from flask import Flask, flash, jsonify, render_template, abort, make_response, request, send_file, send_from_directory
+from flask import Flask, jsonify, render_template, abort, make_response, request, send_file
 from flamapy.metamodels.fm_metamodel.transformations import UVLReader
 from flamapy.metamodels.fm_metamodel.models import FeatureModel, Constraint
 from flamapy.metamodels.fm_metamodel.transformations import JSONWriter, JSONReader
 from typing import Optional
 import os
-import subprocess
 from static.script.main_resolve_variability import main as generate_conf
 
 app = Flask(__name__)
 
 pathFM = 'static/feature_models/' # Ruta hacia los FM
 app.config['UPLOAD_FOLDER'] = 'uploads' # Configurar el folder donde se guardarán los archivos subidos
-app.secret_key = 'supersecretkey'  # Para habilitar mensajes flash
 error = ''  # Variable para almacenar errores
 
 @app.route('/')
