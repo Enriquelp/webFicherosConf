@@ -108,6 +108,8 @@ METADATA_annotations, METADATA_annotations, -
 ANNOTATIONS_key, ANNOTATIONS_key, 
 ANNOTATIONS_value, ANNOTATIONS_value, 
 METADATA_deletionGracePeriodSeconds, METADATA_deletionGracePeriodSeconds, 
+METADATA_finalizers, METADATA_finalizers,
+METADATA_generateName, METADATA_generateName
 spec, spec, -
 DeploymentSpec, DeploymentSpec, -
 DEPLOYMENTSPEC_minReadySeconds, DEPLOYMENTSPEC_minReadySeconds, 
@@ -147,6 +149,8 @@ TEMPLATE_METADATA_annotations, TEMPLATE_METADATA_annotations, -
 TEMPLATE_METADATA_ANNOTATIONS_key, TEMPLATE_METADATA_ANNOTATIONS_key, 
 TEMPLATE_METADATA_ANNOTATIONS_value, TEMPLATE_METADATA_ANNOTATIONS_value, 
 TEMPLATE_METADATA_deletionGracePeriodSeconds, METADATA_deletionGracePeriodSeconds,
+TEMPLATE_METADATA_finalizers, TEMPLATE_METADATA_finalizers
+String TEMPLATE_METADATA_generateName, String TEMPLATE_METADATA_generateName, 
 DEPLOYMENTSPEC_TEMPLATE_podspec, DEPLOYMENTSPEC_TEMPLATE_podspec, -
 PodSpec, PodSpec, -
 PODSPEC_containers, PODSPEC_containers, 
@@ -360,6 +364,7 @@ VOLUMEMOUNTS_recursiveReadOnly, VOLUMEMOUNTS_recursiveReadOnly,
 VOLUMEMOUNTS_subPath, VOLUMEMOUNTS_subPath, 
 VOLUMEMOUNTS_subPathExpr, VOLUMEMOUNTS_subPathExpr, 
 CONTAINERS_workingDir, CONTAINERS_workingDir, 
+PODSPEC_serviceAccountName, PODSPEC_serviceAccountName, 
 PODSPEC_initContainers, PODSPEC_initContainers, -
 INITCONTAINERS_name, INITCONTAINERS_name, 
 INITCONTAINERS_image, INITCONTAINERS_image,
@@ -447,18 +452,105 @@ SECRET_ITEMS_key, SECRET_ITEMS_key,
 SECRET_ITEMS_mode, SECRET_ITEMS_mode, 
 SECRET_ITEMS_path, SECRET_ITEMS_path,
 nfs, nfs, -
+NFS_path, NFS_path, 
+NFS_server, NFS_server, 
+NFS_readOnly, NFS_readOnly, 
 csi, csi, -
+CSI_driver, CSI_driver, 
+CSI_volumeAttributes, CSI_volumeAttributes, 
+CSI_readOnly,CSI_readOnly, -
+CSI_fsType, CSI_fsType, 
+CSI_nodePublichSecretRef, CSI_nodePublichSecretRef, -
+CSI_NODEPUBLISHSECRETREF_name, CSI_NODEPUBLISHSECRETREF_name, 
 downwardAPI, downwardAPI, -
+DOWNWARDAPI_items, DOWNWARDAPI_items, -
+DOWNWARDAPI_ITEMS_fieldRef, DOWNWARDAPI_ITEMS_fieldRef, 
+DOWNWARDAPI_ITEMS_FIELDREF_apiVersion, DOWNWARDAPI_ITEMS_FIELDREF_apiVersion, 
+DOWNWARDAPI_ITEMS_FIELDREF_fieldPath, DOWNWARDAPI_ITEMS_FIELDREF_fieldPath, 
+DOWNWARDAPI_ITEMS_path, DOWNWARDAPI_ITEMS_path, 
+DOWNWARDAPI_mode, DOWNWARDAPI_mode, 
+DOWNWARDAPI_ITEMS_resourceFieldRef, DOWNWARDAPI_ITEMS_resourceFieldRef, 
+DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_containerName, DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_containerName, 
+DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_resource, DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_resource, 
+DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_divisor, DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_divisor, 
+DOWNWARDAPI_defaultMode, DOWNWARDAPI_defaultMode, 
 ephemeral, ephemeral, -
+EPHEMERAL_volumeClaimTemplate, EPHEMERAL_volumeClaimTemplate, 
+EPHEMERAL_VOLUMECLAIMTEMPLATE_spec, EPHEMERAL_VOLUMECLAIMTEMPLATE_spec, 
+EPHEMERAL_VOLUMECLAIMTEMPLATE_metadata, EPHEMERAL_VOLUMECLAIMTEMPLATE_metadata, 
 fc, fc, -
+FC_fsType, FC_fsType, 
+FC_readOnly, FC_readOnly, 
+FC_lun,FC_lun, 
+FC_targetWWNs, FC_targetWWNs, 
+FC_TARGETWWNS_targetWWN, FC_TARGETWWNS_targetWWN, 
+FC_wwids,FC_wwids, 
+FC_WWIDS_wwid, FC_WWIDS_wwid, 
 flocker, flocker, -
+FLOCKER_datsetUUID, FLOCKER_datsetUUID, 
+FLOCKER_datasetName, FLOCKER_datasetName, 
 iscsi, iscsi, -
+ISCSI_targetPortal, ISCSI_targetPortal, 
+ISCSI_fsType, ISCSI_fsType, 
+ISCSI_lun, ISCSI_lun, 
+ISCSI_iqn, ISCSI_iqn, 
+ISCSI_chapAuthDiscovery, ISCSI_chapAuthDiscovery, -
+ISCSI_chapAuthSession, ISCSI_chapAuthSession, -
+ISCSI_initiatorName, ISCSI_initiatorName, 
+ISCSI_iscsiInterface, ISCSI_iscsiInterface, 
+ISCSI_portals,ISCSI_portals, 
+ISCSI_PORTALS_portal, ISCSI_PORTALS_portal, 
+ISCSI_readOnly, ISCSI_readOnly, -
+ISCSI_secretRef, ISCSI_secretRef, -
+ISCSI_SECRETREF_name, ISCSI_SECRETREF_name, 
 photonPersistentDisk, photonPersistentDisk, -
+PHOTONPERSISTENTDISK_pdID, PHOTONPERSISTENTDISK_pdID, 
+PHOTONPERSISTENTDISK_fsType, PHOTONPERSISTENTDISK_fsType, 
 projected, projected, -
+PROJECTED_defaultmode, PROJECTED_defaultmode, 
+PROJECTED_sources, PROJECTED_sources, -
+PROJECTED_SOURCES_clusterTrustBundle, PROJECTED_SOURCES_clusterTrustBundle, 
+PROJECTED_SOURCES_configMap, PROJECTED_SOURCES_configMap, 
+PROJECTED_SOURCES_downwardAPI, PROJECTED_SOURCES_downwardAPI, 
+PROJECTED_SOURCES_secret, PROJECTED_SOURCES_secret, 
+PROJECTED_SOURCES_serviceAccountToken, PROJECTED_SOURCES_serviceAccountToken, 
 quobyte, quobyte, -
+QUOBYTE_volume, QUOBYTE_volume, 
+QUOBYTE_group, QUOBYTE_group, 
+QUOBYTE_readOnly,QUOBYTE_readOnly, -
+QUOBYTE_registry, QUOBYTE_registry, 
+QUOBYTE_tenant, QUOBYTE_tenant,
+QUOBYTE_user, QUOBYTE_user, 
 rbd, rbd, -
+RBD_image, RBD_image, 
+RBD_monitors,RBD_monitors, -
+RBD_MONITORS_monitor, RBD_MONITORS_monitor, 
+RBD_pool, RBD_pool, 
+RBD_fsType, RBD_fsType, 
+RBD_readOnly, RBD_readOnly, -
+RBD_secretRef, RBD_secretRef, -
+RBD_SECRETREF_name, RBD_SECRETREF_name,
+RBD_keyring, RBD_keyring,
+RBD_user,RBD_user, 
 scaleIO, scaleIO, -
+SCALEIO_gateway, SCALEIO_gateway,
+SCALEIO_volumeName, SCALEIO_volumeName, 
+SCALEIO_system, SCALEIO_system, 
+SCALEIO_protectionDomain, SCALEIO_protectionDomain, 
+SCALEIO_fsType, SCALEIO_fsType, 
+SCALEIO_readOnly, SCALEIO_readOnly, -
+SCALEIO_secretRef, SCALEIO_secretRef, 
+SCALEIO_SECRETREF_name, SCALEIO_SECRETREF_name, 
+SCALEIO_sslEnabled, SCALEIO_sslEnabled, -
+SCALEIO_storageMode, SCALEIO_storageMode, -
+SCALEIO_STORAGEMODE_thickProvisioned, SCALEIO_STORAGEMODE_thickProvisioned, thickProvisioned
+SCALEIO_STORAGEMODE_thinProvisioned, SCALEIO_STORAGEMODE_thinProvisioned, thinProvisioned
 storageos, storageos, -
+STORAGEOS_volumeName, STORAGEOS_volumeName, 
+STORAGEOS_fsType, STORAGEOS_fsType, 
+STORAGEOS_readOnly, STORAGEOS_readOnly, -
+STORAGEOS_secretRef, STORAGEOS_secretRef, -
+STORAGEOS_SECRETREF_name, STORAGEOS_SECRETREF_name, 
 ServiceSpec, ServiceSpec, 
 SERVICESPEC_allocateLoadBalancerNodePorts, SERVICESPEC_allocateLoadBalancerNodePorts, -
 SERVICESPEC_clusterIP, SERVICESPEC_clusterIP, -
@@ -595,3 +687,7 @@ RULES_resourceNames, RULES_resourceNames,
 RULES_RESOURCENAMES_value, RULES_RESOURCENAMES_value, 
 RULES_verbs, RULES_verbs, 
 RULES_VERBS_value, RULES_VERBS_value, 
+type, type, 
+stringData, stringData, 
+STRINGDATA_key, STRINGDATA_key, 
+STRINGDATA_value, STRINGDATA_value, 
