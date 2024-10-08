@@ -18,6 +18,9 @@ kind: {{KIND_Container}}{{KIND_CronJob}}{{KIND_DaemonSet}}{{KIND_Deployment}}{{K
 {%elif KIND_Endpoints%}
 {% include 'Kubernetes_manifest_endpoints.txt.jinja'%}
 
+{%elif KIND_Secret%}
+{% include 'Kubernetes_manifest_secret.txt.jinja'%}
+
 {%elif spec%}spec:
 
   {%if DeploymentSpec and PodSpec%}

@@ -59,6 +59,10 @@
       {%endfor%}
     {%endif%}
 
+    {%if TEMPLATE_METADATA_finalizers%}finalizers: {{METADATA_finalizers}}{%endif%}
+
+    {%if TEMPLATE_METADATA_generateName%}generateName: {{TEMPLATE_METADATA_generateName}}{%endif%}
+
   {%endif%}
 
   {%if DEPLOYMENTSPEC_TEMPLATE_podspec%}spec: 

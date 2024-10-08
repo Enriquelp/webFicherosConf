@@ -313,6 +313,8 @@ containers:
 
 {%endfor%}
 
+{%if PODSPEC_serviceAccountName%}serviceAccountName: {{PODSPEC_serviceAccountName}}{%endif%}
+
 {%if PODSPEC_initContainers%}initContainers:
   {%for init in PODSPEC_initContainers%}
   - name: {{init.INITCONTAINERS_name}}
@@ -422,19 +424,151 @@ containers:
       {%endif%}
     {%endif%}
 
-    {%if v.nfs%}nfs:{%endif%}
-    {%if v.csi%}csi:{%endif%}
-    {%if v.downwardAPI%}downwardAPI:{%endif%}
-    {%if v.ephemeral%}ephemeral:{%endif%}
-    {%if v.fc%}fc:{%endif%}
-    {%if v.flocker%}flocker:{%endif%}
-    {%if v.iscsi%}iscsi:{%endif%}
-    {%if v.photonPersistentDisk%}photonPersistentDisk:{%endif%}
-    {%if v.projected%}projected:{%endif%}
-    {%if v.quobyte%}quobyte:{%endif%}
-    {%if v.rbd%}rbd:{%endif%}
-    {%if v.scaleIO%}scaleIO:{%endif%}
-    {%if v.storageos%}storageos:{%endif%}
+    {%if v.nfs%}nfs:
+      path: "{{v.NFS_path}}"
+      server: "{{v.NFS_server}}"
+      {%if v.NFS_readOnly%}readOnly: true{%endif%}
+      {%if v.CSI_fsType%}fsType: {{v.CSI_fsType}}{%endif%}
+    {%endif%}
+
+    {%if v.csi%}csi:
+      driver: {{v.CSI_driver}}
+      {%if v.CSI_volumeAttributes%}volumeAttributes: {{v.CSI_volumeAttributes}}{%endif%}
+      {%if v.CSI_readOnly%}CSI_readOnly: true{%endif%}
+      {%if v.CSI_nodePublichSecretRef%}name: {{v.CSI_NODEPUBLISHSECRETREF_name}}{%endif%}
+    {%endif%}
+
+    {%if v.downwardAPI%}downwardAPI:
+      items: 
+      {%for it in v.DOWNWARDAPI_items%}
+        - path: "{{it.DOWNWARDAPI_ITEMS_path}}"
+          fieldRef:
+            apiVersion: {{it.DOWNWARDAPI_ITEMS_FIELDREF_apiVersion}}
+            fieldPath: {{it.DOWNWARDAPI_ITEMS_FIELDREF_fieldPath}}
+          {%if it.DOWNWARDAPI_mode%}mode: {{it.DOWNWARDAPI_mode}} {%endif%}
+          {%if it.DOWNWARDAPI_ITEMS_resourceFieldRef%}resourceFieldRef: 
+            containerName: {{it.DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_containerName}}
+            resource: {{it.DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_resource}}
+            {%if it.DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_divisor%}divisor: {{it.DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_divisor}} {%endif%}
+          {%endif%}
+      {%endfor%}
+      {%if v.DOWNWARDAPI_defaultMode%}defaultMode: {{v.DOWNWARDAPI_defaultMode}}{%endif%}
+    {%endif%}
+
+    {%if v.ephemeral%}ephemeral:
+      volumeClaimTemplate:
+        spec:
+        {%if v.EPHEMERAL_VOLUMECLAIMTEMPLATE_metadata%}metadata:{%endif%}
+    {%endif%}
+
+    {%if v.fc%}fc:
+      {%if v.FC_fsType%}fsType: {{v.FC_fsType}}{%endif%}
+      {%if v.FC_readOnly%}readOnly: true{%endif%}
+      {%if v.FC_lun%}lun: {{v.FC_lun}}{%endif%}
+      {%if v.FC_targetWWNs%}targetWWNs: 
+        {%for tar in v.FC_targetWWNs%}
+          - {{tar.FC_TARGETWWNS_targetWWN}}
+        {%endfor%}
+      {%endif%}
+      {%if v.FC_wwids%}wwids: 
+        {%for ww in v.FC_wwids%}
+          - {{ww.FC_WWIDS_wwid}}
+        {%endfor%}
+      {%endif%}
+    {%endif%}
+
+    {%if v.flocker%}flocker:
+      datsetUUID: {{v.FLOCKER_datsetUUID}}
+      datasetName: {{v.FLOCKER_datasetName}}
+    {%endif%}
+
+    {%if v.iscsi%}iscsi:
+      {%if v.ISCSI_targetPortal%}targetPortal: {{v.ISCSI_targetPortal}} {%endif%}
+      {%if v.ISCSI_lun%}lun: {{v.ISCSI_lun}}{%endif%}
+      {%if v.ISCSI_iqn%}iqn: {{v.ISCSI_iqn}}{%endif%}
+      {%if v.ISCSI_fsType%}fsType: {{v.ISCSI_fsType}}{%endif%}
+      {%if v.ISCSI_chapAuthDiscovery%}chapAuthDiscovery: true{%else%}chapAuthDiscovery: false{%endif%}
+      {%if v.ISCSI_chapAuthSession%}chapAuthSession: true{%else%}chapAuthSession: false{%endif%}
+      {%if v.ISCSI_initiatorName%}initiatorName: {{v.ISCSI_initiatorName}}{%endif%}
+      {%if v.ISCSI_iscsiInterface%}iscsiInterface: {{v.ISCSI_iscsiInterface}}{%endif%}
+      {%if v.ISCSI_portals%}portals: 
+        {%for p in v.ISCSI_portals%}
+        - "{{p.ISCSI_PORTALS_portal}}"
+        {%endfor%}
+      {%endif%}
+      {%if v.ISCSI_readOnly%}readOnly: true{%endif%}
+      {%if v.ISCSI_secretRef%}secretRef: 
+        name: {{v.ISCSI_SECRETREF_name}}
+      {%endif%}
+    {%endif%}
+
+    {%if v.photonPersistentDisk%}photonPersistentDisk:
+      pdID: {{v.PHOTONPERSISTENTDISK_pdID}}
+      {%if v.PHOTONPERSISTENTDISK_fsType%}fsType: {{v.PHOTONPERSISTENTDISK_fsType}}{%endif%}
+    {%endif%}
+
+    {%if v.projected%}projected:
+      defaultmode: {{v.PROJECTED_defaultmode}}
+      {%if v.PROJECTED_sources%}sources:
+        {%for s in v.PROJECTED_sources%}
+        {%if s.PROJECTED_SOURCES_clusterTrustBundle%}clusterTrustBundle: {%endif%}
+        {%if s.PROJECTED_SOURCES_configMap%}configMap: {%endif%}
+        {%if s.PROJECTED_SOURCES_downwardAPI%}downwardAPI: {%endif%}
+        {%if s.PROJECTED_SOURCES_secret%}secret: {%endif%}
+        {%if s.PROJECTED_SOURCES_serviceAccountToken%}serviceAccountToken: {%endif%}
+        {%endfor%}
+      {%endif%}
+    {%endif%}
+
+    {%if v.quobyte%}quobyte:
+      {%if v.QUOBYTE_volume%}volume: {{v.QUOBYTE_volume}}{%endif%}
+      {%if v.QUOBYTE_registry%}registry: {{v.QUOBYTE_registry}}{%endif%}
+      {%if v.QUOBYTE_group%}group: {{v.QUOBYTE_group}}{%endif%}
+      {%if v.QUOBYTE_readOnly%}readOnly: true{%endif%}
+      {%if v.QUOBYTE_tenant%}tenant: {{v.QUOBYTE_tenant}}{%endif%}
+      {%if v.QUOBYTE_user%}user: {{v.QUOBYTE_user}}{%endif%}
+    {%endif%}
+
+    {%if v.rbd%}rbd:
+      {%if v.RBD_image%}image: {{v.RBD_image}}{%endif%}
+      {%if v.RBD_monitors%}monitors: 
+        {%for m in v.RBD_monitors%}
+          - "{{m.RBD_MONITORS_monitor}}"
+        {%endfor%}
+      {%endif%}
+      {%if v.RBD_fsType%}fsType: {{v.RBD_fsType}}{%endif%}
+      {%if v.RBD_readOnly%}readOnly: true{%endif%}
+      {%if v.RBD_secretRef%}secretRef: 
+        name: {{v.RBD_SECRETREF_name}}
+      {%endif%}
+      {%if v.RBD_keyring%}keyring: {{v.RBD_keyring}}{%endif%}
+      {%if v.RBD_user%}user: {{v.RBD_user}}{%endif%}
+    {%endif%}
+
+    {%if v.scaleIO%}scaleIO:
+      {%if v.SCALEIO_gateway%}gateway: {{v.SCALEIO_gateway}}{%endif%}
+      {%if v.SCALEIO_volumeName%}volumeName: {{v.SCALEIO_volumeName}}{%endif%}
+      {%if v.SCALEIO_system%}system: {{v.SCALEIO_system}}{%endif%}
+      {%if v.SCALEIO_protectionDomain%}protectionDomain: {{v.SCALEIO_protectionDomain}}{%endif%}
+      {%if v.SCALEIO_fsType%}fsType: {{v.SCALEIO_fsType}}{%endif%}
+      {%if v.SCALEIO_readOnly%}readOnly: true{%endif%}
+      {%if v.SCALEIO_secretRef%}secretRef: 
+        name: {{v.SCALEIO_SECRETREF_name}}
+      {%endif%}
+      {%if v.SCALEIO_sslEnabled%}sslEnabled: true{%endif%}
+      {%if v.SCALEIO_storageMode%}storageMode: {{v.SCALEIO_STORAGEMODE_thickProvisioned}}{{v.SCALEIO_STORAGEMODE_thinProvisioned}}{%endif%}
+      {%if v.SCALEIO_storagePool%}storagePool: {{vv.SCALEIO_storagePool}}{%endif%}
+    {%endif%}
+
+    {%if v.storageos%}storageos:
+      {%if v.STORAGEOS_volumeName%}volumeName: {{v.STORAGEOS_volumeName}}{%endif%}
+      {%if v.STORAGEOS_fsType%}fsType: {{v.STORAGEOS_fsType}}{%endif%}
+      {%if v.STORAGEOS_readOnly%}readOnly: true{%endif%}
+      {%if v.secretRef%}secretRef:
+        name: {{v.STORAGEOS_SECRETREF_name}}
+      {%endif%}
+    {%endif%}
+
 
     {%if v.configMap%}configMap:
       {%if v.CONFIGMAP_name%}name: "{{v.CONFIGMAP_name}}"{%endif%}
