@@ -155,17 +155,17 @@ features
                             METADATA_OWNERREFERENCES_name {doc 'Name of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names#names'}
                             METADATA_OWNERREFERENCES_uid {doc 'UID of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names#uids'}      
                         optional   
-                            METADATA_OWNERREFERENCES_blockOwnerDeletion {doc 'If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed_ See https://kubernetes_io/docs/concepts/architecture/garbage-collection/#foreground-deletion for how the garbage collector interacts with this field and enforces the foreground deletion_ Defaults to false_ To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned_'}
+                            METADATA_OWNERREFERENCES_blockOwnerDeletion {default false, doc 'If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed_ See https://kubernetes_io/docs/concepts/architecture/garbage-collection/#foreground-deletion for how the garbage collector interacts with this field and enforces the foreground deletion_ Defaults to false_ To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned_'}
                             METADATA_OWNERREFERENCES_controller {doc 'If true, this reference points to the managing controller_'}
             spec {doc 'Specification of the desired behavior of the object_'}
                 optional 
                     DeploymentSpec {abstract, doc 'Specification of the desired behavior of the Deployment_'}
                         optional   
-                            DEPLOYMENTSPEC_minReadySeconds {doc 'Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for it to be considered available_ Defaults to 0 (pod will be considered available as soon as it is ready)'}
+                            DEPLOYMENTSPEC_minReadySeconds {default 0, doc 'Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for it to be considered available_ Defaults to 0 (pod will be considered available as soon as it is ready)'}
                             DEPLOYMENTSPEC_paused {doc 'Indicates that the deployment is paused_'}
-                            DEPLOYMENTSPEC_progressDeadlineSeconds {doc 'The maximum time in seconds for a deployment to make progress before it is considered to be failed_ The deployment controller will continue to process failed deployments and a condition with a ProgressDeadlineExceeded reason will be surfaced in the deployment status_ Note that progress will not be estimated during the time a deployment is paused_ Defaults to 600s_'}
-                            DEPLOYMENTSPEC_replicas {doc 'Number of desired pods_ This is a pointer to distinguish between explicit zero and not specified_ Defaults to 1_'}
-                            DEPLOYMENTSPEC_revisionHistoryLimit {doc 'The number of old ReplicaSets to retain to allow rollback_ This is a pointer to distinguish between explicit zero and not specified_ Defaults to 10_'}
+                            DEPLOYMENTSPEC_progressDeadlineSeconds {default 600, doc 'The maximum time in seconds for a deployment to make progress before it is considered to be failed_ The deployment controller will continue to process failed deployments and a condition with a ProgressDeadlineExceeded reason will be surfaced in the deployment status_ Note that progress will not be estimated during the time a deployment is paused_ Defaults to 600s_'}
+                            DEPLOYMENTSPEC_replicas {default 1, doc 'Number of desired pods_ This is a pointer to distinguish between explicit zero and not specified_ Defaults to 1_'}
+                            DEPLOYMENTSPEC_revisionHistoryLimit {default 10, doc 'The number of old ReplicaSets to retain to allow rollback_ This is a pointer to distinguish between explicit zero and not specified_ Defaults to 10_'}
                             DEPLOYMENTSPEC_selector {doc 'Label selector for pods_ Existing ReplicaSets whose pods are selected by this will be the ones affected by this deployment_ It must match the pod templates labels_'}
                                 or 
                                     SELECTOR_matchLabels   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
@@ -191,11 +191,11 @@ features
                                     STRATEGY_type {doc 'Type of deployment_ Can be "Recreate" or "RollingUpdate"_ Default is RollingUpdate_'}
                                         or
                                             STRATEGY_TYPE_Recreate
-                                            STRATEGY_TYPE_RollingUpdate
+                                            STRATEGY_TYPE_RollingUpdate {default}
                                                 mandatory
-                                                    maxUnavailable {doc 'The maximum number of pods that can be unavailable during the update_ Value can be an absolute number (ex: 5) or a percentage of desired pods (ex: 10%)_ Absolute number is calculated from percentage by rounding down_ This can not be 0 if MaxSurge is 0_ Defaults to 25%_ Example: when this is set to 30%, the old ReplicaSet can be scaled down to 70% of desired pods immediately when the rolling update starts_ Once new pods are ready, old ReplicaSet can be scaled down further, followed by scaling up the new ReplicaSet, ensuring that the total number of pods available at all times during the update is at least 70% of desired pods_'}
+                                                    maxUnavailable {default 25, doc 'The maximum number of pods that can be unavailable during the update_ Value can be an absolute number (ex: 5) or a percentage of desired pods (ex: 10%)_ Absolute number is calculated from percentage by rounding down_ This can not be 0 if MaxSurge is 0_ Defaults to 25%_ Example: when this is set to 30%, the old ReplicaSet can be scaled down to 70% of desired pods immediately when the rolling update starts_ Once new pods are ready, old ReplicaSet can be scaled down further, followed by scaling up the new ReplicaSet, ensuring that the total number of pods available at all times during the update is at least 70% of desired pods_'}
                                                 optional
-                                                    maxSurge {doc 'The maximum number of pods that can be scheduled above the desired number of pods_ Value can be an absolute number (ex: 5) or a percentage of desired pods (ex: 10%)_ This can not be 0 if MaxUnavailable is 0_ Absolute number is calculated from percentage by rounding up_ Defaults to 25%_ Example: when this is set to 30%, the new ReplicaSet can be scaled up immediately when the rolling update starts, such that the total number of old and new pods do not exceed 130% of desired pods_ Once old pods have been killed, new ReplicaSet can be scaled up further, ensuring that total number of pods running at any time during the update is at most 130% of desired pods_'}
+                                                    maxSurge {default 25, doc 'The maximum number of pods that can be scheduled above the desired number of pods_ Value can be an absolute number (ex: 5) or a percentage of desired pods (ex: 10%)_ This can not be 0 if MaxUnavailable is 0_ Absolute number is calculated from percentage by rounding up_ Defaults to 25%_ Example: when this is set to 30%, the new ReplicaSet can be scaled up immediately when the rolling update starts, such that the total number of old and new pods do not exceed 130% of desired pods_ Once old pods have been killed, new ReplicaSet can be scaled up further, ensuring that total number of pods running at any time during the update is at most 130% of desired pods_'}
                             DEPLOYMENTSPEC_template {doc 'Template describes the pods that will be created_ The only allowed template_spec_restartPolicy value is "Always"_'}
                                 mandatory
                                     DEPLOYMENTSPEC_TEMPLATE_metadata {incomplete, doc 'Standard object`s metadata_ More info: https://git_k8s_io/community/contributors/devel/sig-architecture/api-conventions_md#metadata'}
@@ -233,7 +233,7 @@ features
                                                     TEMPLATE_METADATA_OWNERREFERENCES_name {doc 'Name of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names#names'}
                                                     TEMPLATE_METADATA_OWNERREFERENCES_uid {doc 'UID of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names#uids'}      
                                                 optional   
-                                                    TEMPLATE_METADATA_OWNERREFERENCES_blockOwnerDeletion {doc 'If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed_ See https://kubernetes_io/docs/concepts/architecture/garbage-collection/#foreground-deletion for how the garbage collector interacts with this field and enforces the foreground deletion_ Defaults to false_ To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned_'}
+                                                    TEMPLATE_METADATA_OWNERREFERENCES_blockOwnerDeletion {default false, doc 'If true, AND if the owner has the "foregroundDeletion" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed_ See https://kubernetes_io/docs/concepts/architecture/garbage-collection/#foreground-deletion for how the garbage collector interacts with this field and enforces the foreground deletion_ Defaults to false_ To set this field, a user needs "delete" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned_'}
                                                     TEMPLATE_METADATA_OWNERREFERENCES_controller {doc 'If true, this reference points to the managing controller_'}
                                     DEPLOYMENTSPEC_TEMPLATE_podspec {doc 'If true, PodSpec must be defined'}
                     PodSpec {abstract, incomplete, doc 'Specification of the desired behavior of the Pod_'} 
@@ -251,7 +251,7 @@ features
                                     CONTAINERS_env   {doc 'List of environment variables to set in the container_ Cannot be updated_'}
                                         mandatory
                                             CONTAINERS_ENV_name {doc 'Name of the environment variable_ Must be a C_IDENTIFIER_'}
-                                            CONTAINERS_ENV_value {doc 'Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables_ If a variable cannot be resolved, the reference in the input string will be unchanged_ Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i_e_ "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)"_ Escaped references will never be expanded, regardless of whether the variable exists or not_ Defaults to ""_'}
+                                            CONTAINERS_ENV_value {default ' ',doc 'Variable references $(VAR_NAME) are expanded using the previously defined environment variables in the container and any service environment variables_ If a variable cannot be resolved, the reference in the input string will be unchanged_ Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i_e_ "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)"_ Escaped references will never be expanded, regardless of whether the variable exists or not_ Defaults to ""_'}
                                         optional    
                                             CONTAINERS_ENV_valueFrom {doc 'Source for the environment variable`s value_ Cannot be used if value is not empty_'}
                                                 alternative   
@@ -263,7 +263,7 @@ features
                                                             CONFIGMAPKEYREF_optional {doc 'Specify whether the ConfigMap or its key must be defined'}
                                                     fieldRef {doc 'Selects a field of the pod: supports metadata_name, metadata_namespace, `metadata_labels[<KEY>]`, `metadata_annotations["<KEY>"]`, spec_nodeName, spec_serviceAccountName, status_hostIP, status_podIP, status_podIPs_'}
                                                         mandatory
-                                                            FIELDREF_fieldPath {doc 'Version of the schema the FieldPath is written in terms of, defaults to "v1"_'}
+                                                            FIELDREF_fieldPath {default 'v1',doc 'Version of the schema the FieldPath is written in terms of, defaults to "v1"_'}
                                                         optional   
                                                             FIELDREF_apiversion {doc 'Path of the field to select in the specified API version_'}
                                                     resourceFieldRef {doc 'Selects a resource of the container: only resources limits and requests (limits_cpu, limits_memory, limits_ephemeral-storage, requests_cpu, requests_memory and requests_ephemeral-storage) are currently supported_'}
@@ -271,7 +271,7 @@ features
                                                             RESOURCEFIELDREF_containerName {doc 'Container name: required for volumes, optional for env vars'}
                                                             RESOURCEFIELDREF_resource {doc 'Required: resource to select'}
                                                         optional   
-                                                            RESOURCEFIELDREF_divisor {doc 'Specifies the output format of the exposed resources, defaults to "1"'}
+                                                            RESOURCEFIELDREF_divisor {default '1', doc 'Specifies the output format of the exposed resources, defaults to "1"'}
                                                     secretKeyRef {doc 'Selects a key of a secret in the pod`s namespace'}
                                                         mandatory
                                                             SECRETKEYREF_key {doc 'The key of the secret to select from_ Must be a valid secret key_'}
@@ -292,7 +292,7 @@ features
                                     CONTAINERS_image {doc 'Container image name_ More info: https://kubernetes_io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets_'}
                                     CONTAINERS_imagePullPolicy {doc 'Image pull policy_ One of Always, Never, IfNotPresent_ Defaults to Always if :latest tag is specified, or IfNotPresent otherwise_ Cannot be updated_ More info: https://kubernetes_io/docs/concepts/containers/images#updating-images'}
                                         alternative   
-                                            IMAGEPULLPOLICY_always
+                                            IMAGEPULLPOLICY_always {default}
                                             IMAGEPULLPOLICY_never
                                             IMAGEPULLPOLICY_ifNotPresent
                                     CONTAINERS_lifecycle {doc 'Actions that the management system should take in response to container lifecycle events_ Cannot be updated_'}
@@ -312,7 +312,7 @@ features
                                                             POSTSTART_HTTPGET_port {doc 'Name or number of the port to access on the container_ Number must be in the range 1 to 65535_ Name must be an IANA_SVC_NAME_'}
                                                         optional
                                                             POSTSTART_HTTPGET_path {doc 'Path to access on the HTTP server_'}
-                                                            POSTSTART_HTTPGET_scheme {doc 'Scheme to use for connecting to the host_ Defaults to HTTP_'}
+                                                            POSTSTART_HTTPGET_scheme {default 'HTTP', doc 'Scheme to use for connecting to the host_ Defaults to HTTP_'}
                                                     POSTSTART_sleep {doc 'Sleep represents the duration that the container should sleep before being terminated_'}
                                                         mandatory
                                                             POSTSTART_SLEEP_seconds {doc 'Seconds is the number of seconds to sleep_'}
@@ -331,7 +331,7 @@ features
                                                             PRESTOP_HTTPGET_port {doc 'Name or number of the port to access on the container_ Number must be in the range 1 to 65535_ Name must be an IANA_SVC_NAME_'}
                                                         optional
                                                             PRESTOP_HTTPGET_path {doc 'Path to access on the HTTP server_'}
-                                                            PRESTOP_HTTPGET_scheme {doc 'Scheme to use for connecting to the host_ Defaults to HTTP_'}
+                                                            PRESTOP_HTTPGET_scheme {default 'HTTP', doc 'Scheme to use for connecting to the host_ Defaults to HTTP_'}
                                                     PRESTOP_sleep {doc 'Sleep represents the duration that the container should sleep before being terminated_'}
                                                         mandatory
                                                             PRESTOP_SLEEP_seconds {doc 'Seconds is the number of seconds to sleep_'}
@@ -340,7 +340,7 @@ features
                                             LIVENESSPROBE_exec   {doc 'Exec specifies the action to take_'}
                                                 mandatory
                                                     LIVENESSPROBE_EXEC_command {doc 'Command is the command line to execute inside the container, the working directory for the command is root ("/") in the container`s filesystem_ The command is simply exec`d, it is not run inside a shell, so traditional shell instructions ("|", etc) won`t work_ To use a shell, you need to explicitly call out to that shell_ Exit status of 0 is treated as live/healthy and non-zero is unhealthy_'}
-                                            LIVENESSPROBE_failureThreshold {doc 'Minimum consecutive failures for the probe to be considered failed after having succeeded_ Defaults to 3_ Minimum value is 1_'}
+                                            LIVENESSPROBE_failureThreshold {default 3, doc 'Minimum consecutive failures for the probe to be considered failed after having succeeded_ Defaults to 3_ Minimum value is 1_'}
                                             LIVENESSPROBE_grpc {doc 'GRPC specifies an action involving a GRPC port_'}
                                                 mandatory   
                                                     LIVENESSPROBE_GRPC_port {doc 'Port number of the gRPC service_ Number must be in the range 1 to 65535_'}
@@ -355,21 +355,21 @@ features
                                                             LIVENESSPROBE_HTTPHEADERS_value {doc 'The header field value'}
                                                     LIVENESSPROBE_HTTPGET_path {doc 'Path to access on the HTTP server_'}
                                                     LIVENESSPROBE_HTTPGET_port {doc 'Name or number of the port to access on the container_ Number must be in the range 1 to 65535_ Name must be an IANA_SVC_NAME_'}
-                                                    LIVENESSPROBE_HTTPGET_scheme {doc 'Scheme to use for connecting to the host_ Defaults to HTTP_'}
+                                                    LIVENESSPROBE_HTTPGET_scheme {default 'HTTP', doc 'Scheme to use for connecting to the host_ Defaults to HTTP_'}
                                             LIVENESSPROBE_initialDelaySeconds {doc 'Number of seconds after the container has started before liveness probes are initiated_ More info: https://kubernetes_io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'}
-                                            LIVENESSPROBE_periodSeconds {doc 'How often (in seconds) to perform the probe_ Default to 10 seconds_ Minimum value is 1_'}
-                                            LIVENESSPROBE_successThreshold {doc 'Minimum consecutive successes for the probe to be considered successful after having failed_ Defaults to 1_ Must be 1 for liveness and startup_ Minimum value is 1_'}
+                                            LIVENESSPROBE_periodSeconds {default 10, doc 'How often (in seconds) to perform the probe_ Default to 10 seconds_ Minimum value is 1_'}
+                                            LIVENESSPROBE_successThreshold {default 1, doc 'Minimum consecutive successes for the probe to be considered successful after having failed_ Defaults to 1_ Must be 1 for liveness and startup_ Minimum value is 1_'}
                                             LIVENESSPROBE_tcpSocket {doc 'TCPSocket specifies an action involving a TCP port_'}
                                                 mandatory   
                                                     LIVENESSPROBE_TCPSOCKET_port {doc 'Number or name of the port to access on the container_ Number must be in the range 1 to 65535_ Name must be an IANA_SVC_NAME_'}
                                                 optional   
                                                     LIVENESSPROBE_TCPSOCKET_host {doc 'Optional: Host name to connect to, defaults to the pod IP_'}
-                                            LIVENESSPROBE_timeoutSeconds {doc 'Number of seconds after which the probe times out_ Defaults to 1 second_ Minimum value is 1_ More info: https://kubernetes_io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'}
+                                            LIVENESSPROBE_timeoutSeconds {default 1, doc 'Number of seconds after which the probe times out_ Defaults to 1 second_ Minimum value is 1_ More info: https://kubernetes_io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'}
                                         optional
                                             LIVENESSPROBE_terminationGracePeriodSeconds {doc 'Optional duration in seconds the pod needs to terminate gracefully upon probe failure_ The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal_ Set this value longer than the expected cleanup time for your process_ If this value is nil, the pod`s terminationGracePeriodSeconds will be used_ Otherwise, this value overrides the value provided by the pod spec_ Value must be non-negative integer_ The value zero indicates stop immediately via the kill signal (no opportunity to shut down)_ This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate_ Minimum value is 1_ spec_terminationGracePeriodSeconds is used if unset_'}
                                     CONTAINERS_ports   {doc 'List of ports to expose from the container_ Not specifying a port here DOES NOT prevent that port from being exposed_ Any port which is listening on the default "0_0_0_0" address inside a container will be accessible from the network_ Modifying this array with strategic merge patch may corrupt the data_ For more information See https://github_com/kubernetes/kubernetes/issues/108255_ Cannot be updated_'}
                                         mandatory   
-                                            CONTAINERS_PORTS_containerPort {doc 'Number of port to expose on the pod`s IP address_ This must be a valid port number, 0 < x < 65536_'}
+                                            CONTAINERS_PORTS_containerPort {default 0, doc 'Number of port to expose on the pod`s IP address_ This must be a valid port number, 0 < x < 65536_'}
                                         optional 
                                             CONTAINERS_PORTS_hostIP {doc 'What host IP to bind the external port to_'}
                                             CONTAINERS_PORTS_hostPort {doc 'Number of port to expose on the host_ If specified, this must be a valid port number, 0 < x < 65536_ If HostNetwork is specified, this must match ContainerPort_ Most containers do not need this_'}
@@ -377,14 +377,14 @@ features
                                             CONTAINERS_PORTS_protocol {doc 'Protocol for port_ Must be UDP, TCP, or SCTP_ Defaults to "TCP"_'}
                                                 alternative   
                                                     PROTOCOL_UDP
-                                                    PROTOCOL_TCP
+                                                    PROTOCOL_TCP {default}
                                                     PROTOCOL_SCTP
                                     CONTAINERS_readinessProbe {doc 'Periodic probe of container service readiness_ Container will be removed from service endpoints if the probe fails_ Cannot be updated_ More info: https://kubernetes_io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'}
                                         mandatory
                                             READINESSPROBE_exec   {doc 'Exec specifies the action to take_'}
                                                 mandatory
                                                     READINESSPROBE_EXEC_command {doc 'Command is the command line to execute inside the container, the working directory for the command is root ("/") in the container`s filesystem_ The command is simply exec`d, it is not run inside a shell, so traditional shell instructions ("|", etc) won`t work_ To use a shell, you need to explicitly call out to that shell_ Exit status of 0 is treated as live/healthy and non-zero is unhealthy_'}
-                                            READINESSPROBE_failureThreshold {doc 'Minimum consecutive failures for the probe to be considered failed after having succeeded_ Defaults to 3_ Minimum value is 1_'}
+                                            READINESSPROBE_failureThreshold {default 3, doc 'Minimum consecutive failures for the probe to be considered failed after having succeeded_ Defaults to 3_ Minimum value is 1_'}
                                             READINESSPROBE_grpc {doc 'GRPC specifies an action involving a GRPC port_'}
                                                 mandatory   
                                                     READINESSPROBE_GRPC_port {doc 'Port number of the gRPC service_ Number must be in the range 1 to 65535_'}
@@ -399,16 +399,16 @@ features
                                                             READINESSPROBE_HTTPHEADERS_value {doc 'The header field value'}
                                                     READINESSPROBE_HTTPGET_path {doc 'Path to access on the HTTP server_'}
                                                     READINESSPROBE_HTTPGET_port {doc '	Name or number of the port to access on the container_ Number must be in the range 1 to 65535_ Name must be an IANA_SVC_NAME_'}
-                                                    READINESSPROBE_HTTPGET_scheme {doc 'Scheme to use for connecting to the host_ Defaults to HTTP_'}
+                                                    READINESSPROBE_HTTPGET_scheme {default 'HTTP', doc 'Scheme to use for connecting to the host_ Defaults to HTTP_'}
                                             READINESSPROBE_initialDelaySeconds {doc 'Number of seconds after the container has started before liveness probes are initiated_ More info: https://kubernetes_io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'}
-                                            READINESSPROBE_periodSeconds {doc 'How often (in seconds) to perform the probe_ Default to 10 seconds_ Minimum value is 1_'}
-                                            READINESSPROBE_successThreshold {doc 'Minimum consecutive successes for the probe to be considered successful after having failed_ Defaults to 1_ Must be 1 for liveness and startup_ Minimum value is 1_'}
+                                            READINESSPROBE_periodSeconds {default 10, doc 'How often (in seconds) to perform the probe_ Default to 10 seconds_ Minimum value is 1_'}
+                                            READINESSPROBE_successThreshold {default 1, doc 'Minimum consecutive successes for the probe to be considered successful after having failed_ Defaults to 1_ Must be 1 for liveness and startup_ Minimum value is 1_'}
                                             READINESSPROBE_tcpSocket {doc 'TCPSocket specifies an action involving a TCP port_'}
                                                 mandatory   
                                                     READINESSPROBE_TCPSOCKET_port {doc 'Number or name of the port to access on the container_ Number must be in the range 1 to 65535_ Name must be an IANA_SVC_NAME_'}
                                                 optional   
                                                     READINESSPROBE_TCPSOCKET_host {doc 'Optional: Host name to connect to, defaults to the pod IP_'}                                     
-                                            READINESSPROBE_timeoutSeconds {doc 'Number of seconds after which the probe times out_ Defaults to 1 second_ Minimum value is 1_ More info: https://kubernetes_io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'}
+                                            READINESSPROBE_timeoutSeconds {default 1, doc 'Number of seconds after which the probe times out_ Defaults to 1 second_ Minimum value is 1_ More info: https://kubernetes_io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'}
                                         optional   
                                             READINESSPROBE_terminationGracePeriodSeconds {doc 'Optional duration in seconds the pod needs to terminate gracefully upon probe failure_ The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal_ Set this value longer than the expected cleanup time for your process_ If this value is nil, the pod`s terminationGracePeriodSeconds will be used_ Otherwise, this value overrides the value provided by the pod spec_ Value must be non-negative integer_ The value zero indicates stop immediately via the kill signal (no opportunity to shut down)_ This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate_ Minimum value is 1_ spec_terminationGracePeriodSeconds is used if unset_'}
                                     CONTAINERS_resizePolicy   {doc 'Resources resize policy for the container_'}
@@ -417,14 +417,14 @@ features
                                                 alternative   
                                                     CONTAINERS_RESIZEPOLICY_RESTARTPOLICY_cpu
                                                     CONTAINERS_RESIZEPOLICY_RESTARTPOLICY_memory
-                                            RESIZEPOLICY_restartPolicy {doc 'Restart policy to apply when specified resource is resized_ If not specified, it defaults to NotRequired_'}
+                                            RESIZEPOLICY_restartPolicy {default 'NotRequired', doc 'Restart policy to apply when specified resource is resized_ If not specified, it defaults to NotRequired_'}
                                     CONTAINERS_restartPolicy {doc 'RestartPolicy defines the restart behavior of individual containers in a pod_ This field may only be set for init containers, and the only allowed value is "Always"_ For non-init containers or when this field is not specified, the restart behavior is defined by the Pod`s restart policy and the container type_ Setting the RestartPolicy as "Always" for the init container will have the following effect: this init container will be continually restarted on exit until all regular containers have terminated_ Once all regular containers have completed, all init containers with restartPolicy "Always" will be shut down_ This lifecycle differs from normal init containers and is often referred to as a "sidecar" container_ Although this init container still starts in the init container sequence, it does not wait for the container to complete before proceeding to the next init container_ Instead, the next init container starts immediately after this init container is started, or after any startupProbe has successfully completed_'}
                                     CONTAINERS_resources {doc 'Compute Resources required by this container_ Cannot be updated_ More info: https://kubernetes_io/docs/concepts/configuration/manage-resources-containers/'}
                                         or
                                             RESOURCES_request {doc 'Requests describes the minimum amount of compute resources required_ If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value_ Requests cannot exceed Limits_ More info: https://kubernetes_io/docs/concepts/configuration/manage-resources-containers/'}
                                                 mandatory
-                                                    REQUEST_cpu
-                                                    REQUEST_memory
+                                                    REQUESTS_cpu
+                                                    REQUESTS_memory
                                             RESOURCES_limits {doc 'Limits describes the maximum amount of compute resources allowed_ More info: https://kubernetes_io/docs/concepts/configuration/manage-resources-containers/'}
                                                 mandatory
                                                     LIMITS_cpu
@@ -435,9 +435,9 @@ features
                                     CONTAINERS_securityContext {doc 'SecurityContext defines the security options the container should be run with_ If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext_ More info: https://kubernetes_io/docs/tasks/configure-pod-container/security-context/'}
                                         optional   
                                             CONTAINERS_SECURITYCONTEXT_allowPrivilegeEscalation {doc 'AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process_ This bool directly controls if the no_new_privs flag will be set on the container process_ AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this field cannot be set when spec_os_name is windows_'}
-                                            CONTAINERS_SECURITYCONTEXT_privileged {doc 'Run container in privileged mode_ Processes in privileged containers are essentially equivalent to root on the host_ Defaults to false_ Note that this field cannot be set when spec_os_name is windows_'}
-                                            CONTAINERS_SECURITYCONTEXT_procMount {doc 'procMount denotes the type of proc mount to use for the containers_ The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths_ This requires the ProcMountType feature flag to be enabled_ Note that this field cannot be set when spec_os_name is windows_'}
-                                            CONTAINERS_SECURITYCONTEXT_readOnlyRootFilesystem {doc 'Whether this container has a read-only root filesystem_ Default is false_ Note that this field cannot be set when spec_os_name is windows_'}
+                                            CONTAINERS_SECURITYCONTEXT_privileged {default false, doc 'Run container in privileged mode_ Processes in privileged containers are essentially equivalent to root on the host_ Defaults to false_ Note that this field cannot be set when spec_os_name is windows_'}
+                                            CONTAINERS_SECURITYCONTEXT_procMount {default 'DefaultProcMount', doc 'procMount denotes the type of proc mount to use for the containers_ The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths_ This requires the ProcMountType feature flag to be enabled_ Note that this field cannot be set when spec_os_name is windows_'}
+                                            CONTAINERS_SECURITYCONTEXT_readOnlyRootFilesystem {default false, doc 'Whether this container has a read-only root filesystem_ Default is false_ Note that this field cannot be set when spec_os_name is windows_'}
                                             CONTAINERS_SECURITYCONTEXT_runAsGroup {doc 'The GID to run the entrypoint of the container process_ Uses runtime default if unset_ May also be set in PodSecurityContext_ If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence_ Note that this field cannot be set when spec_os_name is windows_'}
                                             CONTAINERS_SECURITYCONTEXT_runAsNonRoot {doc 'Indicates that the container must run as a non-root user_ If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does_ If unset or false, no such validation will be performed_ May also be set in PodSecurityContext_ If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence_'}
                                             CONTAINERS_SECURITYCONTEXT_runAsUser {doc 'The UID to run the entrypoint of the container process_ Defaults to user specified in image metadata if unspecified_ May also be set in PodSecurityContext_ If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence_ Note that this field cannot be set when spec_os_name is windows_'}
@@ -482,7 +482,7 @@ features
                                             STARTUPPROBE_exec   {doc 'Exec specifies the action to take_'}
                                                 mandatory
                                                     STARTUPPROBE_EXEC_command {doc 'Command is the command line to execute inside the container, the working directory for the command is root ("/") in the container`s filesystem_ The command is simply exec`d, it is not run inside a shell, so traditional shell instructions ("|", etc) won`t work_ To use a shell, you need to explicitly call out to that shell_ Exit status of 0 is treated as live/healthy and non-zero is unhealthy_'}
-                                            STARTUPPROBE_failureThreshold {doc 'Minimum consecutive failures for the probe to be considered failed after having succeeded_ Defaults to 3_ Minimum value is 1_'}
+                                            STARTUPPROBE_failureThreshold {default 3, doc 'Minimum consecutive failures for the probe to be considered failed after having succeeded_ Defaults to 3_ Minimum value is 1_'}
                                             STARTUPPROBE_grpc {doc 'GRPC specifies an action involving a GRPC port_'}
                                                 mandatory   
                                                     STARTUPPROBE_GRPC_port {doc 'Port number of the gRPC service_ Number must be in the range 1 to 65535_'}
@@ -497,23 +497,23 @@ features
                                                             STARTUPPROBE_HTTPHEADERS_value {doc 'The header field value'}
                                                     STARTUPPROBE_HTTPGET_path {doc 'Path to access on the HTTP server_'}
                                                     STARTUPPROBE_HTTPGET_port {doc 'Name or number of the port to access on the container_ Number must be in the range 1 to 65535_ Name must be an IANA_SVC_NAME_'}
-                                                    STARTUPPROBE_HTTPGET_scheme {doc 'Scheme to use for connecting to the host_ Defaults to HTTP_'}
+                                                    STARTUPPROBE_HTTPGET_scheme {default 'HTTP', doc 'Scheme to use for connecting to the host_ Defaults to HTTP_'}
                                             STARTUPPROBE_initialDelaySeconds {doc 'Number of seconds after the container has started before liveness probes are initiated_ More info: https://kubernetes_io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'}
-                                            STARTUPPROBE_periodSeconds {doc 'How often (in seconds) to perform the probe_ Default to 10 seconds_ Minimum value is 1_'}
-                                            STARTUPPROBE_successThreshold {doc 'Minimum consecutive successes for the probe to be considered successful after having failed_ Defaults to 1_ Must be 1 for liveness and startup_ Minimum value is 1_'}
+                                            STARTUPPROBE_periodSeconds {default 10, doc 'How often (in seconds) to perform the probe_ Default to 10 seconds_ Minimum value is 1_'}
+                                            STARTUPPROBE_successThreshold {default 1, doc 'Minimum consecutive successes for the probe to be considered successful after having failed_ Defaults to 1_ Must be 1 for liveness and startup_ Minimum value is 1_'}
                                             STARTUPPROBE_tcpSocket {doc 'TCPSocket specifies an action involving a TCP port_'}
                                                 mandatory   
                                                      STARTUPPROBE_TCPSOCKET_port {doc 'Number or name of the port to access on the container_ Number must be in the range 1 to 65535_ Name must be an IANA_SVC_NAME_'}
                                                 optional   
                                                      STARTUPPROBE_TCPSOCKET_host {doc 'Optional: Host name to connect to, defaults to the pod IP_'}
-                                            STARTUPPROBE_timeoutSeconds {doc 'Number of seconds after which the probe times out_ Defaults to 1 second_ Minimum value is 1_ More info: https://kubernetes_io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'}
+                                            STARTUPPROBE_timeoutSeconds {default 1, doc 'Number of seconds after which the probe times out_ Defaults to 1 second_ Minimum value is 1_ More info: https://kubernetes_io/docs/concepts/workloads/pods/pod-lifecycle#container-probes'}
                                         optional   
                                             STARTUPPROBE_terminationGracePeriodSeconds {doc 'Optional duration in seconds the pod needs to terminate gracefully upon probe failure_ The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal_ Set this value longer than the expected cleanup time for your process_ If this value is nil, the pod`s terminationGracePeriodSeconds will be used_ Otherwise, this value overrides the value provided by the pod spec_ Value must be non-negative integer_ The value zero indicates stop immediately via the kill signal (no opportunity to shut down)_ This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate_ Minimum value is 1_ spec_terminationGracePeriodSeconds is used if unset_'}
-                                    CONTAINERS_stdin {doc 'Whether this container should allocate a buffer for stdin in the container runtime_ If this is not set, reads from stdin in the container will always result in EOF_ Default is false_'}
-                                    CONTAINERS_stdinOnce {doc 'Whether the container runtime should close the stdin channel after it has been opened by a single attach_ When stdin is true the stdin stream will remain open across multiple attach sessions_ If stdinOnce is set to true, stdin is opened on container start, is empty until the first client attaches to stdin, and then remains open and accepts data until the client disconnects, at which time stdin is closed and remains closed until the container is restarted_ If this flag is false, a container processes that reads from stdin will never receive an EOF_ Default is false'}
-                                    CONTAINERS_terminationMessagePath {doc 'Optional: Path at which the file to which the container`s termination message will be written is mounted into the container`s filesystem_ Message written is intended to be brief final status, such as an assertion failure message_ Will be truncated by the node if greater than 4096 bytes_ The total message length across all containers will be limited to 12kb_ Defaults to /dev/termination-log_ Cannot be updated_'}
-                                    CONTAINERS_terminationMessagePolicy {doc 'Indicate how the termination message should be populated_ File will use the contents of terminationMessagePath to populate the container status message on both success and failure_ FallbackToLogsOnError will use the last chunk of container log output if the termination message file is empty and the container exited with an error_ The log output is limited to 2048 bytes or 80 lines, whichever is smaller_ Defaults to File_ Cannot be updated_'}
-                                    CONTAINERS_tty {doc 'Whether this container should allocate a TTY for itself, also requires "stdin" to be true_ Default is false_'}
+                                    CONTAINERS_stdin {default false, doc 'Whether this container should allocate a buffer for stdin in the container runtime_ If this is not set, reads from stdin in the container will always result in EOF_ Default is false_'}
+                                    CONTAINERS_stdinOnce {default false, doc 'Whether the container runtime should close the stdin channel after it has been opened by a single attach_ When stdin is true the stdin stream will remain open across multiple attach sessions_ If stdinOnce is set to true, stdin is opened on container start, is empty until the first client attaches to stdin, and then remains open and accepts data until the client disconnects, at which time stdin is closed and remains closed until the container is restarted_ If this flag is false, a container processes that reads from stdin will never receive an EOF_ Default is false'}
+                                    CONTAINERS_terminationMessagePath {default '/dev/termination-log', doc 'Optional: Path at which the file to which the container`s termination message will be written is mounted into the container`s filesystem_ Message written is intended to be brief final status, such as an assertion failure message_ Will be truncated by the node if greater than 4096 bytes_ The total message length across all containers will be limited to 12kb_ Defaults to /dev/termination-log_ Cannot be updated_'}
+                                    CONTAINERS_terminationMessagePolicy {default 'File', doc 'Indicate how the termination message should be populated_ File will use the contents of terminationMessagePath to populate the container status message on both success and failure_ FallbackToLogsOnError will use the last chunk of container log output if the termination message file is empty and the container exited with an error_ The log output is limited to 2048 bytes or 80 lines, whichever is smaller_ Defaults to File_ Cannot be updated_'}
+                                    CONTAINERS_tty {default false, doc 'Whether this container should allocate a TTY for itself, also requires "stdin" to be true_ Default is false_'}
                                     CONTAINERS_volumeDevices   {doc 'volumeDevices is the list of block devices to be used by the container_'}
                                         mandatory
                                             VOLUMEDEVICES_devicePath {doc 'devicePath is the path inside of the container that the device will be mapped to_'}
@@ -539,9 +539,9 @@ features
                                     INITCONTAINERS_securityContext {doc 'SecurityContext defines the security options the container should be run with_ If set, the fields of SecurityContext override the equivalent fields of PodSecurityContext_ More info: https://kubernetes_io/docs/tasks/configure-pod-container/security-context/'}
                                         optional   
                                             INITCONTAINERS_SECURITYCONTEXT_allowPrivilegeEscalation {doc 'AllowPrivilegeEscalation controls whether a process can gain more privileges than its parent process_ This bool directly controls if the no_new_privs flag will be set on the container process_ AllowPrivilegeEscalation is true always when the container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this field cannot be set when spec_os_name is windows_'}
-                                            INITCONTAINERS_SECURITYCONTEXT_privileged {doc 'Run container in privileged mode_ Processes in privileged containers are essentially equivalent to root on the host_ Defaults to false_ Note that this field cannot be set when spec_os_name is windows_'}
-                                            INITCONTAINERS_SECURITYCONTEXT_procMount {doc 'procMount denotes the type of proc mount to use for the containers_ The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths_ This requires the ProcMountType feature flag to be enabled_ Note that this field cannot be set when spec_os_name is windows_'}
-                                            INITCONTAINERS_SECURITYCONTEXT_readOnlyRootFilesystem {doc 'Whether this container has a read-only root filesystem_ Default is false_ Note that this field cannot be set when spec_os_name is windows_'}
+                                            INITCONTAINERS_SECURITYCONTEXT_privileged {default false, doc 'Run container in privileged mode_ Processes in privileged containers are essentially equivalent to root on the host_ Defaults to false_ Note that this field cannot be set when spec_os_name is windows_'}
+                                            INITCONTAINERS_SECURITYCONTEXT_procMount {default 'DefaultProcMount', doc 'procMount denotes the type of proc mount to use for the containers_ The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths_ This requires the ProcMountType feature flag to be enabled_ Note that this field cannot be set when spec_os_name is windows_'}
+                                            INITCONTAINERS_SECURITYCONTEXT_readOnlyRootFilesystem {default false, doc 'Whether this container has a read-only root filesystem_ Default is false_ Note that this field cannot be set when spec_os_name is windows_'}
                                             INITCONTAINERS_SECURITYCONTEXT_runAsGroup {doc 'The GID to run the entrypoint of the container process_ Uses runtime default if unset_ May also be set in PodSecurityContext_ If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence_ Note that this field cannot be set when spec_os_name is windows_'}
                                             INITCONTAINERS_SECURITYCONTEXT_runAsNonRoot {doc 'Indicates that the container must run as a non-root user_ If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does_ If unset or false, no such validation will be performed_ May also be set in PodSecurityContext_ If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence_'}
                                             INITCONTAINERS_SECURITYCONTEXT_runAsUser {doc 'The UID to run the entrypoint of the container process_ Defaults to user specified in image metadata if unspecified_ May also be set in PodSecurityContext_ If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence_ Note that this field cannot be set when spec_os_name is windows_'}
@@ -591,14 +591,14 @@ features
                             PODSPEC_dnsPolicy {doc 'Set DNS policy for the pod_ Defaults to "ClusterFirst"_ Valid values are "ClusterFirstWithHostNet", "ClusterFirst", "Default" or "None"_ DNS parameters given in DNSConfig will be merged with the policy selected with DNSPolicy_ To have DNS options set along with hostNetwork, you have to specify DNS policy explicitly to "ClusterFirstWithHostNet"_'}
                                 alternative
                                     DNSPOLICY_ClusterFirstWithHostNet
-                                    DNSPOLICY_ClusterFirst
+                                    DNSPOLICY_ClusterFirst {default}
                                     DNSPOLICY_Default
                                     DNSPOLICY_None
                             PODSPEC_enableServiceLinks {doc 'EnableServiceLinks indicates whether information about services should be injected into pod`s environment variables, matching the syntax of Docker links_ Optional: Defaults to true_'}
-                            PODSPEC_hostIPC {doc 'Use the host`s ipc namespace_ Optional: Default to false_'}
-                            PODSPEC_hostNetwork {doc 'Host networking requested for this pod_ Use the host`s network namespace_ If this option is set, the ports that will be used must be specified_ Default to false_'}
-                            PODSPEC_hostPID {doc 'Use the host`s pid namespace_ Optional: Default to false_'}
-                            PODSPEC_hostUsers {doc 'Use the host`s user namespace_ Optional: Default to true_ If set to true or not present, the pod will be run in the host user namespace, useful for when the pod needs a feature only available to the host user namespace, such as loading a kernel module with CAP_SYS_MODULE_ When set to false, a new userns is created for the pod_ Setting false is useful for mitigating container breakout vulnerabilities even allowing users to run their containers as root without actually having root privileges on the host_ This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature_'}
+                            PODSPEC_hostIPC {default false, doc 'Use the host`s ipc namespace_ Optional: Default to false_'}
+                            PODSPEC_hostNetwork {default false, doc 'Host networking requested for this pod_ Use the host`s network namespace_ If this option is set, the ports that will be used must be specified_ Default to false_'}
+                            PODSPEC_hostPID {default false, doc 'Use the host`s pid namespace_ Optional: Default to false_'}
+                            PODSPEC_hostUsers {default true, doc 'Use the host`s user namespace_ Optional: Default to true_ If set to true or not present, the pod will be run in the host user namespace, useful for when the pod needs a feature only available to the host user namespace, such as loading a kernel module with CAP_SYS_MODULE_ When set to false, a new userns is created for the pod_ Setting false is useful for mitigating container breakout vulnerabilities even allowing users to run their containers as root without actually having root privileges on the host_ This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature_'}
                             PODSPEC_hostname {doc 'Specifies the hostname of the Pod If not specified, the pod`s hostname will be set to a system-defined value_'}
                             PODSPEC_nodeName {doc 'NodeName is a request to schedule this pod onto a specific node_ If it is non-empty, the scheduler simply schedules this pod onto that node, assuming that it fits resource requirements_'}
                             PODSPEC_Volumes   {doc 'List of volumes that can be mounted by containers belonging to the pod_ More info: https://kubernetes_io/docs/concepts/storage/volumes'}
@@ -610,17 +610,17 @@ features
                                                 optional
                                                     EMPTYDIR_medium {doc 'medium represents what type of storage medium should back this directory_ The default is "" which means to use the node`s default medium_ Must be an empty string (default) or Memory_ More info: https://kubernetes_io/docs/concepts/storage/volumes#emptydir'}
                                                         alternative   
-                                                            EMPTYDIR_MEDIUM_default
+                                                            EMPTYDIR_MEDIUM_default {default}
                                                             EMPTYDIR_MEDIUM_memory
-                                                    EMPTYDIR_sizeLimit {doc 'sizeLimit is the total amount of local storage required for this EmptyDir volume_ The size limit is also applicable for memory medium_ The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod_ The default is nil which means that the limit is undefined_ More info: https://kubernetes_io/docs/concepts/storage/volumes#emptydir'}
+                                                    EMPTYDIR_sizeLimit {default 'nil', doc 'sizeLimit is the total amount of local storage required for this EmptyDir volume_ The size limit is also applicable for memory medium_ The maximum usage on memory medium EmptyDir would be the minimum value between the SizeLimit specified here and the sum of memory limits of all containers in a pod_ The default is nil which means that the limit is undefined_ More info: https://kubernetes_io/docs/concepts/storage/volumes#emptydir'}
                                             hostPath {doc 'hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container_ This is generally used for system agents or other privileged things that are allowed to see the host machine_ Most containers will NOT need this_ More info: https://kubernetes_io/docs/concepts/storage/volumes#hostpath'}
                                                 optional
                                                     HOSTPATH_path {doc 'path of the directory on the host_ If the path is a symlink, it will follow the link to the real path_ More info: https://kubernetes_io/docs/concepts/storage/volumes#hostpath'}
-                                                    HOSTPATH_type {doc 'type for HostPath Volume Defaults to "" More info: https://kubernetes_io/docs/concepts/storage/volumes#hostpath'}
+                                                    HOSTPATH_type {default ' ', doc 'type for HostPath Volume Defaults to "" More info: https://kubernetes_io/docs/concepts/storage/volumes#hostpath'}
                                             persistentVolumeClaim {doc 'persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims'}
                                                 optional   
                                                     PERSISTENTVOLUMECLAIM_claimName {doc 'claimName is the name of a PersistentVolumeClaim in the same namespace as the pod using this volume_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims'}
-                                                    PERSISTENTVOLUMECLAIM_readOnly {doc 'readOnly Will force the ReadOnly setting in VolumeMounts_ Default false_'}
+                                                    PERSISTENTVOLUMECLAIM_readOnly {default false, doc 'readOnly Will force the ReadOnly setting in VolumeMounts_ Default false_'}
                                             configMap {doc 'configMap represents a configMap that should populate this volume'}
                                                 optional
                                                     CONFIGMAP_name {doc 'Name of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#names'}
@@ -635,7 +635,7 @@ features
                                             secret {doc 'secret represents a secret that should populate this volume_ More info: https://kubernetes_io/docs/concepts/storage/volumes#secret'}
                                                 optional   
                                                     SECRET_secretName {doc 'secretName is the name of the secret in the pod`s namespace to use_ More info: https://kubernetes_io/docs/concepts/storage/volumes#secret'}
-                                                    SECRET_defaultMode {doc 'defaultMode is Optional: mode bits used to set permissions on created files by default_ Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511_ YAML accepts both octal and decimal values, JSON requires decimal values for mode bits_ Defaults to 0644_ Directories within the path are not affected by this setting_ This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set_'}
+                                                    SECRET_defaultMode {default 644, doc 'defaultMode is Optional: mode bits used to set permissions on created files by default_ Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511_ YAML accepts both octal and decimal values, JSON requires decimal values for mode bits_ Defaults to 0644_ Directories within the path are not affected by this setting_ This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set_'}
                                                     SECRET_optional {doc 'optional field specify whether the Secret or its keys must be defined'}
                                                     SECRET_items   {doc 'items If unspecified, each key-value pair in the Data field of the referenced Secret will be projected into the volume as a file whose name is the key and content is the value_ If specified, the listed keys will be projected into the specified paths, and unlisted keys will not be present_ If a key is specified which is not present in the Secret, the volume setup will error unless it is marked optional_ Paths must be relative and may not contain the "__" path or start with "__"_'}
                                                         mandatory   
@@ -648,13 +648,13 @@ features
                                                     NFS_path {doc 'Path that is exported by the NFS server_ More info: https://kubernetes_io/docs/concepts/storage/volumes#nfs'}
                                                     NFS_server {doc 'Server is the hostname or IP address of the NFS server_ More info: https://kubernetes_io/docs/concepts/storage/volumes#nfs'}
                                                 optional    
-                                                    NFS_readOnly {doc 'ReadOnly here will force the NFS export to be mounted with read-only permissions_ Defaults to false_'}
+                                                    NFS_readOnly {default false, doc 'ReadOnly here will force the NFS export to be mounted with read-only permissions_ Defaults to false_'}
                                             csi {doc 'csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature)_'}
                                                 mandatory   
                                                     CSI_driver {doc 'Driver is the name of the CSI driver that handles this volume_ Consult with your admin for the correct name as registered in the cluster_'}
                                                 optional  
                                                     CSI_volumeAttributes {doc 'VolumeAttributes stores driver-specific properties that are passed to the CSI driver_ Consult your driver`s documentation for supported values_'}
-                                                    CSI_readOnly {doc 'ReadOnly here will force the ReadOnly setting in VolumeMounts_ Defaults to false_'}  
+                                                    CSI_readOnly {default false, doc 'ReadOnly here will force the ReadOnly setting in VolumeMounts_ Defaults to false_'}  
                                                     CSI_fsType {doc 'fsType to mount_ Ex_ "ext4", "xfs", "ntfs"_ If not provided, the empty value is passed to the associated CSI driver which will determine the default filesystem to apply_'}                                      
                                                     CSI_nodePublichSecretRef {doc 'NodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls_ This field is optional, and  may be empty if no secret is required_ If the secret is specified, it must be a secret object that is already visible to the Kubelet_'}
                                                         mandatory   
@@ -665,7 +665,7 @@ features
                                                         mandatory   
                                                             DOWNWARDAPI_ITEMS_fieldRef {doc 'FieldRef contains the field selector to populate this volume with_'}
                                                                 mandatory 
-                                                                    DOWNWARDAPI_ITEMS_FIELDREF_apiVersion {doc 'Version of the schema the FieldPath is written in terms of, defaults to "v1"_'}  
+                                                                    DOWNWARDAPI_ITEMS_FIELDREF_apiVersion {default 'v1', doc 'Version of the schema the FieldPath is written in terms of, defaults to "v1"_'}  
                                                                     DOWNWARDAPI_ITEMS_FIELDREF_fieldPath {doc 'Path of the field to select in the specified API version_'}
                                                             DOWNWARDAPI_ITEMS_path {doc 'Path is the relative path name of the file to be created_ Must not be absolute or contain the "__" path_ Must be utf-8 encoded_ The first item of the relative path must not start with "__'}
                                                         optional 
@@ -675,9 +675,9 @@ features
                                                                     DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_containerName {doc 'Container name: required for volumes, optional for env vars'}
                                                                     DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_resource {doc 'Required: resource to select'}
                                                                 optional   
-                                                                    DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_divisor {doc 'Specifies the output format of the exposed resources, defaults to "1"'}
+                                                                    DOWNWARDAPI_ITEMS_RESOURCEFIELDREF_divisor {default '1', doc 'Specifies the output format of the exposed resources, defaults to "1"'}
                                                 optional
-                                                    DOWNWARDAPI_defaultMode {doc 'Optional: mode bits to use on created files by default_ Must be a Optional: mode bits used to set permissions on created files by default_ Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511_ YAML accepts both octal and decimal values, JSON requires decimal values for mode bits_ Defaults to 0644_ Directories within the path are not affected by this setting_ This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set_'}
+                                                    DOWNWARDAPI_defaultMode {default 644, doc 'Optional: mode bits to use on created files by default_ Must be a Optional: mode bits used to set permissions on created files by default_ Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511_ YAML accepts both octal and decimal values, JSON requires decimal values for mode bits_ Defaults to 0644_ Directories within the path are not affected by this setting_ This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set_'}
                                             ephemeral {doc 'ephemeral represents a volume that is handled by a cluster storage driver_ The volume`s lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed_ Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity tracking are needed, c) the storage driver is specified through a storage class, and d) the storage driver supports dynamic volume provisioning through a PersistentVolumeClaim (see EphemeralVolumeSource for more information on the connection between this volume type and PersistentVolumeClaim)_ Use PersistentVolumeClaim or one of the vendor-specific APIs for volumes that persist for longer than the lifecycle of an individual pod_ Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information_ A pod can use both types of ephemeral volumes and persistent volumes at the same time_'}
                                                 mandatory   
                                                     EPHEMERAL_volumeClaimTemplate {doc 'Will be used to create a stand-alone PVC to provision the volume_ The pod in which this EphemeralVolumeSource is embedded will be the owner of the PVC, i_e_ the PVC will be deleted together with the pod_ The name of the PVC will be `<pod name>-<volume name>` where `<volume name>` is the name from the `PodSpec_Volumes` array entry_ Pod validation will reject the pod if the concatenated name is not valid for a PVC (for example, too long)_ An existing PVC with that name that is not owned by the pod will *not* be used for the pod to avoid using an unrelated volume by mistake_ Starting the pod is then blocked until the unrelated PVC is removed_ If such a pre-created PVC is meant to be used by the pod, the PVC has to updated with an owner reference to the pod once the pod exists_ Normally this should not be necessary, but it may be useful when manually reconstructing a broken cluster_ This field is read-only and no changes will be made by Kubernetes to the PVC after it has been created_ Required, must not be nil_'}
@@ -689,7 +689,7 @@ features
                                                 mandatory
                                                     FC_fsType {doc 'fsType is the filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_'}   
                                                 optional    
-                                                    FC_readOnly {doc 'readOnly is Optional: Defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
+                                                    FC_readOnly {default false, doc 'readOnly is Optional: Defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
                                                     FC_lun {doc 'lun is Optional: FC target lun number'}
                                                     FC_targetWWNs   {doc 'targetWWNs is Optional: FC target worldwide names (WWNs)'}
                                                         mandatory   
@@ -711,11 +711,11 @@ features
                                                     ISCSI_chapAuthDiscovery {doc 'chapAuthDiscovery defines whether support iSCSI Discovery CHAP authentication'}
                                                     ISCSI_chapAuthSession {doc 'chapAuthSession defines whether support iSCSI Session CHAP authentication'}
                                                     ISCSI_initiatorName {doc 'initiatorName is the custom iSCSI Initiator Name_ If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection_'}
-                                                    ISCSI_iscsiInterface {doc 'iscsiInterface is the interface Name that uses an iSCSI transport_ Defaults to "default" (tcp)_'}
+                                                    ISCSI_iscsiInterface {default 'default', doc 'iscsiInterface is the interface Name that uses an iSCSI transport_ Defaults to "default" (tcp)_'}
                                                     ISCSI_portals   {doc 'portals is the iSCSI Target Portal List_ The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260)_'}
                                                         mandatory   
                                                             ISCSI_PORTALS_portal
-                                                    ISCSI_readOnly {doc 'readOnly here will force the ReadOnly setting in VolumeMounts_ Defaults to false_'}
+                                                    ISCSI_readOnly {default false, doc 'readOnly here will force the ReadOnly setting in VolumeMounts_ Defaults to false_'}
                                                     ISCSI_secretRef {doc 'secretRef is the CHAP Secret for iSCSI target and initiator authentication'}
                                                         mandatory   
                                                             ISCSI_SECRETREF_name {doc 'Name of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#names'}
@@ -740,7 +740,7 @@ features
                                                     QUOBYTE_registry {doc 'registry represents a single or multiple Quobyte Registry services specified as a string as host:port pair (multiple entries are separated with commas) which acts as the central registry for volumes'}
                                                 optional
                                                     QUOBYTE_group {doc 'group to map volume access to Default is no group'}
-                                                    QUOBYTE_readOnly {doc 'readOnly here will force the Quobyte volume to be mounted with read-only permissions_ Defaults to false_'}
+                                                    QUOBYTE_readOnly {default false, doc 'readOnly here will force the Quobyte volume to be mounted with read-only permissions_ Defaults to false_'}
                                                     QUOBYTE_tenant {doc 'tenant owning the given Quobyte volume in the Backend Used with dynamically provisioned Quobyte volumes, value is set by the plugin'}
                                                     QUOBYTE_user {doc 'user to map volume access to Defaults to serivceaccount user'}
                                             rbd {doc 'rbd represents a Rados Block Device mount on the host that shares a pod`s lifetime_ More info: https://examples_k8s_io/volumes/rbd/README_md'}
@@ -749,15 +749,15 @@ features
                                                     RBD_monitors   {doc 'monitors is a collection of Ceph monitors_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
                                                         mandatory   
                                                             RBD_MONITORS_monitor
-                                                    RBD_pool {doc 'pool is the rados pool name_ Default is rbd_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}                                                
+                                                    RBD_pool {default 'rbd', doc 'pool is the rados pool name_ Default is rbd_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}                                                
                                                 optional  
                                                     RBD_fsType {doc 'fsType is the filesystem type of the volume that you want to mount_ Tip: Ensure that the filesystem type is supported by the host operating system_ Examples: "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_ More info: https://kubernetes_io/docs/concepts/storage/volumes#rbd'}  
-                                                    RBD_readOnly {doc 'readOnly here will force the ReadOnly setting in VolumeMounts_ Defaults to false_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
-                                                    RBD_secretRef {doc 'secretRef is name of the authentication secret for RBDUser_ If provided overrides keyring_ Default is nil_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
+                                                    RBD_readOnly {default false,doc 'readOnly here will force the ReadOnly setting in VolumeMounts_ Defaults to false_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
+                                                    RBD_secretRef {default false, doc 'secretRef is name of the authentication secret for RBDUser_ If provided overrides keyring_ Default is nil_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
                                                         mandatory   
                                                             RBD_SECRETREF_name {doc 'Name of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#names'}
-                                                    RBD_keyring {doc 'keyring is the path to key ring for RBDUser_ Default is /etc/ceph/keyring_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
-                                                    RBD_user {doc 'user is the rados user name_ Default is admin_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}                                                    
+                                                    RBD_keyring {default '/etc/ceph/keyring', doc 'keyring is the path to key ring for RBDUser_ Default is /etc/ceph/keyring_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
+                                                    RBD_user {default 'admin', doc 'user is the rados user name_ Default is admin_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}                                                    
                                             scaleIO {doc 'scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes_'}
                                                 mandatory   
                                                     SCALEIO_gateway {doc 'gateway is the host address of the ScaleIO API Gateway_'}
@@ -765,30 +765,30 @@ features
                                                     SCALEIO_system {doc 'system is the name of the storage system as configured in ScaleIO_'}
                                                     SCALEIO_protectionDomain {doc 'protectionDomain is the name of the ScaleIO Protection Domain for the configured storage_'}
                                                 optional  
-                                                    SCALEIO_fsType {doc 'fsType is the filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ Default is "xfs"_'} 
-                                                    SCALEIO_readOnly {doc 'readOnly Defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
+                                                    SCALEIO_fsType {default 'xfs', doc 'fsType is the filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ Default is "xfs"_'} 
+                                                    SCALEIO_readOnly {default false, doc 'readOnly Defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
                                                     SCALEIO_secretRef {doc 'secretRef references to the secret for ScaleIO user and other sensitive information_ If this is not provided, Login operation will fail_'}
                                                         mandatory
                                                             SCALEIO_SECRETREF_name
-                                                    SCALEIO_sslEnabled {doc 'sslEnabled Flag enable/disable SSL communication with Gateway, default false'}
+                                                    SCALEIO_sslEnabled {default false, doc 'sslEnabled Flag enable/disable SSL communication with Gateway, default false'}
                                                     SCALEIO_storageMode {doc 'storageMode indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned_ Default is ThinProvisioned_'}
                                                         alternative   
                                                             SCALEIO_STORAGEMODE_thickProvisioned
-                                                            SCALEIO_STORAGEMODE_thinProvisioned
+                                                            SCALEIO_STORAGEMODE_thinProvisioned {default}
                                                     SCALEIO_storagePool {doc 'storagePool is the ScaleIO Storage Pool associated with the protection domain_'}
                                             storageos {doc 'storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes_'}
                                                 mandatory   
                                                     STORAGEOS_volumeName {doc 'volumeName is the human-readable name of the StorageOS volume_ Volume names are only unique within a namespace_'}
                                                 optional   
                                                     STORAGEOS_fsType {doc 'fsType is the filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_'}
-                                                    STORAGEOS_readOnly {doc 'readOnly defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
+                                                    STORAGEOS_readOnly {default false, doc 'readOnly defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
                                                     STORAGEOS_secretRef {doc 'secretRef specifies the secret to use for obtaining the StorageOS API credentials_ If not specified, default values will be attempted_'}
                                                         mandatory   
                                                             STORAGEOS_SECRETREF_name
                                                     STORAGEOS_volumeNamespace {doc 'volumeNamespace specifies the scope of the volume within StorageOS_ If no namespace is specified then the Pod`s namespace will be used_ This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration_ Set VolumeName to any name to override the default behaviour_ Set to "default" if you are not using namespaces within StorageOS_ Namespaces that do not pre-exist within StorageOS will be created_'}
                     ServiceSpec {abstract, doc 'Specification of the desired behavior of the Service_'}
                         optional
-                            SERVICESPEC_allocateLoadBalancerNodePorts {doc 'allocateLoadBalancerNodePorts defines if NodePorts will be automatically allocated for services with type LoadBalancer_ Default is "true"_ It may be set to "false" if the cluster load-balancer does not rely on NodePorts_ If the caller requests specific NodePorts (by specifying a value), those requests will be respected, regardless of this field_ This field may only be set for services with type LoadBalancer and will be cleared if the type is changed to any other type_'}
+                            SERVICESPEC_allocateLoadBalancerNodePorts {default true, doc 'allocateLoadBalancerNodePorts defines if NodePorts will be automatically allocated for services with type LoadBalancer_ Default is "true"_ It may be set to "false" if the cluster load-balancer does not rely on NodePorts_ If the caller requests specific NodePorts (by specifying a value), those requests will be respected, regardless of this field_ This field may only be set for services with type LoadBalancer and will be cleared if the type is changed to any other type_'}
                             SERVICESPEC_clusterIP {doc 'clusterIP is the IP address of the service and is usually assigned randomly_ If an address is specified manually, is in-range (as per system configuration), and is not in use, it will be allocated to the service; otherwise creation of the service will fail_ This field may not be changed through updates unless the type field is also being changed to ExternalName (which requires this field to be blank) or the type field is being changed from ExternalName (in which case this field may optionally be specified, as describe above)_ Valid values are "None", empty string (""), or a valid IP address_ Setting this to "None" makes a "headless service" (no virtual IP), which is useful when direct endpoint connections are preferred and proxying is not required_ Only applies to types ClusterIP, NodePort, and LoadBalancer_ If this field is specified when creating a Service of type ExternalName, creation will fail_ This field will be wiped when updating a Service to type ExternalName_ More info: https://kubernetes_io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies'}
                                 alternative
                                     CLUSTERIP_none
@@ -806,19 +806,19 @@ features
                             SERVICESPEC_externalTrafficPolicy {doc 'externalTrafficPolicy describes how nodes distribute service traffic they receive on one of the Service`s "externally-facing" addresses (NodePorts, ExternalIPs, and LoadBalancer IPs)_ If set to "Local", the proxy will configure the service in a way that assumes that external load balancers will take care of balancing the service traffic between nodes, and so each node will deliver traffic only to the node-local endpoints of the service, without masquerading the client source IP_ (Traffic mistakenly sent to a node with no endpoints will be dropped_) The default value, "Cluster", uses the standard behavior of routing to all endpoints evenly (possibly modified by topology and other features)_ Note that traffic sent to an External IP or LoadBalancer IP from within the cluster will always get "Cluster" semantics, but clients sending to a NodePort from within the cluster may need to take traffic policy into account when picking a node_'}
                                 alternative   
                                     EXTERNALTRAFFICPOLICY_Local
-                                    EXTERNALTRAFFICPOLICY_Cluster
+                                    EXTERNALTRAFFICPOLICY_Cluster {default}
                             SERVICESPEC_healthCheckNodePort {doc 'healthCheckNodePort specifies the healthcheck nodePort for the service_ This only applies when type is set to LoadBalancer and externalTrafficPolicy is set to Local_ If a value is specified, is in-range, and is not in use, it will be used_ If not specified, a value will be automatically allocated_ External systems (e_g_ load-balancers) can use this port to determine if a given node holds endpoints for this service or not_ If this field is specified when creating a Service which does not need it, creation will fail_ This field will be wiped when updating a Service to no longer need it (e_g_ changing type)_ This field cannot be updated once set_'}
                             SERVICESPEC_internalTrafficPolicy {doc 'InternalTrafficPolicy describes how nodes distribute service traffic they receive on the ClusterIP_ If set to "Local", the proxy will assume that pods only want to talk to endpoints of the service on the same node as the pod, dropping the traffic if there are no local endpoints_ The default value, "Cluster", uses the standard behavior of routing to all endpoints evenly (possibly modified by topology and other features)_'}
                                 alternative   
                                     INTERNALTRAFFICPOLICY_Local
-                                    INTERNALTRAFFICPOLICY_Cluster
+                                    INTERNALTRAFFICPOLICY_Cluster {default}
                             SERVICESPEC_ipFamilies {doc 'IPFamilies is a list of IP families (e_g_ IPv4, IPv6) assigned to this service_ This field is usually assigned automatically based on cluster configuration and the ipFamilyPolicy field_ If this field is specified manually, the requested family is available in the cluster, and ipFamilyPolicy allows it, it will be used; otherwise creation of the service will fail_ This field is conditionally mutable: it allows for adding or removing a secondary IP family, but it does not allow changing the primary IP family of the Service_ Valid values are "IPv4" and "IPv6"_ This field only applies to Services of types ClusterIP, NodePort, and LoadBalancer, and does apply to "headless" services_ This field will be wiped when updating a Service to type ExternalName_ This field may hold a maximum of two entries (dual-stack families, in either order)_ These families must correspond to the values of the clusterIPs field, if specified_ Both clusterIPs and ipFamilies are governed by the ipFamilyPolicy field_'}
                                 optional
                                     IPFAMILIES_IPv4
                                     IPFAMILIES_IPv6
                             SERVICESPEC_ipFamilyPolicy {doc 'IPFamilyPolicy represents the dual-stack-ness requested or required by this Service_ If there is no value provided, then this field will be set to SingleStack_ Services can be "SingleStack" (a single IP family), "PreferDualStack" (two IP families on dual-stack configured clusters or a single IP family on single-stack clusters), or "RequireDualStack" (two IP families on dual-stack configured clusters, otherwise fail)_ The ipFamilies and clusterIPs fields depend on the value of this field_ This field will be wiped when updating a service to type ExternalName_'}
                                 alternative   
-                                    SingleStack
+                                    SingleStack {default}
                                     PreferDualStack
                                     RequireDualStack
                             SERVICESPEC_loadBalancerClass {doc 'loadBalancerClass is the class of the load balancer implementation this Service belongs to_ If specified, the value of this field must be a label-style identifier, with an optional prefix, e_g_ "internal-vip" or "example_com/internal-vip"_ Unprefixed names are reserved for end-users_ This field can only be set when the Service type is "LoadBalancer"_ If not set, the default load balancer implementation is used, today this is typically done through the cloud provider integration, but should apply for any default implementation_ If set, it is assumed that a load balancer implementation is watching for Services with a matching class_ Any default load balancer implementation (e_g_ cloud providers) should ignore Services that set this field_ This field can only be set when creating or updating a Service to type "LoadBalancer"_ Once set, it can not be changed_ This field will be wiped when a service is updated to a non "LoadBalancer" type_'}
@@ -829,7 +829,7 @@ features
                                     SERVICESPEC_PORTS_name {doc 'The name of this port within the service_ This must be a DNS_LABEL_ All ports within a ServiceSpec must have unique names_ When considering the endpoints for a Service, this must match the "name" field in the EndpointPort_ Optional if only one ServicePort is defined on this service_'}
                                     SERVICESPEC_PORTS_protocol {doc 'The IP protocol for this port_ Supports "TCP", "UDP", and "SCTP"_ Default is TCP_'}
                                         alternative
-                                            PORTS_PROTOCOL_tcp
+                                            PORTS_PROTOCOL_tcp {default}
                                             PORTS_PROTOCOL_udp
                                             PORTS_PROTOCOL_sctp
                                     SERVICESPEC_PORTS_nodePort {doc 'The port on each node on which this service is exposed when type is NodePort or LoadBalancer_ Usually assigned by the system_ If a value is specified, in-range, and not in use it will be used, otherwise the operation will fail_ If not specified, a port will be allocated if this Service requires one_ If this field is specified when creating a Service which does not need it, creation will fail_ This field will be wiped when updating a Service to no longer need it (e_g_ changing type from NodePort to ClusterIP)_ More info: https://kubernetes_io/docs/concepts/services-networking/service/#type-nodeport'}
@@ -848,40 +848,79 @@ features
                                 mandatory
                                     SESSIONAFFINITYCONFIG_clientIP {doc 'clientIP contains the configurations of Client IP based session affinity_'}
                                         mandatory
-                                            CLIENTIP_timeoutSeconds {doc 'timeoutSeconds specifies the seconds of ClientIP type session sticky time_ The value must be >0 && <=86400(for 1 day) if ServiceAffinity == "ClientIP"_ Default value is 10800(for 3 hours)_'}
+                                            CLIENTIP_timeoutSeconds {default 10800, doc 'timeoutSeconds specifies the seconds of ClientIP type session sticky time_ The value must be >0 && <=86400(for 1 day) if ServiceAffinity == "ClientIP"_ Default value is 10800(for 3 hours)_'}
                             SERVICESPEC_trafficDistribution {doc 'TrafficDistribution offers a way to express preferences for how traffic is distributed to Service endpoints_ Implementations can use this field as a hint, but are not required to guarantee strict adherence_ If the field is not set, the implementation will apply its default routing strategy_ If set to "PreferClose", implementations should prioritize endpoints that are topologically close (e_g_, same zone)_'}
                             SERVICESPEC_Type {doc 'type determines how the Service is exposed_ Defaults to ClusterIP_ Valid options are ExternalName, ClusterIP, NodePort, and LoadBalancer_ "ClusterIP" allocates a cluster-internal IP address for load-balancing to endpoints_ Endpoints are determined by the selector or if that is not specified, by manual construction of an Endpoints object or EndpointSlice objects_ If clusterIP is "None", no virtual IP is allocated and the endpoints are published as a set of endpoints rather than a virtual IP_ "NodePort" builds on ClusterIP and allocates a port on every node which routes to the same endpoints as the clusterIP_ "LoadBalancer" builds on NodePort and creates an external load-balancer (if supported in the current cloud) which routes to the same endpoints as the clusterIP_ "ExternalName" aliases this service to the specified externalName_ Several other fields do not apply to ExternalName services_ More info: https://kubernetes_io/docs/concepts/services-networking/service/#publishing-services-service-types'}
                                 alternative   
                                     TYPE_ExternalName
-                                    TYPE_ClusterIP
+                                    TYPE_ClusterIP {default}
                                     TYPE_NodePort
                                     TYPE_LoadBalancer
                     CustomResourceDefinitionSpec {incomplete, doc 'CustomResourceDefinitionSpec describes how a user wants their resource to appear'}
                         optional   
-                            CUSTOMRESOURCEDEFINITIONSPEC_conversion {incomplete, doc 'conversion defines conversion settings for the CRD_'}
+                            CUSTOMRESOURCEDEFINITIONSPEC_conversion {doc 'conversion defines conversion settings for the CRD_'}
+                                mandatory 
+                                    CONVERSION_strategy {doc 'strategy specifies how custom resources are converted between versions_ Allowed values are: - `"None"`: The converter only change the apiVersion and would not touch any other field in the custom resource_ - `"Webhook"`: API Server will call to an external webhook to do the conversion_ Additional information is needed for this option_ This requires spec_preserveUnknownFields to be false, and spec_conversion_webhook to be set_'}
+                                        alternative
+                                            CONVERSION_STRATEGY_None
+                                            CONVERSION_STRATEGY_Webhook
+                                optional
+                                    CONVERSION_webhook {doc 'webhook describes how to call the conversion webhook_ Required when `strategy` is set to `"Webhook"`_'}
+                                        mandatory
+                                            WEBHOOK_clientConfig {doc 'clientConfig is the instructions for how to call the webhook if strategy is `Webhook`_'}
+                                                alternative
+                                                    CLIENTCONFIG_url {doc 'URL gives the location of the webhook, in standard URL form (`scheme://host:port/path`)_ Exactly one of `url` or `service` must be specified_'}
+                                                    CLIENTCONFIG_URL_service {doc 'service is a reference to the service for this webhook_ Either service or url must be specified_ If the webhook is running within the cluster, then you should use `service`_'}                                                
+                                                        mandatory   
+                                                            CLIENTCONFIG_URL_SERVICE_name {doc 'name is the name of the service_ Required'}
+                                                            CLIENTCONFIG_URL_SERVICE_namespace {doc 'namespace is the namespace of the service_ Required'}
+                                                            CLIENTCONFIG_URL_port {default 443, doc 'port is an optional service port at which the webhook will be contacted_ `port` should be a valid port number (1-65535, inclusive)_ Defaults to 443 for backward compatibility_'}
+                                                        optional   
+                                                             CLIENTCONFIG_URL_SERVICE_path {doc 'path is an optional URL path at which the webhook will be contacted_'}
+                                                optional   
+                                                    CLIENTCONFIG_URL_caBundle {doc 'caBundle is a PEM encoded CA bundle which will be used to validate the webhook`s server certificate_ If unspecified, system trust roots on the apiserver are used_'}                                            
+                                            WEEBHOOK_conversionReviewVersions   {doc 'conversionReviewVersions is an ordered list of preferred `ConversionReview` versions the Webhook expects_ The API server will use the first version in the list which it supports_ If none of the versions specified in this list are supported by API server, conversion will fail for the custom resource_ If a persisted Webhook configuration specifies allowed versions and does not include any versions known to the API Server, calls to the webhook will fail_'}
+                                                mandatory   
+                                                    CONVERSIONREVIEWVERSIONS_version
                             CUSTOMRESOURCEDEFINITIONSPEC_group {doc 'group is the API group of the defined custom resource_ The custom resources are served under `/apis/<group>/___`_ Must match the name of the CustomResourceDefinition (in the form `<names_plural>_<group>`)_'}
-                            CUSTOMRESOURCEDEFINITIONSPEC_names {incomplete, doc 'names specify the resource and kind names for the custom resource_'}
+                            CUSTOMRESOURCEDEFINITIONSPEC_names {doc 'names specify the resource and kind names for the custom resource_'}
+                                mandatory   
+                                    CUSTOMRESOURCEDEFINITIONSPEC_NAMES_categories   {doc 'categories is a list of grouped resources this custom resource belongs to (e_g_ "all")_ This is published in API discovery documents, and used by clients to support invocations like `kubectl get all`_'}
+                                        mandatory 
+                                            NAMES_CATEGORIES_resource
+                                    CUSTOMRESOURCEDEFINITIONSPEC_NAMES_kind {doc 'kind is the serialized kind of the resource_ It is normally CamelCase and singular_ Custom resource instances will use this value as the `kind` attribute in API calls_'}
+                                    CUSTOMRESOURCEDEFINITIONSPEC_NAMES_listKind {doc 'listKind is the serialized kind of the list for this resource_ Defaults to "`kind`List"_'}
+                                    CUSTOMRESOURCEDEFINITIONSPEC_NAMES_plural {doc 'plural is the plural name of the resource to serve_ The custom resources are served under `/apis/<group>/<version>/___/<plural>`_ Must match the name of the CustomResourceDefinition (in the form `<names_plural>_<group>`)_ Must be all lowercase_'}
+                                    CUSTOMRESOURCEDEFINITIONSPEC_NAMES_singular {doc 'singular is the singular name of the resource_ It must be all lowercase_ Defaults to lowercased `kind`_'}
+                                    CUSTOMRESOURCEDEFINITIONSPEC_NAMES_shortNames   {doc 'shortNames are short names for the resource, exposed in API discovery documents, and used by clients to support invocations like `kubectl get <shortname>`_ It must be all lowercase_'}
+                                        mandatory   
+                                            SHORTNAMES_shortName 
                             CUSTOMRESOURCEDEFINITIONSPEC_scope {doc 'scope indicates whether the defined custom resource is cluster- or namespace-scoped_ Allowed values are `Cluster` and `Namespaced`_'}
                                 alternative   
                                     CUSTOMRESOURCEDEFINITIONSPEC_SCOPE_Cluster
                                     CUSTOMRESOURCEDEFINITIONSPEC_SCOPE_Namespaced
-                            CUSTOMRESOURCEDEFINITIONSPEC_versions    {incomplete, doc 'Conversion describes conversion settings for the CRD_'}
+                            CUSTOMRESOURCEDEFINITIONSPEC_versions    {doc 'Conversion describes conversion settings for the CRD_'}
                                 optional
                                     VERSIONS_name {doc 'name is the version name, e_g_ v1, v2beta1, etc_ The custom resources are served under this version at `/apis/<group>/<version>/___` if `served` is true_'}
                                     VERSIONS_served {doc 'served is a flag enabling/disabling this version from being served via REST APIs'}
                                     VERSIONS_storage {doc 'storage indicates this version should be used when persisting custom resources to storage_ There must be exactly one version with storage=true_'}
-                                    VERSIONS_subresources   {doc 'subresources specify what subresources this version of the defined custom resource have_'} 
+                                    VERSIONS_subresources {doc 'subresources specify what subresources this version of the defined custom resource have_'} 
                                         optional   
                                             SUBRESOURCES_status {doc 'status indicates the custom resource should serve a /status subresource_ When enabled: 1_ requests to the custom resource primary endpoint ignore changes to the status stanza of the object_ 2_ requests to the custom resource /status subresource ignore changes to anything other than the status stanza of the object_'}
                                             SUBRESOURCES_scale {doc 'scale indicates the custom resource should serve a `/scale` subresource that returns an `autoscaling/v1` Scale object_'}
+                                                mandatory
+                                                    SUBRESOURCES_SCALE_specReplicasPath {doc 'specReplicasPath defines the JSON path inside of a custom resource that corresponds to Scale `spec_replicas`_ Only JSON paths without the array notation are allowed_ Must be a JSON Path under `_spec`_ If there is no value under the given path in the custom resource, the `/scale` subresource will return an error on GET_'}
+                                                    SUBRESOURCES_SCALE_statusReplicasPath {doc 'statusReplicasPath defines the JSON path inside of a custom resource that corresponds to Scale `status_replicas`_ Only JSON paths without the array notation are allowed_ Must be a JSON Path under `_status`_ If there is no value under the given path in the custom resource, the `status_replicas` value in the `/scale` subresource will default to 0_'}
+                                                optional   
+                                                    SUBRESOURCES_SCALE_labelSelectorPath {doc 'labelSelectorPath defines the JSON path inside of a custom resource that corresponds to Scale `status_selector`_ Only JSON paths without the array notation are allowed_ Must be a JSON Path under `_status` or `_spec`_ Must be set to work with HorizontalPodAutoscaler_ The field pointed by this JSON path must be a string field (not a complex selector struct) which contains a serialized label selector in string form_ More info: https://kubernetes_io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions#scale-subresource If there is no value under the given path in the custom resource, the `status_selector` value in the `/scale` subresource will default to the empty string_'}
                                     VERSIONS_schema   {doc 'schema describes the schema used for validation, pruning, and defaulting of this version of the custom resource_'}
                                         mandatory      
                                             SCHEMA_openAPIV3Schema {incomplete, doc 'OpenAPIV3Schema is the OpenAPI v3 schema to use for validation and pruning_'}
                                                 optional   
-                                                    OPENAPIV3SCHEMA_type {unnavalible}        
-                                                    OPENAPIV3SCHEMA_properties {unnavalible}
-                                                    OPENAPIV3SCHEMA_description {unnavalible}
-                                                    OPENAPIV3SCHEMA_required {unnavalible}                              
+                                                    OPENAPIV3SCHEMA_type {unavalible}        
+                                                    OPENAPIV3SCHEMA_properties {unavalible}
+                                                    OPENAPIV3SCHEMA_description {unavalible}
+                                                    OPENAPIV3SCHEMA_required {unavalible}                              
                                     VERSIONS_additionalPrinterColumns   {doc 'AdditionalPrinterColumns are additional columns shown e_g_ in kubectl next to the name_ Defaults to a created-at column_ More info: https://kubernetes_io/docs/reference/using-api/api-concepts/#additionalprintercolumns'}
                                         optional
                                             ADDITIONALPRINTERCOLUMNS_name {doc 'name is a human readable name for the column_'}
@@ -890,6 +929,159 @@ features
                                             ADDITIONALPRINTERCOLUMNS_description {doc 'description is a human readable description of this column_'}
                                             ADDITIONALPRINTERCOLUMNS_priority {doc 'priority is an integer defining the relative importance of this column compared to others_ Lower numbers are considered higher priority_ Columns that may be omitted in limited space scenarios should be given a priority greater than 0_'}
                                             ADDITIONALPRINTERCOLUMNS_format {doc 'format is an optional OpenAPI type definition for this column_ The "name" format is applied to the primary identifier column to assist in clients identifying column is the resource name_ See https://github_com/OAI/OpenAPI-Specification/blob/master/versions/2_0_md#data-types for details_'}
+                    CronJobSpec {doc 'Specification of the desired behavior of a cron job, including the schedule_ More info: https://git_k8s_io/community/contributors/devel/sig-architecture/api-conventions_md#spec-and-status'}
+                        mandatory 
+                            CRONJOBSPEC_jobTemplate {doc 'Specifies the job that will be created when executing a CronJob_'}
+                                mandatory   
+                                    JOBTEMPLATE_metadataReference {doc 'Reference to metadata object to not duplicate it'}
+                                    JOBTEMPLATE_jobSpecReference {doc 'Reference to job spec to not duplicate it'}
+                            CRONJOBSPEC_schedule {doc 'The schedule in Cron format, see https://en_wikipedia_org/wiki/Cron_'}
+                        optional  
+                            CRONJOBSPEC_concurrencyPolicy {doc 'pecifies how to treat concurrent executions of a Job_ Valid values are: - "Allow" (default): allows CronJobs to run concurrently; - "Forbid": forbids concurrent runs, skipping next run if previous run hasn`t finished yet; - "Replace": cancels currently running job and replaces it with a new one'}
+                                alternative   
+                                    CRONJOBSPEC_CONCURRENCYPOLICY_Allow {default}
+                                    CRONJOBSPEC_CONCURRENCYPOLICY_Forbid
+                                    CRONJOBSPEC_CONCURRENCYPOLICY_Replace
+                            CRONJOBSPEC_failedJobsHistoryLimit {default 1, doc 'Specifies the job that will be created when executing a CronJob_'}
+                            CRONJOBSPEC_successfulJobHistoryLimit {default 3, doc 'The number of successful finished jobs to retain_ Value must be non-negative integer_ Defaults to 3_'}
+                            CRONJOBSPEC_suspend {default false, doc 'This flag tells the controller to suspend subsequent executions, it does not apply to already started executions_ Defaults to false_'}
+                            CRONJOBSPEC_timezone {doc 'The time zone name for the given schedule, see https://en_wikipedia_org/wiki/List_of_tz_database_time_zones_ If not specified, this will default to the time zone of the kube-controller-manager process_ The set of valid time zone names and the time zone offset is loaded from the system-wide time zone database by the API server during CronJob validation and the controller manager during execution_ If no system-wide time zone database can be found a bundled version of the database is used instead_ If the time zone name becomes invalid during the lifetime of a CronJob or due to a change in host configuration, the controller will stop creating new new Jobs and will create a system event with the reason UnknownTimeZone_ More information can be found in https://kubernetes_io/docs/concepts/workloads/controllers/cron-jobs/#time-zones'}
+                            CRONJOBSPEC_startingDeadlineSeconds {doc 'Optional deadline in seconds for starting the job if it misses scheduled time for any reason_ Missed jobs executions will be counted as failed ones_'}        
+                    JobSpec {doc 'Specification of the desired behavior of the job_'}
+                        mandatory   
+                            JOBSPEC_activeDeadlineSeconds {doc 'Specifies the duration in seconds relative to the startTime that the job may be continuously active before the system tries to terminate it; value must be positive integer_ If a Job is suspended (at creation or through an update), this timer will effectively be stopped and reset when the Job is resumed again_'}
+                            JOBSPEC_backoffLimit {default 6, doc 'Specifies the number of retries before marking this job failed_ Defaults to 6'}
+                            JOBSPEC_backoffLimitPerIndex {doc 'Specifies the limit for the number of retries within an index before marking this index as failed_ When enabled the number of failures per index is kept in the pod`s batch_kubernetes_io/job-index-failure-count annotation_ It can only be set when Job`s completionMode=Indexed, and the Pod`s restart policy is Never_ The field is immutable_ This field is beta-level_ It can be used when the `JobBackoffLimitPerIndex` feature gate is enabled (enabled by default)_'}
+                                mandatory    
+                                    BACKOFFLIMITPERINDEX_value
+                            JOBSPEC_completionMode {doc 'completionMode specifies how Pod completions are tracked_ It can be `NonIndexed` (default) or `Indexed`_ `NonIndexed` means that the Job is considered complete when there have been _spec_completions successfully completed Pods_ Each Pod completion is homologous to each other_ `Indexed` means that the Pods of a Job get an associated completion index from 0 to (_spec_completions - 1), available in the annotation batch_kubernetes_io/job-completion-index_ The Job is considered complete when there is one successfully completed Pod for each index_ When value is `Indexed`, _spec_completions must be specified and `_spec_parallelism` must be less than or equal to 10^5_ In addition, The Pod name takes the form `$(job-name)-$(index)-$(random-string)`, the Pod hostname takes the form `$(job-name)-$(index)`_ More completion modes can be added in the future_ If the Job controller observes a mode that it doesn`t recognize, which is possible during upgrades due to version skew, the controller skips updates for the Job_'}
+                                alternative   
+                                    COMPLETIONMODE_NonIndexed {default}
+                                    COMPLETIONMODE_Indexed
+                            JOBSPEC_completions {doc 'Specifies the desired number of successfully finished pods the job should be run with_ Setting to null means that the success of any pod signals the success of all pods, and allows parallelism to have any positive value_ Setting to 1 means that parallelism is limited to 1 and the success of that pod signals the success of the job_ More info: https://kubernetes_io/docs/concepts/workloads/controllers/jobs-run-to-completion/'}
+                            JOBSPEC_managedBy {doc 'ManagedBy field indicates the controller that manages a Job_ The k8s Job controller reconciles jobs which don`t have this field at all or the field value is the reserved string `kubernetes_io/job-controller`, but skips reconciling Jobs with a custom value for this field_ The value must be a valid domain-prefixed path (e_g_ acme_io/foo) - all characters before the first "/" must be a valid subdomain as defined by RFC 1123_ All characters trailing the first "/" must be valid HTTP Path characters as defined by RFC 3986_ The value cannot exceed 64 characters_ This field is alpha-level_ The job controller accepts setting the field when the feature gate JobManagedBy is enabled (disabled by default)_'}
+                            JOBSPEC_manualSelector {doc 'manualSelector controls generation of pod labels and pod selectors_ Leave `manualSelector` unset unless you are certain what you are doing_ When false or unset, the system pick labels unique to this job and appends those labels to the pod template_ When true, the user is responsible for picking unique labels and specifying the selector_ Failure to pick a unique label may cause this and other jobs to not function correctly_ However, You may see `manualSelector=true` in jobs that were created with the old `extensions/v1beta1` API_ More info: https://kubernetes_io/docs/concepts/workloads/controllers/jobs-run-to-completion/#specifying-your-own-pod-selector'}
+                            JOBSPEC_failedIndexes {doc 'Specifies the maximal number of failed indexes before marking the Job as failed, when backoffLimitPerIndex is set_ Once the number of failed indexes exceeds this number the entire Job is marked as Failed and its execution is terminated_ When left as null the job continues execution of all of its indexes and is marked with the `Complete` Job condition_ It can only be specified when backoffLimitPerIndex is set_ It can be null or up to completions_ It is required and must be less than or equal to 10^4 when is completions greater than 10^5_ This field is beta-level_ It can be used when the `JobBackoffLimitPerIndex` feature gate is enabled (enabled by default)_'}
+                            JOBSPEC_parallelism {doc 'Specifies the maximum desired number of pods the job should run at any given time_ The actual number of pods running in steady state will be less than this number when ((_spec_completions - _status_successful) < _spec_parallelism), i_e_ when the work left to do is less than max parallelism_ More info: https://kubernetes_io/docs/concepts/workloads/controllers/jobs-run-to-completion/'}
+                            JOBSPEC_podFailurePolicy {doc 'Specifies the policy of handling failed pods_ In particular, it allows to specify the set of actions and conditions which need to be satisfied to take the associated action_ If empty, the default behaviour applies - the counter of failed pods, represented by the jobs`s _status_failed field, is incremented and it is checked against the backoffLimit_ This field cannot be used in combination with restartPolicy=OnFailure_ This field is beta-level_ It can be used when the `JobPodFailurePolicy` feature gate is enabled (enabled by default)_'}
+                                mandatory 
+                                    JOBSPEC_PODFAILUREPOLICY_rules   {doc 'A list of pod failure policy rules_ The rules are evaluated in order_ Once a rule matches a Pod failure, the remaining of the rules are ignored_ When no rule matches the Pod failure, the default handling applies - the counter of pod failures is incremented and it is checked against the backoffLimit_ At most 20 elements are allowed_'} 
+                                        mandatory   
+                                            PODFAILUREPOLICY_RULES_action {doc 'Specifies the action taken on a pod failure when the requirements are satisfied_ Possible values are: - FailJob: indicates that the pod`s job is marked as Failed and all running pods are terminated_ - FailIndex: indicates that the pod`s index is marked as Failed and will not be restarted_ This value is beta-level_ It can be used when the `JobBackoffLimitPerIndex` feature gate is enabled (enabled by default)_ - Ignore: indicates that the counter towards the _backoffLimit is not incremented and a replacement pod is created_ - Count: indicates that the pod is handled in the default way - the counter towards the _backoffLimit is incremented_ Additional values are considered to be added in the future_ Clients should react to an unknown action by skipping the rule_'}
+                                                alternative   
+                                                    PODFAILUREPOLICY_RULES_FailJob
+                                                    PODFAILUREPOLICY_RULES_FailIndex
+                                                    PODFAILUREPOLICY_RULES_Ignore
+                                                    PODFAILUREPOLICY_RULES_Count
+                                            PODFAILUREPOLICY_RULES_onPodConditions    {doc 'Represents the requirement on the pod conditions_ The requirement is represented as a list of pod condition patterns_ The requirement is satisfied if at least one pattern matches an actual pod condition_ At most 20 elements are allowed_'}
+                                                mandatory   
+                                                    ONPODCONDITIONS_type {doc 'Specifies the required Pod condition type_ To match a pod condition it is required that specified type equals the pod condition type_'}
+                                                    ONPODCONDITIONS_status {default true, doc 'Specifies the required Pod condition status_ To match a pod condition it is required that the specified status equals the pod condition status_ Defaults to True_'}
+                                        optional   
+                                            PODFAILUREPOLICY_RULES_onExitCodes {doc 'Represents the requirement on the container exit codes_'}
+                                                mandatory
+                                                    ONEXITCODES_containerName {doc 'Restricts the check for exit codes to the container with the specified name_ When null, the rule applies to all containers_ When specified, it should match one the container or initContainer names in the pod template_'}
+                                                    ONEXITCODES_operator {doc 'Represents the relationship between the container exit code(s) and the specified values_ Containers completed with success (exit code 0) are excluded from the requirement check_ Possible values are: - In: the requirement is satisfied if at least one container exit code (might be multiple if there are multiple containers not restricted by the `containerName` field) is in the set of specified values_ - NotIn: the requirement is satisfied if at least one container exit code (might be multiple if there are multiple containers not restricted by the `containerName` field) is not in the set of specified values_ Additional values are considered to be added in the future_ Clients should react to an unknown operator by assuming the requirement is not satisfied_'}
+                                                        alternative   
+                                                            ONEXITCODES_In
+                                                            ONEXITCODES_NotIn
+                                                    ONEXITCODES_values    {doc 'Specifies the set of values_ Each returned container exit code (might be multiple in case of multiple containers) is checked against this set of values with respect to the operator_ The list of values must be ordered and must not contain duplicates_ Value 0 cannot be used for the In operator_ At least one element is required_ At most 255 elements are allowed_'}
+                                                        mandatory   
+                                                            ONEXITCODES_VALUES_value   
+                            JOBSPEC_podReplacementPolicy {doc 'podReplacementPolicy specifies when to create replacement Pods_ Possible values are: - TerminatingOrFailed means that we recreate pods when they are terminating (has a metadata_deletionTimestamp) or failed_ - Failed means to wait until a previously created Pod is fully terminated (has phase Failed or Succeeded) before creating a replacement Pod_ When using podFailurePolicy, Failed is the the only allowed value_ TerminatingOrFailed and Failed are allowed values when podFailurePolicy is not in use_ This is an beta field_ To use this, enable the JobPodReplacementPolicy feature toggle_ This is on by default_'}
+                                alternative   
+                                    PODREPLACEMENTPOLICY_TerminatingOrFailed
+                                    PODREPLACEMENTPOLICY_Failed
+                            JOBSPEC_selector {default false, doc 'A label query over pods that should match the pod count_ Normally, the system sets this field for you_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/labels/#label-selectors'}
+                                or   
+                                    JOBSPEC_SELECTOR_matchExpressions   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                        mandatory   
+                                            JOBSPEC_SELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                            JOBSPEC_SELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists, DoesNotExist_ Gt, and Lt_'}
+                                                alternative   
+                                                    JOBSPEC_OPERATOR_in
+                                                    JOBSPEC_OPERATOR_notIn
+                                                    JOBSPEC_OPERATOR_exist
+                                                    JOBSPEC_OPERATOR_doesNotExist
+                                                    JOBSPEC_OPERATOR_gt
+                                                    JOBSPEC_OPERATOR_lt
+                                            JOBSPEC_SELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer_ This array is replaced during a strategic merge patch_'}
+                                                mandatory   
+                                                    JOBSPEC_SELECTOR_MATCHEXPRESSIONS_value
+                                    JOBSPEC_SELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                        mandatory   
+                                            JOBSPEC_SELECTOR_MATCHLABELS_key
+                                            JOBSPEC_SELECTOR_MATCHLABELS_value
+                            JOBSPEC_successPolicy {doc 'successPolicy specifies the policy when the Job can be declared as succeeded_ If empty, the default behavior applies - the Job is declared as succeeded only when the number of succeeded pods equals to the completions_ When the field is specified, it must be immutable and works only for the Indexed Jobs_ Once the Job meets the SuccessPolicy, the lingering pods are terminated_ This field is alpha-level_ To use this field, you must enable the `JobSuccessPolicy` feature gate (disabled by default)_'}
+                                mandatory   
+                                    JOBSPEC_SUCCESSPOLICY_rules    {doc 'rules represents the list of alternative rules for the declaring the Jobs as successful before `_status_succeeded >= _spec_completions`_ Once any of the rules are met, the "SucceededCriteriaMet" condition is added, and the lingering pods are removed_ The terminal state for such a Job has the "Complete" condition_ Additionally, these rules are evaluated in order; Once the Job meets one of the rules, other rules are ignored_ At most 20 elements are allowed_'}
+                                        mandatory   
+                                            SUCCESSPOLICY_RULES_succededCount {doc 'succeededCount specifies the minimal required size of the actual set of the succeeded indexes for the Job_ When succeededCount is used along with succeededIndexes, the check is constrained only to the set of indexes specified by succeededIndexes_ For example, given that succeededIndexes is "1-4", succeededCount is "3", and completed indexes are "1", "3", and "5", the Job isn`t declared as succeeded because only "1" and "3" indexes are considered in that rules_ When this field is null, this doesn`t default to any value and is never evaluated at any time_ When specified it needs to be a positive integer_'}
+                                            SUCCESSPOLICY_RULES_succededIndexes {doc 'succeededIndexes specifies the set of indexes which need to be contained in the actual set of the succeeded indexes for the Job_ The list of indexes must be within 0 to "_spec_completions-1" and must not contain duplicates_ At least one element is required_ The indexes are represented as intervals separated by commas_ The intervals can be a decimal integer or a pair of decimal integers separated by a hyphen_ The number are listed in represented by the first and last element of the series, separated by a hyphen_ For example, if the completed indexes are 1, 3, 4, 5 and 7, they are represented as "1,3-5,7"_ When this field is null, this field doesn`t default to any value and is never evaluated at any time_'}
+                            JOBSPEC_suspend {default false, doc 'suspend specifies whether the Job controller should create Pods or not_ If a Job is created with suspend set to true, no Pods are created by the Job controller_ If a Job is suspended after creation (i_e_ the flag goes from false to true), the Job controller will delete all active Pods associated with this Job_ Users must design their workload to gracefully handle this_ Suspending a Job will reset the StartTime field of the Job, effectively resetting the ActiveDeadlineSeconds timer too_ Defaults to false_'}
+                            JOBSPEC_template {doc 'Describes the pod that will be created when executing a job_ The only allowed template_spec_restartPolicy values are "Never" or "OnFailure"_ More info: https://kubernetes_io/docs/concepts/workloads/controllers/jobs-run-to-completion/'}
+                                mandatory   
+                                    JOBSPEC_TEMPLATE_metadata {doc 'Reference to metadata to not duplicate it'}
+                                    JOBSPEC_TEMPLATE_podSpecTemplate {doc 'Reference to pod spec to not duplicate it'}
+                            JOBSPEC_ttlSecondsAfterFinished {doc 'ttlSecondsAfterFinished limits the lifetime of a Job that has finished execution (either Complete or Failed)_ If this field is set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be automatically deleted_ When the Job is being deleted, its lifecycle guarantees (e_g_ finalizers) will be honored_ If this field is unset, the Job won`t be automatically deleted_ If this field is set to zero, the Job becomes eligible to be deleted immediately after it finishes_'}
+                    NamespaceSpec {doc 'Spec defines the behavior of the Namespace_'}
+                        mandatory   
+                            NAMESPACE_SPEC_finalizers   {doc 'Finalizers is an opaque list of values that must be empty to permanently remove object from storage_ More info: https://kubernetes_io/docs/tasks/administer-cluster/namespaces/'}
+                                mandatory   
+                                    FINALIZERS_finalizer
+                    IngressSpec {doc 'spec is the desired state of the Ingress_ More info: https://git_k8s_io/community/contributors/devel/sig-architecture/api-conventions_md#spec-and-status'}
+                        mandatory   
+                            INGRESSSPEC_defaultBackend {doc 'defaultBackend is the backend that should handle requests that don`t match any rule_ If Rules are not specified, DefaultBackend must be specified_ If DefaultBackend is not set, the handling of requests that do not match any of the rules will be up to the Ingress controller_'}
+                                alternative   
+                                    INGRESSSPEC_DEFAULTBACKEND_resource {doc 'resource is an ObjectRef to another Kubernetes resource in the namespace of the Ingress object_ If resource is specified, a service_Name and service_Port must not be specified_ This is a mutually exclusive setting with "Service"_'}
+                                        mandatory   
+                                            INGRESSSPEC_DEFAULTBACKEND_RESOURCE_kind {doc 'Kind is the type of resource being referenced'}
+                                            INGRESSSPEC_DEFAULTBACKEND_RESOURCE_name {doc 'Name is the name of resource being referenced'}
+                                        alternative
+                                            INGRESSSPEC_DEFAULTBACKEND_RESOURCE_apiGroup {doc 'APIGroup is the group for the resource being referenced_ If APIGroup is not specified, the specified Kind must be in the core API group_ For any other third-party types, APIGroup is required_'}                                   
+                                    INGRESSSPEC_DEFAULTBACKEND_service {doc 'service references a service as a backend_ This is a mutually exclusive setting with "Resource"_'}
+                                        mandatory   
+                                            INGRESSSPEC_DEFAULTBACKEND_SERVICE_name {doc 'name is the referenced service_ The service must exist in the same namespace as the Ingress object_'}
+                                            INGRESSSPEC_DEFAULTBACKEND_port {doc 'port of the referenced service_ A port name or port number is required for a IngressServiceBackend_'}
+                                                alternative   
+                                                    INGRESSSPEC_DEFAULTBACKEND_SERVICE_PORT_name {doc 'name is the name of the port on the Service_ This is a mutually exclusive setting with "Number"_'}
+                                                    INGRESSSPEC_DEFAULTBACKEND_SERVICE_PORT_number {doc 'number is the numerical port number (e_g_ 80) on the Service_ This is a mutually exclusive setting with "Name"_'}
+                        optional
+                            INGRESSSPEC_rules   {doc 'rules is a list of host rules used to configure the Ingress_ If unspecified, or no rule matches, all traffic is sent to the default backend_'}
+                                mandatory   
+                                    INGRESSSPEC_RULES_host {doc 'host is the fully qualified domain name of a network host, as defined by RFC 3986_ Note the following deviations from the "host" part of the URI as defined in RFC 3986: 1_ IPs are not allowed_ Currently an IngressRuleValue can only apply to the IP in the Spec of the parent Ingress_ 2_ The `:` delimiter is not respected because ports are not allowed_ Currently the port of an Ingress is implicitly :80 for http and :443 for https_ Both these may change in the future_ Incoming requests are matched against the host before the IngressRuleValue_ If the host is unspecified, the Ingress routes all traffic based on the specified IngressRuleValue_ host can be "precise" which is a domain name without the terminating dot of a network host (e_g_ "foo_bar_com") or "wildcard", which is a domain name prefixed with a single wildcard label (e_g_ "*_foo_com")_ The wildcard character `*` must appear by itself as the first DNS label and matches only a single label_ You cannot have a wildcard label by itself (e_g_ Host == "*")_ Requests will be matched against the Host field in the following way: 1_ If host is precise, the request matches this rule if the http host header is equal to Host_ 2_ If host is a wildcard, then the request matches this rule if the http host header is to equal to the suffix (removing the first label) of the wildcard rule_'}
+                                    INGRESSSPEC_RULES_http
+                                        mandatory   
+                                            INGRESSSPEC_RULES_HTTP_paths   {doc 'paths is a collection of paths that map requests to backends_'} 
+                                                mandatory   
+                                                    HTTP_PATHS_backend {doc 'backend defines the referenced service endpoint to which the traffic will be forwarded to_'}
+                                                        mandatory   
+                                                            INGRESSSPEC_RULES_HTTP_PATHS_resource {doc 'resource is an ObjectRef to another Kubernetes resource in the namespace of the Ingress object_ If resource is specified, a service_Name and service_Port must not be specified_ This is a mutually exclusive setting with "Service"_'}
+                                                                mandatory   
+                                                                    INGRESSSPEC_RULES_HTTP_PATHS_RESOURCE_kind {doc 'Kind is the type of resource being referenced'}
+                                                                    INGRESSSPEC_RULES_HTTP_PATHS_RESOURCE_name {doc 'Name is the name of resource being referenced'}
+                                                                optional
+                                                                    INGRESSSPEC_RULES_HTTP_PATHS_RESOURCE_apiGroup {doc 'APIGroup is the group for the resource being referenced_ If APIGroup is not specified, the specified Kind must be in the core API group_ For any other third-party types, APIGroup is required_'}                                   
+                                                            INGRESSSPEC_RULES_HTTP_PATHS_service {doc 'service references a service as a backend_ This is a mutually exclusive setting with "Resource"_'}
+                                                                mandatory   
+                                                                    INGRESSSPEC_RULES_HTTP_PATHS_SERVICE_name {doc 'name is the referenced service_ The service must exist in the same namespace as the Ingress object_'}
+                                                                    INGRESSSPEC_RULES_HTTP_PATHS_port {doc 'port of the referenced service_ A port name or port number is required for a IngressServiceBackend_'}
+                                                                        alternative   
+                                                                            INGRESSSPEC_RULES_HTTP_PATHS_SERVICE_PORT_name {doc 'name is the name of the port on the Service_ This is a mutually exclusive setting with "Number"_'}
+                                                                            INGRESSSPEC_RULES_HTTP_PATHS_SERVICE_PORT_number {doc 'number is the numerical port number (e_g_ 80) on the Service_ This is a mutually exclusive setting with "Name"_'}
+                                                    HTTP_PATHS_path {doc 'path is matched against the path of an incoming request_ Currently it can contain characters disallowed from the conventional "path" part of a URL as defined by RFC 3986_ Paths must begin with a "/" and must be present when using PathType with value "Exact" or "Prefix"_'}
+                                                    HTTP_PATHS_pathType {doc 'pathType determines the interpretation of the path matching_ PathType can be one of the following values: * Exact: Matches the URL path exactly_ * Prefix: Matches based on a URL path prefix split by "/"_ Matching is done on a path element by element basis_ A path element refers is the list of labels in the path split by the "/" separator_ A request is a match for path p if every p is an element-wise prefix of p of the request path_ Note that if the last element of the path is a substring of the last element in request path, it is not a match (e_g_ /foo/bar matches /foo/bar/baz, but does not match /foo/barbaz)_ * ImplementationSpecific: Interpretation of the Path matching is up to the IngressClass_ Implementations can treat this as a separate PathType or treat it identically to Prefix or Exact path types_ Implementations are required to support all path types_'}
+                                                        alternative   
+                                                            HTTP_PATHS_PATHTYPE_Exact
+                                                            HTTP_PATHS_PATHTYPE_Prefix
+                                                            HTTP_PATHS_PATHTYPE_ImplementationSpecific
+                            INGRESSSPEC_ingressClassName {doc 'ingressClassName is the name of an IngressClass cluster resource_ Ingress controller implementations use this field to know whether they should be serving this Ingress resource, by a transitive connection (controller -> IngressClass -> Ingress resource)_ Although the `kubernetes_io/ingress_class` annotation (simple constant name) was never formally defined, it was widely supported by Ingress controllers to create a direct binding between Ingress controller and Ingress resources_ Newly created Ingress resources should prefer using the field_ However, even though the annotation is officially deprecated, for backwards compatibility reasons, ingress controllers should still honor that annotation if present_'}
+                            INGRESSSPEC_tls    {doc 'tls represents the TLS configuration_ Currently the Ingress only supports a single TLS port, 443_ If multiple members of this list specify different hosts, they will be multiplexed on the same port according to the hostname specified through the SNI TLS extension, if the ingress controller fulfilling the ingress supports SNI_'}
+                                mandatory   
+                                    INGRESSSPEC_TLS_hosts   {doc 'hosts is a list of hosts included in the TLS certificate_ The values in this list must match the name/s used in the tlsSecret_ Defaults to the wildcard host setting for the loadbalancer controller fulfilling this Ingress, if left unspecified_'}
+                                        mandatory   
+                                            INGRESSSPEC_TLS_HOSTS_host
+                                    INGRESSSPEC_TLS_secretName {doc 'secretName is the name of the secret used to terminate TLS traffic on port 443_ Field is left optional to allow TLS routing based on SNI hostname alone_ If the SNI host in a listener conflicts with the "Host" header field used by an IngressRule, the SNI host is used for termination and value of the "Host" header is used for routing_'}
             binaryData   {doc 'BinaryData contains the binary data_ Each key must consist of alphanumeric characters, "-", "_" or "_"_ BinaryData can contain byte sequences that are not in the UTF-8 range_ The keys stored in BinaryData must not overlap with the ones in the Data field, this is enforced during validation process_ Using this field will require 1_10+ apiserver and kubelet_'}
                 mandatory
                     BINARYDATA_binaryFile_name
@@ -948,7 +1140,7 @@ features
                             SUBSETS_PORTS_protocol {doc 'The IP protocol for this port_ Must be UDP, TCP, or SCTP_ Default is TCP_'}
                                 alternative  
                                     SUBSETS_PORTS_UDP 
-                                    SUBSETS_PORTS_TCP
+                                    SUBSETS_PORTS_TCP {default}
                                     SUBSETS_PORTS_SCTP
             rules   {doc 'Rules holds all the PolicyRules for this Role'} 
                 mandatory
@@ -973,6 +1165,49 @@ features
                 mandatory   
                     STRINGDATA_key
                     STRINGDATA_value
+            aggregationRule {doc 'AggregationRule is an optional field that describes how to build the Rules for this ClusterRole_ If AggregationRule is set, then the Rules are controller managed and direct changes to Rules will be stomped by the controller_'}
+                mandatory 
+                    AGGREGATIONRULE_clusterRoleSelectors {doc 'ClusterRoleSelectors holds a list of selectors which will be used to find ClusterRoles and create the rules_ If any of the selectors match, then the ClusterRole`s permissions will be added'}
+                        alternative
+                            CLUSTERROLESELECTORS_matchExpressions   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                mandatory
+                                    CLUSTERROLESELECTORS_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                    CLUSTERROLESELECTORS_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                        alternative   
+                                            CLUSTERROLESELECTORS_MATCHEXPRESSIONS_In
+                                            CLUSTERROLESELECTORS_MATCHEXPRESSIONS_NotIn
+                                            CLUSTERROLESELECTORS_MATCHEXPRESSIONS_Exists
+                                            CLUSTERROLESELECTORS_MATCHEXPRESSIONS_DoesNotExist
+                                    CLUSTERROLESELECTORS_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                        mandatory
+                                            CLUSTERROLESELECTORS_MATCHEXPRESSIONS_VALUES_value
+                            CLUSTERROLESELECTORS_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                mandatory
+                                    CLUSTERROLESELECTORS_MATCHLABELS_key
+                                    CLUSTERROLESELECTORS_MATCHLABELS_value
+            subjects   {doc 'Subjects holds references to the objects the role applies to_'}
+                mandatory   
+                    SUBJECTS_kind {doc 'Kind of object being referenced_ Values defined by this API group are "User", "Group", and "ServiceAccount"_ If the Authorizer does not recognized the kind value, the Authorizer should report an error_'}
+                        alternative
+                            SUBJECTS_KIND_User
+                            SUBJECTS_KIND_Group
+                            SUBJECTS_KIND_ServiceAccount
+                    SUBJECTS_name {doc 'Name of the object being referenced_'}
+                optional   
+                    SUBJECTS_apiGroup {doc 'APIGroup holds the API group of the referenced subject_ Defaults to "" for ServiceAccount subjects_ Defaults to "rbac_authorization_k8s_io" for User and Group subjects_'}
+                    SUBJECTS_namespace {doc 'Namespace of the referenced object_ If the object kind is non-namespace, such as "User" or "Group", and this value is not empty the Authorizer should report an error_'}
+            roleRef {doc 'RoleRef can only reference a ClusterRole in the global namespace_ If the RoleRef cannot be resolved, the Authorizer must return an error_ This field is immutable_'}
+                mandatory   
+                    ROLEREF_apiGroup {doc 'APIGroup is the group for the resource being referenced'}
+                    ROLEREF_kind {doc 'Kind is the type of resource being referenced'}
+                    ROLEREF_name {doc 'Name is the name of resource being referenced'}
+            automountServiceAccountToken {doc 'AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted_ Can be overridden at the pod level_'}
+            imagePullSecrets   {doc 'ImagePullSecrets is a list of references to secrets in the same namespace to use for pulling any images in pods that reference this ServiceAccount_ ImagePullSecrets are distinct from Secrets because Secrets can be mounted in the pod, but ImagePullSecrets are only accessed by the kubelet_ More info: https://kubernetes_io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod'}
+                mandatory   
+                    IMAGEPULLSECRETS_name {doc 'Name of the referent_ '}
+            secrets   {doc 'Secrets is a list of the secrets in the same namespace that pods running using this ServiceAccount are allowed to use_ Pods are only limited to this list if this service account has a "kubernetes_io/enforce-mountable-secrets" annotation set to "true"_ This field should not be used to find auto-generated service account token secrets for use outside of pods_ Instead, tokens can be requested directly using the TokenRequest API, or service account token secrets can be manually created_ More info: https://kubernetes_io/docs/concepts/configuration/secret'} 
+                mandatory
+                    SECRETS_name {doc 'Name of the referent_ '}
 constraints
     (GROUP_apiextensions | GROUP_apiregistration | GROUP_apps | GROUP_authorization | GROUP_batch | GROUP_coordination | GROUP_core | GROUP_discovery | GROUP_events | GROUP_node | GROUP_policy | GROUP_rbac | GROUP_scheduling) => VERSION_v1
     (GROUP_admissionregistration | GROUP_authentication) => VERSION_v1 | VERSION_v1beta1 | VERSION_v1alpha1
@@ -1002,22 +1237,23 @@ constraints
     (KIND_SelfSubjectReview | KIND_TokenRequest | KIND_TokenReview) => GROUP_authentication
     KIND_StorageVersion => GROUP_internal
     (KIND_ClusterRole | KIND_ClusterRoleBinding | KIND_Role | KIND_RoleBinding)=> GROUP_rbac
-    DeploymentSpec & PodSpec & ServiceSpec => spec
-    KIND_Pod => PodSpec
-    KIND_Deployment => DeploymentSpec & PodSpec
-    KIND_Service => ServiceSpec
+    DeploymentSpec & PodSpec & ServiceSpec & CronJobSpec & JobSpec & CustomResourceDefinitionSpec & IngressSpec => spec
     KIND_ConfigMap => binaryData | data 
     KIND_Endpoints => subsets
     KIND_Role => rules
-    KIND_CustomResourceDefinition => CustomResourceDefinitionSpec
+    KIND_ClusterRole => rules
+    KIND_ClusterRoleBinding => subjects & roleRef
+    KIND_CronJob => CronJobSpec 
+    KIND_Job => JobSpec
+    KIND_Namespace => NamespaceSpec
+    KIND_Ingress => IngressSpec
     immutable => KIND_ConfigMap | KIND_Secret
     stringData => KIND_Secret
-    CustomResourceDefinitionSpec => KIND_CustomResourceDefinition
+    KIND_CustomResourceDefinition => CustomResourceDefinitionSpec
     data => KIND_ConfigMap | KIND_Secret
     binaryData => KIND_ConfigMap
-    DeploymentSpec => PodSpec
     PodSpec => KIND_Pod | KIND_Deployment
-    rules => KIND_Role
+    rules => KIND_Role | KIND_ClusterRole
     DeploymentSpec => KIND_Deployment
     SERVICESPEC_clusterIP => !SERVICESPEC_clusterIPs
     SERVICESPEC_clusterIPs => !SERVICESPEC_clusterIP
@@ -1028,8 +1264,10 @@ constraints
     CONTAINERS_tty => CONTAINERS_stdin
     SERVICESPEC_allocateLoadBalancerNodePorts => TYPE_LoadBalancer
     ServiceSpec => KIND_Service
-    SERVICESPEC_Type => TYPE_LoadBalancer | TYPE_ClusterIP | TYPE_NodePort
-    SERVICESPEC_ipFamilyPolicy => SingleStack | PreferDualStack | RequireDualStack
-    CONTAINERS_SECURITYCONTEXT_allowPrivilegeEscalation => CONTAINERS_SECURITYCONTEXT_privileged
     CONTAINERS_WINDOWSOPTIONS_hostProcess => PODSPEC_hostNetwork
     RULES_apiGroups => RULES_verbs
+    CONVERSION_STRATEGY_Webhook => CONVERSION_webhook
+    aggregationRule => KIND_ClusterRole
+    subjects & roleRef => KIND_ClusterRoleBinding
+    automountServiceAccountToken & imagePullSecrets & secrets => KIND_ServiceAccount
+    JOBSPEC_backoffLimitPerIndex => COMPLETIONMODE_Indexed
