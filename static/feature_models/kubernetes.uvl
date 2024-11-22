@@ -47,7 +47,7 @@ features
                             KIND_Pod
                             KIND_ReplicaSet
                             KIND_ReplicationController
-                            KIND_StatefullSet
+                            KIND_StatefulSet
                     Service_APIs {abstract, doc 'Refer to the set of resources used to expose and manage access to applications running in a cluster_ These resources define how applications are accessed both internally (within the cluster) and externally (from outside the cluster)_'}
                         alternative
                             KIND_Endpoints
@@ -1021,8 +1021,8 @@ features
                             JOBSPEC_suspend {default false, doc 'suspend specifies whether the Job controller should create Pods or not_ If a Job is created with suspend set to true, no Pods are created by the Job controller_ If a Job is suspended after creation (i_e_ the flag goes from false to true), the Job controller will delete all active Pods associated with this Job_ Users must design their workload to gracefully handle this_ Suspending a Job will reset the StartTime field of the Job, effectively resetting the ActiveDeadlineSeconds timer too_ Defaults to false_'}
                             JOBSPEC_template {doc 'Describes the pod that will be created when executing a job_ The only allowed template_spec_restartPolicy values are "Never" or "OnFailure"_ More info: https://kubernetes_io/docs/concepts/workloads/controllers/jobs-run-to-completion/'}
                                 mandatory   
-                                    JOBSPEC_TEMPLATE_metadata {doc 'Reference to metadata to not duplicate it'}
-                                    JOBSPEC_TEMPLATE_podSpecTemplate {doc 'Reference to pod spec to not duplicate it'}
+                                    JOBSPEC_TEMPLATE_metadataReference {doc 'Reference to metadata to not duplicate it'}
+                                    JOBSPEC_TEMPLATE_podSpecReference {doc 'Reference to pod spec to not duplicate it'}
                             JOBSPEC_ttlSecondsAfterFinished {doc 'ttlSecondsAfterFinished limits the lifetime of a Job that has finished execution (either Complete or Failed)_ If this field is set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be automatically deleted_ When the Job is being deleted, its lifecycle guarantees (e_g_ finalizers) will be honored_ If this field is unset, the Job won`t be automatically deleted_ If this field is set to zero, the Job becomes eligible to be deleted immediately after it finishes_'}
                     NamespaceSpec {doc 'Spec defines the behavior of the Namespace_'}
                         mandatory   
@@ -1037,7 +1037,7 @@ features
                                         mandatory   
                                             INGRESSSPEC_DEFAULTBACKEND_RESOURCE_kind {doc 'Kind is the type of resource being referenced'}
                                             INGRESSSPEC_DEFAULTBACKEND_RESOURCE_name {doc 'Name is the name of resource being referenced'}
-                                        alternative
+                                        optional
                                             INGRESSSPEC_DEFAULTBACKEND_RESOURCE_apiGroup {doc 'APIGroup is the group for the resource being referenced_ If APIGroup is not specified, the specified Kind must be in the core API group_ For any other third-party types, APIGroup is required_'}                                   
                                     INGRESSSPEC_DEFAULTBACKEND_service {doc 'service references a service as a backend_ This is a mutually exclusive setting with "Resource"_'}
                                         mandatory   
@@ -1082,6 +1082,723 @@ features
                                         mandatory   
                                             INGRESSSPEC_TLS_HOSTS_host
                                     INGRESSSPEC_TLS_secretName {doc 'secretName is the name of the secret used to terminate TLS traffic on port 443_ Field is left optional to allow TLS routing based on SNI hostname alone_ If the SNI host in a listener conflicts with the "Host" header field used by an IngressRule, the SNI host is used for termination and value of the "Host" header is used for routing_'}
+                    PersistentVolumeClaimSpec {doc 'spec defines the desired characteristics of a volume requested by a pod author_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims'}
+                        mandatory   
+                            PRESISTENTVOLUMECLAIMSPEC_accessModes    {doc 'accessModes contains the desired access modes the volume should have_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#access-modes-1'} 
+                                mandatory   
+                                    PRESISTENTVOLUMECLAIMSPEC_ACCESSMODES_accessMode
+                            PRESISTENTVOLUMECLAIMSPEC_resources {doc 'resources represents the minimum resources the volume should have_ If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#resources'}
+                                or   
+                                    PRESISTENTVOLUMECLAIMSPEC_RESOURCES_limits {doc 'Limits describes the maximum amount of compute resources allowed_ More info: https://kubernetes_io/docs/concepts/configuration/manage-resources-containers/'}
+                                        mandatory
+                                            PRESISTENTVOLUMECLAIMSPEC_RESOURCES_LIMITS_storage
+                                    PRESISTENTVOLUMECLAIMSPEC_RESOURCES_requests {doc 'Requests describes the minimum amount of compute resources required_ If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value_ Requests cannot exceed Limits_ More info: https://kubernetes_io/docs/concepts/configuration/manage-resources-containers/'}
+                                        mandatory
+                                            PRESISTENTVOLUMECLAIMSPEC_RESOURCES_REQUESTS_storage
+                        optional
+                            PRESISTENTVOLUMECLAIMSPEC_dataSource {doc 'dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot_storage_k8s_io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source_ When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef, and dataSourceRef contents will be copied to dataSource when dataSourceRef_namespace is not specified_ If the namespace is specified, then dataSourceRef will not be copied to dataSource_'}
+                                mandatory   
+                                    PRESISTENTVOLUMECLAIMSPEC_DATASOURCE_name {doc 'Name is the name of resource being referenced'}
+                                    PRESISTENTVOLUMECLAIMSPEC_DATASOURCE_kind {doc 'Kind is the type of resource being referenced'}
+                                optional
+                                    PRESISTENTVOLUMECLAIMSPEC_DATASOURCE_apigroup {doc 'APIGroup is the group for the resource being referenced_ If APIGroup is not specified, the specified Kind must be in the core API group_ For any other third-party types, APIGroup is required_'}
+                            PRESISTENTVOLUMECLAIMSPEC_dataSourceRef {doc 'dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired_ This may be any object from a non-empty API group (non core object) or a PersistentVolumeClaim object_ When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner_ This field will replace the functionality of the dataSource field and as such if both fields are non-empty, they must have the same value_ For backwards compatibility, when namespace isn`t specified in dataSourceRef, both fields (dataSource and dataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty_ When namespace is specified in dataSourceRef, dataSource isn`t set to the same value and must be empty_ There are three important differences between dataSource and dataSourceRef: * While dataSource only allows two specific types of objects, dataSourceRef allows any non-core object, as well as PersistentVolumeClaim objects_ * While dataSource ignores disallowed values (dropping them), dataSourceRef preserves all values, and generates an error if a disallowed value is specified_ * While dataSource only allows local objects, dataSourceRef allows objects in any namespaces_ (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled_ (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled_'}
+                                mandatory   
+                                    PRESISTENTVOLUMECLAIMSPEC_DATASOURCEREF_name {doc 'Name is the name of resource being referenced'}
+                                    PRESISTENTVOLUMECLAIMSPEC_DATASOURCEREF_kind {doc 'Kind is the type of resource being referenced'}
+                                optional
+                                    PRESISTENTVOLUMECLAIMSPEC_DATASOURCEREF_apigroup {doc 'APIGroup is the group for the resource being referenced_ If APIGroup is not specified, the specified Kind must be in the core API group_ For any other third-party types, APIGroup is required_'}
+                                    PRESISTENTVOLUMECLAIMSPEC_DATASOURCEREF_namespace {doc 'Namespace is the namespace of resource being referenced Note that when a namespace is specified, a gateway_networking_k8s_io/ReferenceGrant object is required in the referent namespace to allow that namespace`s owner to accept the reference_ See the ReferenceGrant documentation for details_ (Alpha) This field requires the CrossNamespaceVolumeDataSource feature gate to be enabled_'}
+                            PRESISTENTVOLUMECLAIMSPEC_selector {doc 'selector is a label query over volumes to consider for binding_'}
+                                or
+                                    PRESISTENTVOLUMECLAIMSPEC_SELECTOR_matchLabels   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                        mandatory 
+                                            PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHLABELS_key
+                                            PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHLABELS_value
+                                    PRESISTENTVOLUMECLAIMSPEC_SELECTOR_matchExpressions   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                        mandatory   
+                                            PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                            PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                mandatory
+                                                    PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHEXPRESSIONS_value
+                                            PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a keys relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                                alternative
+                                                    PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_in
+                                                    PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_notIn
+                                                    PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_exist
+                                                    PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_doesNotExist
+                                                    PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_gt
+                                                    PRESISTENTVOLUMECLAIMSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_lt
+                            PRESISTENTVOLUMECLAIMSPEC_storageClassName {doc 'storageClassName is the name of the StorageClass required by the claim_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#class-1'}
+                            PRESISTENTVOLUMECLAIMSPEC_volumeAttributesClassName {doc 'volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim_ If specified, the CSI driver will create or update the volume with the attributes defined in the corresponding VolumeAttributesClass_ This has a different purpose than storageClassName, it can be changed after the claim is created_ An empty string value means that no VolumeAttributesClass will be applied to the claim but it`s not allowed to reset this field to empty string once it is set_ If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass will be set by the persistentvolume controller if it exists_ If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource exists_ More info: https://kubernetes_io/docs/concepts/storage/volume-attributes-classes/ (Alpha) Using this field requires the VolumeAttributesClass feature gate to be enabled_'}
+                            PRESISTENTVOLUMECLAIMSPEC_volumeMode {doc 'volumeMode defines what type of volume is required by the claim_ Value of Filesystem is implied when not included in claim spec_'}
+                            PRESISTENTVOLUMECLAIMSPEC_volumeName {doc 'volumeName is the binding reference to the PersistentVolume backing this claim_'}
+                    PersistentVolumeSpec {doc 'spec defines a specification of a persistent volume owned by the cluster_ Provisioned by an administrator_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#persistent-volumes'}
+                        mandatory   
+                            PERSISTENTVOLUME_accessModes    {doc 'accessModes contains all ways the volume can be mounted_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#access-modes'}
+                                mandatory   
+                                    PERSISTENTVOLUME_ACCESSMODES_accessMode
+                            PERSISTENTVOLUME_capacity {doc 'capacity is the description of the persistent volume`s resources and capacity_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#capacity'}
+                                mandatory   
+                                    PERSISTENTVOLUME_CAPACITY_storage
+                            PERSISTENTVOLUME_persistentVolumeReclaimPolicy {doc 'persistentVolumeReclaimPolicy defines what happens to a persistent volume when released from its claim_ Valid options are Retain (default for manually created PersistentVolumes), Delete (default for dynamically provisioned PersistentVolumes), and Recycle (deprecated)_ Recycle must be supported by the volume plugin underlying this PersistentVolume_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#reclaiming'}
+                                alternative
+                                    PERSISTENTVOLUME_RECLAIMPOLICY_Retain
+                                    PERSISTENTVOLUME_RECLAIMPOLICY_Delete
+                                    PERSISTENTVOLUME_RECLAIMPOLICY_Recycle
+                            PERSISTENTVOLUME_storageClassName {doc 'storageClassName is the name of StorageClass to which this persistent volume belongs_ Empty value means that this volume does not belong to any StorageClass_'}
+                            PERSISTENTVOLUME_volumeMode {doc 'volumeMode defines if a volume is intended to be used with a formatted filesystem or to remain in raw block state_ Value of Filesystem is implied when not included in spec_'}
+                        optional 
+                            PERSISTENTVOLUME_volumeAttributesClassName {doc 'Name of VolumeAttributesClass to which this persistent volume belongs_ Empty value is not allowed_ When this field is not set, it indicates that this volume does not belong to any VolumeAttributesClass_ This field is mutable and can be changed by the CSI driver after a volume has been updated successfully to a new class_ For an unbound PersistentVolume, the volumeAttributesClassName will be matched with unbound PersistentVolumeClaims during the binding process_ This is an alpha field and requires enabling VolumeAttributesClass feature_'}  
+                            PERSISTENTVOLUME_mountOptions {doc 'mountOptions is the list of mount options, e_g_ ["ro", "soft"]_ Not validated - mount will simply fail if one is invalid_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes/#mount-options'}
+                                mandatory   
+                                    PERSISTENTVOLUME_MOUNTOPTIONS_mountOption
+                        or
+                            PERSISTENTVOLUME_hostPath {doc 'hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container_ This is generally used for system agents or other privileged things that are allowed to see the host machine_ Most containers will NOT need this_ More info: https://kubernetes_io/docs/concepts/storage/volumes#hostpath'}
+                                optional
+                                    PERSISTENTVOLUME_HOSTPATH_path {doc 'path of the directory on the host_ If the path is a symlink, it will follow the link to the real path_ More info: https://kubernetes_io/docs/concepts/storage/volumes#hostpath'}
+                                    PERSISTENTVOLUME_HOSTPATH_type {default ' ', doc 'type for HostPath Volume Defaults to "" More info: https://kubernetes_io/docs/concepts/storage/volumes#hostpath'}
+                            PERSISTENTVOLUME_nfs {doc 'nfs represents an NFS mount on the host that shares a pod`s lifetime More info: https://kubernetes_io/docs/concepts/storage/volumes#nfs'}
+                                mandatory   
+                                    PERSISTENTVOLUME_NFS_path {doc 'Path that is exported by the NFS server_ More info: https://kubernetes_io/docs/concepts/storage/volumes#nfs'}
+                                    PERSISTENTVOLUME_NFS_server {doc 'Server is the hostname or IP address of the NFS server_ More info: https://kubernetes_io/docs/concepts/storage/volumes#nfs'}
+                                optional    
+                                    PERSISTENTVOLUME_NFS_readOnly {default false, doc 'ReadOnly here will force the NFS export to be mounted with read-only permissions_ Defaults to false_'}
+                            PERSISTENTVOLUME_csi {doc 'csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature)_'}
+                                mandatory   
+                                    PERSISTENTVOLUME_CSI_driver {doc 'Driver is the name of the CSI driver that handles this volume_ Consult with your admin for the correct name as registered in the cluster_'}
+                                optional  
+                                    PERSISTENTVOLUME_CSI_volumeAttributes {doc 'VolumeAttributes stores driver-specific properties that are passed to the CSI driver_ Consult your driver`s documentation for supported values_'}
+                                    PERSISTENTVOLUME_CSI_readOnly {default false, doc 'ReadOnly here will force the ReadOnly setting in VolumeMounts_ Defaults to false_'}  
+                                    PERSISTENTVOLUME_CSI_fsType {doc 'fsType to mount_ Ex_ "ext4", "xfs", "ntfs"_ If not provided, the empty value is passed to the associated CSI driver which will determine the default filesystem to apply_'}                                      
+                                    PERSISTENTVOLUME_CSI_nodePublichSecretRef {doc 'NodePublishSecretRef is a reference to the secret object containing sensitive information to pass to the CSI driver to complete the CSI NodePublishVolume and NodeUnpublishVolume calls_ This field is optional, and  may be empty if no secret is required_ If the secret is specified, it must be a secret object that is already visible to the Kubelet_'}
+                                        mandatory   
+                                            PERSISTENTVOLUME_CSI_NODEPUBLISHSECRETREF_name {doc 'Name of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#names'}
+                            PERSISTENTVOLUME_fc {doc 'fc represents a Fibre Channel resource that is attached to a kubelet`s host machine and then exposed to the pod_'}
+                                mandatory
+                                    PERSISTENTVOLUME_FC_fsType {doc 'fsType is the filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_'}   
+                                optional    
+                                    PERSISTENTVOLUME_FC_readOnly {default false, doc 'readOnly is Optional: Defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
+                                    PERSISTENTVOLUME_FC_lun {doc 'lun is Optional: FC target lun number'}
+                                    PERSISTENTVOLUME_FC_targetWWNs   {doc 'targetWWNs is Optional: FC target worldwide names (WWNs)'}
+                                        mandatory   
+                                            PERSISTENTVOLUME_FC_TARGETWWNS_targetWWN
+                                    PERSISTENTVOLUME_FC_wwids   {doc 'wwids Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously_'}
+                                        mandatory   
+                                            PERSISTENTVOLUME_FC_WWIDS_wwid
+                            PERSISTENTVOLUME_flocker {doc 'flocker represents a Flocker volume attached to a kubelet`s host machine_ This depends on the Flocker control service being running'}
+                                mandatory
+                                    PERSISTENTVOLUME_FLOCKER_datsetUUID {doc 'datasetUUID is the UUID of the dataset_ This is unique identifier of a Flocker dataset'}
+                                    PERSISTENTVOLUME_FLOCKER_datasetName {doc 'Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated'}
+                            PERSISTENTVOLUME_iscsi {doc 'iscsi represents an ISCSI Disk resource that is attached to a kubelet`s host machine and then exposed to the pod_ More info: https://examples_k8s_io/volumes/iscsi/README_md'} 
+                                mandatory 
+                                    PERSISTENTVOLUME_ISCSI_targetPortal {doc 'targetPortal is iSCSI Target Portal_ The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260)_'}  
+                                    PERSISTENTVOLUME_ISCSI_lun {doc 'lun represents iSCSI Target Lun number_'}
+                                    PERSISTENTVOLUME_ISCSI_iqn {doc 'iqn is the target iSCSI Qualified Name_'}
+                                optional 
+                                    PERSISTENTVOLUME_ISCSI_fsType {doc 'fsType is the filesystem type of the volume that you want to mount_ Tip: Ensure that the filesystem type is supported by the host operating system_ Examples: "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_ More info: https://kubernetes_io/docs/concepts/storage/volumes#iscsi'} 
+                                    PERSISTENTVOLUME_ISCSI_chapAuthDiscovery {doc 'chapAuthDiscovery defines whether support iSCSI Discovery CHAP authentication'}
+                                    PERSISTENTVOLUME_ISCSI_chapAuthSession {doc 'chapAuthSession defines whether support iSCSI Session CHAP authentication'}
+                                    PERSISTENTVOLUME_ISCSI_initiatorName {doc 'initiatorName is the custom iSCSI Initiator Name_ If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection_'}
+                                    PERSISTENTVOLUME_ISCSI_iscsiInterface {default 'default', doc 'iscsiInterface is the interface Name that uses an iSCSI transport_ Defaults to "default" (tcp)_'}
+                                    PERSISTENTVOLUME_ISCSI_portals   {doc 'portals is the iSCSI Target Portal List_ The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260)_'}
+                                        mandatory   
+                                            PERSISTENTVOLUME_ISCSI_PORTALS_portal
+                                    PERSISTENTVOLUME_ISCSI_readOnly {default false, doc 'readOnly here will force the ReadOnly setting in VolumeMounts_ Defaults to false_'}
+                                    PERSISTENTVOLUME_ISCSI_secretRef {doc 'secretRef is the CHAP Secret for iSCSI target and initiator authentication'}
+                                        mandatory   
+                                            PERSISTENTVOLUME_ISCSI_SECRETREF_name {doc 'Name of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#names'}
+                            PERSISTENTVOLUME_photonPersistentDisk {doc 'photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine_'}
+                                mandatory   
+                                    PERSISTENTVOLUME_PHOTONPERSISTENTDISK_pdID {doc 'pdID is the ID that identifies Photon Controller persistent disk_'}
+                                optional    
+                                    PERSISTENTVOLUME_PHOTONPERSISTENTDISK_fsType {doc 'fsType is the filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_'}
+                            PERSISTENTVOLUME_quobyte {doc 'quobyte represents a Quobyte mount on the host that shares a pod`s lifetime_'}
+                                mandatory   
+                                    PERSISTENTVOLUME_QUOBYTE_volume {doc 'volume is a string that references an already created Quobyte volume by name_'}
+                                    PERSISTENTVOLUME_QUOBYTE_registry {doc 'registry represents a single or multiple Quobyte Registry services specified as a string as host:port pair (multiple entries are separated with commas) which acts as the central registry for volumes'}
+                                optional
+                                    PERSISTENTVOLUME_QUOBYTE_group {doc 'group to map volume access to Default is no group'}
+                                    PERSISTENTVOLUME_QUOBYTE_readOnly {default false, doc 'readOnly here will force the Quobyte volume to be mounted with read-only permissions_ Defaults to false_'}
+                                    PERSISTENTVOLUME_QUOBYTE_tenant {doc 'tenant owning the given Quobyte volume in the Backend Used with dynamically provisioned Quobyte volumes, value is set by the plugin'}
+                                    PERSISTENTVOLUME_QUOBYTE_user {doc 'user to map volume access to Defaults to serivceaccount user'}
+                            PERSISTENTVOLUME_rbd {doc 'rbd represents a Rados Block Device mount on the host that shares a pod`s lifetime_ More info: https://examples_k8s_io/volumes/rbd/README_md'}
+                                mandatory    
+                                    PERSISTENTVOLUME_RBD_image {doc 'image is the rados image name_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
+                                    PERSISTENTVOLUME_RBD_monitors   {doc 'monitors is a collection of Ceph monitors_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
+                                        mandatory   
+                                            PERSISTENTVOLUME_RBD_MONITORS_monitor
+                                    PERSISTENTVOLUME_RBD_pool {default 'rbd', doc 'pool is the rados pool name_ Default is rbd_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}                                                
+                                optional  
+                                    PERSISTENTVOLUME_RBD_fsType {doc 'fsType is the filesystem type of the volume that you want to mount_ Tip: Ensure that the filesystem type is supported by the host operating system_ Examples: "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_ More info: https://kubernetes_io/docs/concepts/storage/volumes#rbd'}  
+                                    PERSISTENTVOLUME_RBD_readOnly {default false,doc 'readOnly here will force the ReadOnly setting in VolumeMounts_ Defaults to false_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
+                                    PERSISTENTVOLUME_RBD_secretRef {default false, doc 'secretRef is name of the authentication secret for RBDUser_ If provided overrides keyring_ Default is nil_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
+                                        mandatory   
+                                            PERSISTENTVOLUME_RBD_SECRETREF_name {doc 'Name of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#names'}
+                                    PERSISTENTVOLUME_RBD_keyring {default '/etc/ceph/keyring', doc 'keyring is the path to key ring for RBDUser_ Default is /etc/ceph/keyring_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}
+                                    PERSISTENTVOLUME_RBD_user {default 'admin', doc 'user is the rados user name_ Default is admin_ More info: https://examples_k8s_io/volumes/rbd/README_md#how-to-use-it'}                                                    
+                            PERSISTENTVOLUME_scaleIO {doc 'scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes_'}
+                                mandatory   
+                                    PERSISTENTVOLUME_SCALEIO_gateway {doc 'gateway is the host address of the ScaleIO API Gateway_'}
+                                    PERSISTENTVOLUME_SCALEIO_volumeName {doc 'volumeName is the name of a volume already created in the ScaleIO system that is associated with this volume source_'}
+                                    PERSISTENTVOLUME_SCALEIO_system {doc 'system is the name of the storage system as configured in ScaleIO_'}
+                                    PERSISTENTVOLUME_SCALEIO_protectionDomain {doc 'protectionDomain is the name of the ScaleIO Protection Domain for the configured storage_'}
+                                optional  
+                                    PERSISTENTVOLUME_SCALEIO_fsType {default 'xfs', doc 'fsType is the filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ Default is "xfs"_'} 
+                                    PERSISTENTVOLUME_SCALEIO_readOnly {default false, doc 'readOnly Defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
+                                    PERSISTENTVOLUME_SCALEIO_secretRef {doc 'secretRef references to the secret for ScaleIO user and other sensitive information_ If this is not provided, Login operation will fail_'}
+                                        mandatory
+                                            PERSISTENTVOLUME_SCALEIO_SECRETREF_name
+                                    PERSISTENTVOLUME_SCALEIO_sslEnabled {default false, doc 'sslEnabled Flag enable/disable SSL communication with Gateway, default false'}
+                                    PERSISTENTVOLUME_SCALEIO_storageMode {doc 'storageMode indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned_ Default is ThinProvisioned_'}
+                                        alternative   
+                                            PERSISTENTVOLUME_SCALEIO_STORAGEMODE_thickProvisioned
+                                            PERSISTENTVOLUME_SCALEIO_STORAGEMODE_thinProvisioned {default}
+                                    PERSISTENTVOLUME_SCALEIO_storagePool {doc 'storagePool is the ScaleIO Storage Pool associated with the protection domain_'}
+                            PERSISTENTVOLUME_storageos {doc 'storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes_'}
+                                mandatory   
+                                    PERSISTENTVOLUME_STORAGEOS_volumeName {doc 'volumeName is the human-readable name of the StorageOS volume_ Volume names are only unique within a namespace_'}
+                                optional   
+                                    PERSISTENTVOLUME_STORAGEOS_fsType {doc 'fsType is the filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_'}
+                                    PERSISTENTVOLUME_STORAGEOS_readOnly {default false, doc 'readOnly defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
+                                    PERSISTENTVOLUME_STORAGEOS_secretRef {doc 'secretRef specifies the secret to use for obtaining the StorageOS API credentials_ If not specified, default values will be attempted_'}
+                                        mandatory   
+                                            PERSISTENTVOLUME_STORAGEOS_SECRETREF_name
+                                    PERSISTENTVOLUME_STORAGEOS_volumeNamespace {doc 'volumeNamespace specifies the scope of the volume within StorageOS_ If no namespace is specified then the Pod`s namespace will be used_ This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration_ Set VolumeName to any name to override the default behaviour_ Set to "default" if you are not using namespaces within StorageOS_ Namespaces that do not pre-exist within StorageOS will be created_'}
+                            PERSISTENTVOLUME_awsElasticBlockStore {doc 'awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet`s host machine and then exposed to the pod_ More info: https://kubernetes_io/docs/concepts/storage/volumes#awselasticblockstore'}
+                                mandatory   
+                                    PERSISTENTVOLUME_AWSELASTICBLOCKSTORE_volumeID {doc 'volumeID is unique ID of the persistent disk resource in AWS (Amazon EBS volume)_ More info: https://kubernetes_io/docs/concepts/storage/volumes#awselasticblockstore'}
+                                    PERSISTENTVOLUME_AWSELASTICBLOCKSTORE_fsType { default 'ext4', doc 'fsType is the filesystem type of the volume that you want to mount_ Tip: Ensure that the filesystem type is supported by the host operating system_ Examples: "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_ More info: https://kubernetes_io/docs/concepts/storage/volumes#awselasticblockstore'}
+                                optional
+                                    PERSISTENTVOLUME_AWSELASTICBLOCKSTORE_partition {doc 'partition is the partition in the volume that you want to mount_ If omitted, the default is to mount by volume name_ Examples: For volume /dev/sda1, you specify the partition as "1"_ Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty)_'}
+                                    PERSISTENTVOLUME_AWSELASTICBLOCKSTORE_readOnly {doc 'readOnly value true will force the readOnly setting in VolumeMounts_ More info: https://kubernetes_io/docs/concepts/storage/volumes#awselasticblockstore'}
+                            PERSISTENTVOLUME_azureDisk {doc 'azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod_'}
+                                mandatory
+                                    PERSISTENTVOLUME_AZUREDISTK_diskName {doc 'diskName is the Name of the data disk in the blob storage'}
+                                    PERSISTENTVOLUME_AZUREDISTK_diskURI {doc 'diskURI is the URI of data disk in the blob storage'}
+                                optional
+                                    PERSISTENTVOLUME_AZUREDISTK_cachingMode {doc 'cachingMode is the Host Caching mode: None, Read Only, Read Write_'}
+                                        alternative   
+                                            PERSISTENTVOLUME_AZUREDISTK_CACHINGMODE_none
+                                            PERSISTENTVOLUME_AZUREDISTK_CACHINGMODE_readOnly
+                                            PERSISTENTVOLUME_AZUREDISTK_CACHINGMODE_readWrite
+                                    PERSISTENTVOLUME_AZUREDISTK_fsType {default 'ext4', doc 'fsType is Filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_'}
+                                    PERSISTENTVOLUME_AZUREDISTK_kind {doc 'kind expected values are Shared: multiple blob disks per storage account Dedicated: single blob disk per storage account Managed: azure managed data disk (only in managed availability set)_ defaults to shared'}
+                                        alternative   
+                                            PERSISTENTVOLUME_AZUREDISTK_KIND_shared {default}
+                                            PERSISTENTVOLUME_AZUREDISTK_KIND_dedicated
+                                            PERSISTENTVOLUME_AZUREDISTK_KIND_managed
+                                    PERSISTENTVOLUME_AZUREDISTK_readOnly {default false, doc 'readOnly Defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
+                            PERSISTENTVOLUME_azureFile {doc 'azureFile represents an Azure File Service mount on the host and bind mount to the pod_'}
+                                mandatory
+                                    PERSISTENTVOLUME_AZUREFILE_secretName {doc 'secretName is the name of secret that contains Azure Storage Account Name and Key'}
+                                    PERSISTENTVOLUME_AZUREFILE_shareName {doc 'shareName is the azure Share Name'}
+                                optional
+                                    PERSISTENTVOLUME_AZUREFILE_secretNamespace {doc 'secretNamespace is the namespace of the secret that contains Azure Storage Account Name and Key default is the same as the Pod'}
+                                    PERSISTENTVOLUME_AZUREFILE_readOnly {doc 'readOnly defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
+                            PERSISTENTVOLUME_cephfs {doc 'cephFS represents a Ceph FS mount on the host that shares a pod`s lifetime'}
+                                mandatory 
+                                    PERSISTENTVOLUME_CEFS_monitors   {doc 'monitors is Required: Monitors is a collection of Ceph monitors More info: https://examples_k8s_io/volumes/cephfs/README_md#how-to-use-it'} 
+                                        mandatory   
+                                            PERSISTENTVOLUME_CEFS_MONITORS_monitor
+                                optional
+                                    PERSISTENTVOLUME_CEFS_path {default '/', doc 'path is Optional: Used as the mounted root, rather than the full Ceph tree, default is /'}
+                                    PERSISTENTVOLUME_CEFS_readOnly {default false, doc 'readOnly is Optional: Defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_ More info: https://examples_k8s_io/volumes/cephfs/README_md#how-to-use-it'}
+                                    PERSISTENTVOLUME_CEFS_secretFile {doc 'secretFile is Optional: SecretFile is the path to key ring for User, default is /etc/ceph/user_secret More info: https://examples_k8s_io/volumes/cephfs/README_md#how-to-use-it'}
+                                    PERSISTENTVOLUME_CEFS_secretRef {doc 'secretRef is Optional: SecretRef is reference to the authentication secret for User, default is empty_ More info: https://examples_k8s_io/volumes/cephfs/README_md#how-to-use-it'}
+                                        mandatory   
+                                            PERSISTENTVOLUME_CEFS_SECRETREF_name {doc 'name is unique within a namespace to reference a secret resource_'}
+                                        optional    
+                                            PERSISTENTVOLUME_CEFS_SECRETREF_namespace {doc 'namespace defines the space within which the secret name must be unique_'}
+                                    PERSISTENTVOLUME_CEFS_user {doc 'user is Optional: User is the rados user name, default is admin More info: https://examples_k8s_io/volumes/cephfs/README_md#how-to-use-it'}
+                            PERSISTENTVOLUME_cinder {doc 'cinder represents a cinder volume attached and mounted on kubelets host machine_ More info: https://examples_k8s_io/mysql-cinder-pd/README_md'}
+                                mandatory   
+                                    PERSISTENTVOLUME_CINDER_fsType {doc 'fsType Filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Examples: "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_ More info: https://examples_k8s_io/mysql-cinder-pd/README_md'}
+                                    PERSISTENTVOLUME_CINDER_volumeID {doc 'volumeID used to identify the volume in cinder_ More info: https://examples_k8s_io/mysql-cinder-pd/README_md'}
+                                optional        
+                                    PERSISTENTVOLUME_CINDER_readOnly {doc 'readOnly is Optional: Defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_ More info: https://examples_k8s_io/mysql-cinder-pd/README_md'}  
+                                    PERSISTENTVOLUME_CINDER_secretRef {doc 'secretRef is Optional: points to a secret object containing parameters used to connect to OpenStack_'}   
+                                        mandatory   
+                                            PERSISTENTVOLUME_CINDER_SECRETREF_name {doc 'name is unique within a namespace to reference a secret resource_'}    
+                                        optional    
+                                            PERSISTENTVOLUME_CINDER_SECRETREF_namespace {doc 'namespace defines the space within which the secret name must be unique_'}             
+                            PERSISTENTVOLUME_claimRef {doc 'claimRef is part of a bi-directional binding between PersistentVolume and PersistentVolumeClaim_ Expected to be non-nil when bound_ claim_VolumeName is the authoritative bind between PV and PVC_ More info: https://kubernetes_io/docs/concepts/storage/persistent-volumes#binding'}
+                                mandatory
+                                    PERSISTENTVOLUME_CLAIMREF_name {doc 'Name of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#names'} 
+                                optional    
+                                    PERSISTENTVOLUME_CLAIMREF_namespace {doc 'Namespace of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/namespaces/'}  
+                                optional
+                                    PERSISTENTVOLUME_CLAIMREF_apiVersion {doc 'API version of the referent_'}
+                                    PERSISTENTVOLUME_CLAIMREF_kind {doc 'Kind of the referent_ More info: https://git_k8s_io/community/contributors/devel/sig-architecture/api-conventions_md#types-kinds'} 
+                                    PERSISTENTVOLUME_CLAIMREF_fieldPath {doc 'If referring to a piece of an object instead of an entire object, this string should contain a valid JSON/Go field access statement, such as desiredState_manifest_containers[2]_ For example, if the object reference is to a container within a pod, this would take on a value like: "spec_containers{name}" (where "name" refers to the name of the container that triggered the event) or if no container name is specified "spec_containers[2]" (container with index 2 in this pod)_ This syntax is chosen only to have some well-defined way of referencing a part of an object_'} 
+                                    PERSISTENTVOLUME_CLAIMREF_resourceVersion {doc 'Specific resourceVersion to which this reference is made, if any_ More info: https://git_k8s_io/community/contributors/devel/sig-architecture/api-conventions_md#concurrency-control-and-consistency'} 
+                                    PERSISTENTVOLUME_CLAIMREF_uid {doc 'UID of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#uids'} 
+                            PERSISTENTVOLUME_flexVolume {doc 'flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin_'}
+                                mandatory 
+                                    PERSISTENTVOLUME_FLEXVOLUME_driver {doc 'driver is the name of the driver to use for this volume_'} 
+                                    PERSISTENTVOLUME_FLEXVOLUME_fsType {doc 'fsType is the Filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ The default filesystem depends on FlexVolume script_'} 
+                                optional
+                                    PERSISTENTVOLUME_FLEXVOLUME_options    {doc 'options is Optional: this field holds extra command options if any_'}
+                                        mandatory  
+                                            PERSISTENTVOLUME_FLEXVOLUME_OPTIONS_key 
+                                            PERSISTENTVOLUME_FLEXVOLUME_OPTIONS_value 
+                                    PERSISTENTVOLUME_FLEXVOLUME_readOnly {default false, doc 'readOnly is Optional: defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
+                                    PERSISTENTVOLUME_FLEXVOLUME_secretRef {doc 'secretRef is Optional: SecretRef is reference to the secret object containing sensitive information to pass to the plugin scripts_ This may be empty if no secret object is specified_ If the secret object contains more than one secret, all secrets are passed to the plugin scripts_'}
+                                        mandatory
+                                            PERSISTENTVOLUME_FLEXVOLUME_name {doc 'Name of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#names'} 
+                                        optional
+                                            PERSISTENTVOLUME_FLEXVOLUME_namespace {doc 'Namespace of the referent_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/namespaces/'}  
+                            PERSISTENTVOLUME_gcePersistentDisk {doc 'gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet`s host machine and then exposed to the pod_ Provisioned by an admin_ More info: https://kubernetes_io/docs/concepts/storage/volumes#gcepersistentdisk'}
+                                mandatory  
+                                    PERSISTENTVOLUME_GCEPERSISTENTDISK_fsType {default 'ext4', doc 'fsType is filesystem type of the volume that you want to mount_ Tip: Ensure that the filesystem type is supported by the host operating system_ Examples: "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_ More info: https://kubernetes_io/docs/concepts/storage/volumes#gcepersistentdisk'}
+                                    PERSISTENTVOLUME_GCEPERSISTENTDISK_pdName {doc 'pdName is unique name of the PD resource in GCE_ Used to identify the disk in GCE_ More info: https://kubernetes_io/docs/concepts/storage/volumes#gcepersistentdisk'}
+                                optional
+                                    PERSISTENTVOLUME_GCEPERSISTENTDISK_partition {doc 'partition is the partition in the volume that you want to mount_ If omitted, the default is to mount by volume name_ Examples: For volume /dev/sda1, you specify the partition as "1"_ Similarly, the volume partition for /dev/sda is "0" (or you can leave the property empty)_ More info: https://kubernetes_io/docs/concepts/storage/volumes#gcepersistentdisk'}
+                                    PERSISTENTVOLUME_GCEPERSISTENTDISK_readOnly {doc 'readOnly here will force the ReadOnly setting in VolumeMounts_ Defaults to false_ More info: https://kubernetes_io/docs/concepts/storage/volumes#gcepersistentdisk'}
+                            PERSISTENTVOLUME_glusterfs {doc 'glusterfs represents a Glusterfs volume that is attached to a host and exposed to the pod_ Provisioned by an admin_ More info: https://examples_k8s_io/volumes/glusterfs/README_md'}
+                                mandatory
+                                    PERSISTENTVOLUME_GLUSTERFS_endpoints {doc 'endpoints is the endpoint name that details Glusterfs topology_ More info: https://examples_k8s_io/volumes/glusterfs/README_md#create-a-pod'}
+                                    PERSISTENTVOLUME_GLUSTERFS_path {doc 'path is the Glusterfs volume path_ More info: https://examples_k8s_io/volumes/glusterfs/README_md#create-a-pod'}
+                                optional 
+                                    PERSISTENTVOLUME_GLUSTERFS_endpointsNamespace {doc 'endpointsNamespace is the namespace that contains Glusterfs endpoint_ If this field is empty, the EndpointNamespace defaults to the same namespace as the bound PVC_ More info: https://examples_k8s_io/volumes/glusterfs/README_md#create-a-pod'}
+                                    PERSISTENTVOLUME_GLUSTERFS_readOnly {default false, doc 'readOnly here will force the Glusterfs volume to be mounted with read-only permissions_ Defaults to false_ More info: https://examples_k8s_io/volumes/glusterfs/README_md#create-a-pod'}
+                            PERSISTENTVOLUME_local {doc 'local represents directly-attached storage with node affinity'}
+                                mandatory 
+                                    PERSISTENTVOLUME_LOCAL_path {doc 'path of the full path to the volume on the node_ It can be either a directory or block device (disk, partition, ___)_'}
+                                optional
+                                    PERSISTENTVOLUME_LOCAL_fsType {doc 'fsType is the filesystem type to mount_ It applies only when the Path is a block device_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ The default value is to auto-select a filesystem if unspecified_'}
+                            PERSISTENTVOLUME_nodeAffinity {doc 'nodeAffinity defines constraints that limit what nodes this volume can be accessed from_ This field influences the scheduling of pods that use this volume_'}
+                                mandatory   
+                                    PERSISTENTVOLUME_NODEAFFINITY_required {doc 'required specifies hard node constraints that must be met_'}
+                                        mandatory  
+                                            PERSISTENTVOLUME_NODEAFFINITY_nodeSelectorTerms   {doc 'Required_ A list of node selector terms_ The terms are ORed_'}
+                                                or
+                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_matchExpressions {doc 'A list of node selector requirements by node`s labels_'}
+                                                        mandatory   
+                                                            PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHEXPRESSIONS_key {doc 'The label key that the selector applies to_'}
+                                                            PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHEXPRESSIONS_operator {doc 'Represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists, DoesNotExist_ Gt, and Lt_'}
+                                                                alternative
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHEXPRESSIONS_OPERATOR_In
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHEXPRESSIONS_OPERATOR_NotExist
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHEXPRESSIONS_OPERATOR_Gt
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHEXPRESSIONS_OPERATOR_Lt
+                                                            PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHEXPRESSIONS_values    {doc 'An array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer_ This array is replaced during a strategic merge patch_'}
+                                                                mandatory   
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHEXPRESSIONS_VALUES_value 
+                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_matchFields {doc 'A list of node selector requirements by node`s fields_'}
+                                                        mandatory   
+                                                            PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHFIELDS_key {doc 'The label key that the selector applies to_'}
+                                                            PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHFIELDS_operator {doc 'Represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists, DoesNotExist_ Gt, and Lt_'}
+                                                                alternative
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHFIELDS_OPERATOR_In
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHFIELDS_OPERATOR_NotIn
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHFIELDS_OPERATOR_Exist
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHFIELDS_OPERATOR_NotExist
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHFIELDS_OPERATOR_Gt
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHFIELDS_OPERATOR_Lt
+                                                            PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHFIELDS_values    {doc 'An array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer_ This array is replaced during a strategic merge patch_'}
+                                                                mandatory   
+                                                                    PERSISTENTVOLUME_NODEAFFINITY_NODESELECTORTERMS_MATCHFIELDS_VALUES_value
+                            PERSISTENTVOLUME_portworxVolume {doc 'portworxVolume represents a portworx volume attached and mounted on kubelets host machine'}
+                                mandatory   
+                                    PERSISTENTVOLUME_PORTWORXVOLUME_volumeID {doc 'volumeID uniquely identifies a Portworx volume'}
+                                optional   
+                                    PERSISTENTVOLUME_PORTWORXVOLUME_fsType {default 'ext4', doc 'fSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs"_ Implicitly inferred to be "ext4" if unspecified_'}
+                                    PERSISTENTVOLUME_PORTWORXVOLUME_readOnly {deafult false, doc 'readOnly defaults to false (read/write)_ ReadOnly here will force the ReadOnly setting in VolumeMounts_'}
+                            PERSISTENTVOLUME_vsphereVolume {doc 'vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine'}
+                                mandatory
+                                    PERSISTENTVOLUME_VSPHEREVOLUME_volumePath {doc 'volumePath is the path that identifies vSphere volume vmdk'} 
+                                optional   
+                                    PERSISTENTVOLUME_VSPHEREVOLUME_fsType {default 'ext4', doc 'fsType is filesystem type to mount_ Must be a filesystem type supported by the host operating system_ Ex_ "ext4", "xfs", "ntfs"_ Implicitly inferred to be "ext4" if unspecified_'}
+                                    PERSISTENTVOLUME_VSPHEREVOLUME_storagePolicyID {doc 'storagePolicyID is the storage Policy Based Management (SPBM) profile ID associated with the StoragePolicyName_'}
+                                    PERSISTENTVOLUME_VSPHEREVOLUME_storagePolicyName {doc 'storagePolicyName is the storage Policy Based Management (SPBM) profile name_'}  
+                    StatefulSetSpec {doc 'Spec defines the desired identities of pods in this set_'}
+                        mandatory
+                            STATEFULSETSPEC_selector {doc 'selector is a label query over pods that should match the replica count_ It must match the pod template`s labels_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/labels/#label-selectors'}
+                                or   
+                                    STATEFULSETSPEC_SELECTOR_matchExpressions    {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                        mandatory   
+                                            STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                            STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                                alternative
+                                                    STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                                    STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                    STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                    STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist
+                                            STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                mandatory   
+                                                    STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_VALUES_value
+                                    STATEFULSETSPEC_SELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                        mandatory   
+                                            STATEFULSETSPEC_SELECTOR_MATCHLABELS_key
+                                            STATEFULSETSPEC_SELECTOR_MATCHLABELS_value
+                            STATEFULSETSPEC_serviceName {doc 'serviceName is the name of the service that governs this StatefulSet_ This service must exist before the StatefulSet, and is responsible for the network identity of the set_ Pods get DNS/hostnames that follow the pattern: pod-specific-string_serviceName_default_svc_cluster_local where "pod-specific-string" is managed by the StatefulSet controller_'}
+                            STATEFULSETSPEC_template {doc 'template is the object that describes the pod that will be created if insufficient replicas are detected_ Each pod stamped out by the StatefulSet will fulfill this Template, but have a unique identity from the rest of the StatefulSet_ Each pod will be named with the format <statefulsetname>-<podindex>_ For example, a pod in a StatefulSet named "web" with index number "3" would be named "web-3"_ The only allowed template_spec_restartPolicy value is "Always"_'}
+                                mandatory   
+                                    STATEFULSETSPEC_TEMPLATE_metadataReference {doc 'Reference to metadata object to not duplicate it'}
+                                    STATEFULSETSPEC_TEMPLATE_podSpecReference {doc 'Reference to Pod spec object to not duplicate it'}
+                        optional
+                            STATEFULSETSPEC_replicas {default 1, doc 'replicas is the desired number of replicas of the given Template_ These are replicas in the sense that they are instantiations of the same Template, but individual replicas also have a consistent identity_ If unspecified, defaults to 1_'}
+                            STATEFULSETSPEC_revisionHistoryLimit {default 10, doc 'revisionHistoryLimit is the maximum number of revisions that will be maintained in the StatefulSet`s revision history_ The revision history consists of all revisions not represented by a currently applied StatefulSetSpec version_ The default value is 10_'}
+                            STATEFULSETSPEC_updateStrategy {doc 'updateStrategy indicates the StatefulSetUpdateStrategy that will be employed to update Pods in the StatefulSet when a revision is made to Template_'}
+                                mandatory   
+                                    STATEFULSETSPEC_UPDATESTRATEGY_type { default 'RollingUpdate', doc 'Type indicates the type of the StatefulSetUpdateStrategy_ Default is RollingUpdate_'}
+                                    STATEFULSETSPEC_UPDATESTRATEGY_rollingUpdate {doc 'rollingUpdate is used to communicate parameters when Type is RollingUpdateStatefulSetStrategyType_'}
+                                        mandatory   
+                                            STATEFULSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_partition {default 0, doc 'Partition indicates the ordinal at which the StatefulSet should be partitioned for updates_ During a rolling update, all pods from ordinal Replicas-1 to Partition are updated_ All pods from ordinal Partition-1 to 0 remain untouched_ This is helpful in being able to do a canary based deployment_ The default value is 0_'}
+                                        optional    
+                                            STATEFULSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_maxUnavailable {default '1', doc 'The maximum number of pods that can be unavailable during the update_ Value can be an absolute number (ex: 5) or a percentage of desired pods (ex: 10%)_ Absolute number is calculated from percentage by rounding up_ This can not be 0_ Defaults to 1_ This field is alpha-level and is only honored by servers that enable the MaxUnavailableStatefulSet feature_ The field applies to all pods in the range 0 to Replicas-1_ That means if there is any unavailable pod in the range 0 to Replicas-1, it will be counted towards MaxUnavailable_'}
+                            STATEFULSETSPEC_volumeClaimTemplates    {doc 'volumeClaimTemplates is a list of claims that pods are allowed to reference_ The StatefulSet controller is responsible for mapping network identities to claims in a way that maintains the identity of a pod_ Every claim in this list must have at least one matching (by name) volumeMount in one container in the template_ A claim in this list takes precedence over any volumes in the template, with the same name_'}
+                                mandatory   
+                                    STATEFULSETSPEC_VOLUMECLAIMTEMPLATES_persistentVolumeClaimReference {doc 'Reference to PersistenVolumeClaim object to not duplicate it'}
+                                    STATEFULSETSPEC_VOLUMECLAIMTEMPLATES_metadataReference {doc 'Reference to metadata object to not duplicate it'}
+                            STATEFULSETSPEC_minReadySeconds {default 0, doc 'Minimum number of seconds for which a newly created pod should be ready without any of its container crashing for it to be considered available_ Defaults to 0 (pod will be considered available as soon as it is ready)'}
+                            STATEFULSETSPEC_ordinals {doc 'ordinals controls the numbering of replica indices in a StatefulSet_ The default ordinals behavior assigns a "0" index to the first replica and increments the index by one for each additional replica requested_ Using the ordinals field requires the StatefulSetStartOrdinal feature gate to be enabled, which is beta_'}
+                                mandatory   
+                                    STATEFULSETSPEC_ORDINALS_start {doc 'start is the number representing the first replica`s index_ It may be used to number replicas from an alternate index (eg: 1-indexed) over the default 0-indexed names, or to orchestrate progressive movement of replicas from one StatefulSet to another_ If set, replica indices will be in the range: [_spec_ordinals_start, _spec_ordinals_start + _spec_replicas)_ If unset, defaults to 0_ Replica indices will be in the range: [0, _spec_replicas)_'}
+                            STATEFULSETSPEC_persistentVolumeClaimRetentionPolicy {doc 'persistentVolumeClaimRetentionPolicy describes the lifecycle of persistent volume claims created from volumeClaimTemplates_ By default, all persistent volume claims are created as needed and retained until manually deleted_ This policy allows the lifecycle to be altered, for example by deleting persistent volume claims when their stateful set is deleted, or when their pod is scaled down_ This requires the StatefulSetAutoDeletePVC feature gate to be enabled, which is alpha_ +optional'}
+                                or   
+                                    STATEFULSETSPEC_PERSISTENTVOLUMECLAIMRETENTIONPOLICY_whenDeleted {doc 'WhenDeleted specifies what happens to PVCs created from StatefulSet VolumeClaimTemplates when the StatefulSet is deleted_ The default policy of `Retain` causes PVCs to not be affected by StatefulSet deletion_ The `Delete` policy causes those PVCs to be deleted_'}
+                                    STATEFULSETSPEC_PERSISTENTVOLUMECLAIMRETENTIONPOLICY_whenScaled {doc 'WhenScaled specifies what happens to PVCs created from StatefulSet VolumeClaimTemplates when the StatefulSet is scaled down_ The default policy of `Retain` causes PVCs to not be affected by a scaledown_ The `Delete` policy causes the associated PVCs for any excess pods above the replica count to be deleted_'}
+                            STATEFULSETSPEC_podManagementPolicy {doc 'podManagementPolicy controls how pods are created during initial scale up, when replacing pods on nodes, or when scaling down_ The default policy is `OrderedReady`, where pods are created in increasing order (pod-0, then pod-1, etc) and the controller will wait until each pod is ready before continuing_ When scaling down, the pods are removed in the opposite order_ The alternative policy is `Parallel` which will create pods in parallel to match the desired scale without waiting, and on scale down will delete all pods at once_'}
+                    NetworkPolicySpec {doc 'NetworkPolicySpec represents the specification of the desired behavior for this NetworkPolicy_'}
+                        mandatory
+                            NETWORKPOLICYSPEC_podSelector {doc 'podSelector selects the pods to which this NetworkPolicy object applies_ The array of ingress rules is applied to any pods selected by this field_ Multiple network policies can select the same set of pods_ In this case, the ingress rules for each are combined additively_ This field is NOT optional and follows standard label selector semantics_ An empty podSelector matches all pods in this namespace_'}
+                                or   
+                                    NETWORKPOLICYSPEC_PODSELECTOR_matchExpressions   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                        mandatory   
+                                            NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_key
+                                            NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_operator
+                                                alternative
+                                                    NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                                    NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                    NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                    NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist
+                                            NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                mandatory   
+                                                    NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_VALUES_value
+                                    NETWORKPOLICYSPEC_PODSELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                        mandatory   
+                                            NETWORKPOLICYSPEC_PODSELECTOR_MATCHLABELS_key
+                                            NETWORKPOLICYSPEC_PODSELECTOR_MATCHLABELS_value
+                        optional   
+                            NETWORKPOLICYSPEC {doc 'policyTypes is a list of rule types that the NetworkPolicy relates to_ Valid options are ["Ingress"], ["Egress"], or ["Ingress", "Egress"]_ If this field is not specified, it will default based on the existence of ingress or egress rules; policies that contain an egress section are assumed to affect egress, and all policies (whether or not they contain an ingress section) are assumed to affect ingress_ If you want to write an egress-only policy, you must explicitly specify policyTypes [ "Egress" ]_ Likewise, if you want to write a policy that specifies that no egress is allowed, you must specify a policyTypes value that include "Egress" (since such a policy would not include an egress section and would otherwise default to just [ "Ingress" ])_ This field is beta-level in 1_8'}
+                                or             
+                                    NETWORKPOLICYSPEC_POLICYTYPES_Egress
+                                    NETWORKPOLICYSPEC_POLICYTYPES_Ingress
+                                    NETWORKPOLICYSPEC_POLICYTYPES_IngressAndEgress
+                            NETWORKPOLICYSPEC_egress   {doc 'egress is a list of egress rules to be applied to the selected pods_ Outgoing traffic is allowed if there are no NetworkPolicies selecting the pod (and cluster policy otherwise allows the traffic), OR if the traffic matches at least one egress rule across all of the NetworkPolicy objects whose podSelector matches the pod_ If this field is empty then this NetworkPolicy limits all outgoing traffic (and serves solely to ensure that the pods it selects are isolated by default)_ This field is beta-level in 1_8'} 
+                                or 
+                                    NETWORKPOLICYSPEC_EGRESS_ports   {doc 'ports is a list of destination ports for outgoing traffic_ Each item in this list is combined using a logical OR_ If this field is empty or missing, this rule matches all ports (traffic not restricted by port)_ If this field is present and contains at least one item, then this rule allows traffic only if the traffic matches at least one port in the list_'}
+                                        mandatory  
+                                            NETWORKPOLICYSPEC_EGRESS_PORTS_port {doc 'port represents the port on the given protocol_ This can either be a numerical or named port on a pod_ If this field is not provided, this matches all port names and numbers_ If present, only traffic on the specified protocol AND port will be matched_'}
+                                            NETWORKPOLICYSPEC_EGRESS_PORTS_protocol {doc 'protocol represents the protocol (TCP, UDP, or SCTP) which traffic must match_ If not specified, this field defaults to TCP_'} 
+                                                alternative   
+                                                    NETWORKPOLICYSPEC_EGRESS_PORTS_PROTOCOL_TCP {default}
+                                                    NETWORKPOLICYSPEC_EGRESS_PORTS_PROTOCOL_UDP
+                                                    NETWORKPOLICYSPEC_EGRESS_PORTS_PROTOCOL_SCTP
+                                        optional
+                                            NETWORKPOLICYSPEC_EGRESS_PORTS_endPort {doc 'endPort indicates that the range of ports from port to endPort if set, inclusive, should be allowed by the policy_ This field cannot be defined if the port field is not defined or if the port field is defined as a named (string) port_ The endPort must be equal or greater than port_'}
+                                    NETWORKPOLICYSPEC_EGRESS_to   {doc 'to is a list of destinations for outgoing traffic of pods selected for this rule_ Items in this list are combined using a logical OR operation_ If this field is empty or missing, this rule matches all destinations (traffic not restricted by destination)_ If this field is present and contains at least one item, this rule allows traffic only if the traffic matches at least one item in the to list_'} 
+                                        or   
+                                            NETWORKPOLICYSPEC_EGRESS_TO_ipBlock {doc 'ipBlock defines policy on a particular IPBlock_ If this field is set then neither of the other fields can be_'}
+                                                mandatory   
+                                                    NETWORKPOLICYSPEC_EGRESS_TO_IPBLOCK_cidr {doc 'cidr is a string representing the IPBlock Valid examples are "192_168_1_0/24" or "2001:db8::/64"'}
+                                                optional   
+                                                    NETWORKPOLICYSPEC_EGRESS_TO_IPBLOCK_except   {doc 'except is a slice of CIDRs that should not be included within an IPBlock Valid examples are "192_168_1_0/24" or "2001:db8::/64" Except values will be rejected if they are outside the cidr range'}
+                                                        mandatory   
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_IPBLOCK_EXCEPT_value
+                                            NETWORKPOLICYSPEC_EGRESS_TO_namespaceSelector {doc 'namespaceSelector selects namespaces using cluster-scoped labels_ This field follows standard label selector semantics; if present but empty, it selects all namespaces_ If podSelector is also set, then the NetworkPolicyPeer as a whole selects the pods matching podSelector in the namespaces selected by namespaceSelector_ Otherwise it selects all pods in the namespaces selected by namespaceSelector_'}
+                                                or   
+                                                    NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_matchExpressions   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                                        mandatory   
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                                                alternative
+                                                                    NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                                                    NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                                    NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                                    NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                                mandatory   
+                                                                    NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHEXPRESSIONS_VALUES_value
+                                                    NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                                        mandatory   
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHLABELS_key
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHLABELS_value
+                                            NETWORKPOLICYSPEC_EGRESS_TO_podSelector {doc 'podSelector is a label selector which selects pods_ This field follows standard label selector semantics; if present but empty, it selects all pods_ If namespaceSelector is also set, then the NetworkPolicyPeer as a whole selects the pods matching podSelector in the Namespaces selected by NamespaceSelector_ Otherwise it selects the pods matching podSelector in the policy`s own namespace_'}
+                                                or   
+                                                    NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_matchExpressions   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                                        mandatory   
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                                                alternative
+                                                                    NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                                                    NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                                    NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                                    NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                                mandatory   
+                                                                    NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHEXPRESSIONS_VALUES_value
+                                                    NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                                        mandatory   
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHLABELS_key
+                                                            NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHLABELS_value
+                            NETWORKPOLICYSPEC_ingress   {doc 'ingress is a list of ingress rules to be applied to the selected pods_ Traffic is allowed to a pod if there are no NetworkPolicies selecting the pod (and cluster policy otherwise allows the traffic), OR if the traffic source is the pod`s local node, OR if the traffic matches at least one ingress rule across all of the NetworkPolicy objects whose podSelector matches the pod_ If this field is empty then this NetworkPolicy does not allow any traffic (and serves solely to ensure that the pods it selects are isolated by default)'}
+                                optional   
+                                    NETWORKPOLICYSPEC_INGRESS_from   {doc 'from is a list of sources which should be able to access the pods selected for this rule_ Items in this list are combined using a logical OR operation_ If this field is empty or missing, this rule matches all sources (traffic not restricted by source)_ If this field is present and contains at least one item, this rule allows traffic only if the traffic matches at least one item in the from list_'} 
+                                        or   
+                                            NETWORKPOLICYSPEC_INGRESS_FROM_ipBlock {doc 'ipBlock defines policy on a particular IPBlock_ If this field is set then neither of the other fields can be_'}
+                                                    mandatory   
+                                                        NETWORKPOLICYSPEC_INGRESS_FROM_IPBLOCK_cidr {doc 'cidr is a string representing the IPBlock Valid examples are "192_168_1_0/24" or "2001:db8::/64"'}
+                                                    optional   
+                                                        NETWORKPOLICYSPEC_INGRESS_FROM_IPBLOCK_except   {doc 'except is a slice of CIDRs that should not be included within an IPBlock Valid examples are "192_168_1_0/24" or "2001:db8::/64" Except values will be rejected if they are outside the cidr range'}
+                                                            mandatory   
+                                                                NETWORKPOLICYSPEC_INGRESS_FROM_IPBLOCK_EXCEPT_value
+                                            NETWORKPOLICYSPEC_INGRESS_FROM_namespaceSelector {doc 'namespaceSelector selects namespaces using cluster-scoped labels_ This field follows standard label selector semantics; if present but empty, it selects all namespaces_ If podSelector is also set, then the NetworkPolicyPeer as a whole selects the pods matching podSelector in the namespaces selected by namespaceSelector_ Otherwise it selects all pods in the namespaces selected by namespaceSelector_'}
+                                                or   
+                                                    NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_matchExpressions   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                                        mandatory   
+                                                            NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                                            NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                                                alternative
+                                                                    NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                                                    NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                                    NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                                    NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist
+                                                            NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                                mandatory   
+                                                                    NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHEXPRESSIONS_VALUES_value
+                                                    NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                                        mandatory   
+                                                            NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHLABELS_key
+                                                            NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHLABELS_value
+                                            NETWORKPOLICYSPEC_INGRESS_FROM_podSelector {doc 'podSelector is a label selector which selects pods_ This field follows standard label selector semantics; if present but empty, it selects all pods_ If namespaceSelector is also set, then the NetworkPolicyPeer as a whole selects the pods matching podSelector in the Namespaces selected by NamespaceSelector_ Otherwise it selects the pods matching podSelector in the policy`s own namespace_'}
+                                                or   
+                                                    NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_matchExpressions   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                                        mandatory   
+                                                            NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                                            NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                                                alternative
+                                                                    NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                                                    NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                                    NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                                    NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist
+                                                            NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                                mandatory   
+                                                                    NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHEXPRESSIONS_VALUES_value
+                                                    NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                                        mandatory   
+                                                            NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHLABELS_key
+                                                            NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHLABELS_value
+                                    NETWORKPOLICYSPEC_INGRESS_ports   {doc 'ports is a list of ports which should be made accessible on the pods selected for this rule_ Each item in this list is combined using a logical OR_ If this field is empty or missing, this rule matches all ports (traffic not restricted by port)_ If this field is present and contains at least one item, then this rule allows traffic only if the traffic matches at least one port in the list_'}
+                                        mandatory  
+                                            NETWORKPOLICYSPEC_INGRESS_PORTS_port {doc 'port represents the port on the given protocol_ This can either be a numerical or named port on a pod_ If this field is not provided, this matches all port names and numbers_ If present, only traffic on the specified protocol AND port will be matched_'}
+                                            NETWORKPOLICYSPEC_INGRESS_PORTS_protocol {doc 'protocol represents the protocol (TCP, UDP, or SCTP) which traffic must match_ If not specified, this field defaults to TCP_'} 
+                                                alternative   
+                                                    NETWORKPOLICYSPEC_INGRESS_PORTS_PROTOCOL_TCP {default}
+                                                    NETWORKPOLICYSPEC_INGRESS_PORTS_PROTOCOL_UDP
+                                                    NETWORKPOLICYSPEC_INGRESS_PORTS_PROTOCOL_SCTP
+                                        optional
+                                            NETWORKPOLICYSPEC_INGRESS_PORTS_endPort {doc 'endPort indicates that the range of ports from port to endPort if set, inclusive, should be allowed by the policy_ This field cannot be defined if the port field is not defined or if the port field is defined as a named (string) port_ The endPort must be equal or greater than port_'}
+                    DaemonSetSpec {doc 'The desired behavior of this daemon set_'}
+                        mandatory
+                            DAEMONSETSPEC_selector {doc 'A label query over pods that are managed by the daemon set_ Must match in order to be controlled_ It must match the pod template`s labels_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/labels/#label-selectors'}
+                                or 
+                                    DAEMONSETSPEC_SELECTOR_matchExpressions   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                        mandatory   
+                                            DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_key
+                                            DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_operator
+                                                alternative
+                                                    DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                                    DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                    DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                    DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist
+                                            DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                mandatory   
+                                                    DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_VALUES_value
+                                    DAEMONSETSPEC_SELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                        mandatory   
+                                            DAEMONSETSPEC_SELECTOR_MATCHLABELS_key
+                                            DAEMONSETSPEC_SELECTOR_MATCHLABELS_value
+                            DAEMONSETSPEC_template {doc 'An object that describes the pod that will be created_ The DaemonSet will create exactly one copy of this pod on every node that matches the template`s node selector (or on every node if no node selector is specified)_ The only allowed template_spec_restartPolicy value is "Always"_ More info: https://kubernetes_io/docs/concepts/workloads/controllers/replicationcontroller#pod-template'}
+                                mandatory   
+                                    DAEMONSETSPEC_TEMPLATE_metadataReference {doc 'Reference to metadata object to not duplicate it'}
+                                    DAEMONSETSPEC_TEMPLATE_podSpecReference {doc 'Reference to Pod spec object to not duplicate it'}
+                        optional
+                            DAEMONSETSPEC_minReadySeconds {default 0, doc 'The minimum number of seconds for which a newly created DaemonSet pod should be ready without any of its container crashing, for it to be considered available_ Defaults to 0 (pod will be considered available as soon as it is ready)_'}
+                            DAEMONSETSPEC_revisionHistoryLimit {default 10, doc 'The number of old history to retain to allow rollback_ This is a pointer to distinguish between explicit zero and not specified_ Defaults to 10_'}
+                            DAEMONSETSPEC_updateStrategy {doc 'An update strategy to replace existing DaemonSet pods with new pods_'}
+                                mandatory   
+                                    DAEMONSETSPEC_UPDATESTRATEGY_type { default 'RollingUpdate', doc 'Type of daemon set update_ Can be "RollingUpdate" or "OnDelete"_ Default is RollingUpdate_'}
+                                optional
+                                    DAEMONSETSPEC_UPDATESTRATEGY_rollingUpdate {doc 'Rolling update config params_ Present if and only if type is RollingUpdate_'}
+                                        mandatory   
+                                            DAEMONSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_maxUnavailable {default 1, doc 'The maximum number of DaemonSet pods that can be unavailable during the update_ Value can be an absolute number (ex: 5) or a percentage of total number of DaemonSet pods at the start of the update (ex: 10%)_ This can not be 0 if MaxSurge is 0_ Defaults to 1_'}
+                                            DAEMONSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_maxSurge {default '0', doc 'he maximum number of nodes with an existing available DaemonSet pod that can have an updated DaemonSet pod during during an update_ Value can be an absolute number (ex: 5) or a percentage of desired pods (ex: 10%)_ This can not be 0 if MaxUnavailable is 0_ Absolute number is calculated from percentage by rounding up to a minimum of 1_ Default value is 0_ Example: when this is set to 30%, at most 30% of the total number of nodes that should be running the daemon pod (i_e_ status_desiredNumberScheduled) can have their a new pod created before the old pod is marked as deleted_ The update starts by launching new pods on 30% of nodes_ Once an updated pod is available (Ready for at least minReadySeconds) the old DaemonSet pod on that node is marked deleted_ If the old pod becomes unavailable for any reason (Ready transitions to false, is evicted, or is drained) an updated pod is immediatedly created on that node without considering surge limits_ Allowing surge implies the possibility that the resources consumed by the daemonset on any given node can double if the readiness check fails, and so resource intensive daemonsets should take into account that they may cause evictions during disruption_'}
+                    ReplicationControllerSpec {doc 'Spec defines the specification of the desired behavior of the replication controller_'}
+                        mandatory  
+                            REPLICATIONCONTROLLERSPEC_selector {doc 'Selector is a label query over pods that should match the Replicas count_ If Selector is empty, it is defaulted to the labels present on the Pod template_ Label keys and values that must match in order to be controlled by this replication controller, if empty defaulted to labels on Pod template_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/labels/#label-selectors'} 
+                                mandatory
+                                    REPLICATIONCONTROLLERSPEC_SELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                        mandatory   
+                                            REPLICATIONCONTROLLERSPEC_SELECTOR_MATCHLABELS_key
+                                            REPLICATIONCONTROLLERSPEC_SELECTOR_MATCHLABELS_value
+                            REPLICATIONCONTROLLERSPEC_template {doc 'Template is the object that describes the pod that will be created if insufficient replicas are detected_ This takes precedence over a TemplateRef_ The only allowed template_spec_restartPolicy value is "Always"_ More info: https://kubernetes_io/docs/concepts/workloads/controllers/replicationcontroller#pod-template'} 
+                                mandatory   
+                                    REPLICATIONCONTROLLERSPEC_TEMPLATE_metadataReference {doc 'Reference to metadata object to not duplicate it'}
+                                    REPLICATIONCONTROLLERSPEC_TEMPLATE_podSpecReference {doc 'Reference to Pod spec object to not duplicate it'}
+                        optional
+                            REPLICATIONCONTROLLERSPEC_minReadySeconds {default 0, doc 'Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for it to be considered available_ Defaults to 0 (pod will be considered available as soon as it is ready)'} 
+                            REPLICATIONCONTROLLERSPEC_replicas {default 1, doc 'Replicas is the number of desired replicas_ This is a pointer to distinguish between explicit zero and unspecified_ Defaults to 1_ More info: https://kubernetes_io/docs/concepts/workloads/controllers/replicationcontroller#what-is-a-replicationcontroller'} 
+                    HorizontalPodAutoscalerSpec {doc 'HorizontalPodAutoscalerSpec is the specification for the behaviour of the autoscaler_'}
+                        mandatory 
+                            HORIZONTALPODAUTOSCALERSPEC_scaleTargetRef {doc 'scaleTargetRef points to the target resource to scale, and is used to the pods for which metrics should be collected, as well as to actually change the replica count_'}
+                                mandatory   
+                                    HORIZONTALPODAUTOSCALERSPEC_SCALETARGETREF_apiVersion {doc 'apiVersion is the API version of the referent_'}
+                                    HORIZONTALPODAUTOSCALERSPEC_SCALETARGETREF_kind {doc 'kind is the kind of the referent; More info: https://git_k8s_io/community/contributors/devel/sig-architecture/api-conventions_md#types-kinds'}
+                                    HORIZONTALPODAUTOSCALERSPEC_SCALETARGETREF_name {doc 'name is the name of the referent; More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#names'}
+                            HORIZONTALPODAUTOSCALERSPEC_maxReplicas {doc 'maxReplicas is the upper limit for the number of replicas to which the autoscaler can scale up_ It cannot be less that minReplicas_'}
+                            HORIZONTALPODAUTOSCALERSPEC_minReplicas {default 1, doc 'minReplicas is the lower limit for the number of replicas to which the autoscaler can scale down_ It defaults to 1 pod_ minReplicas is allowed to be 0 if the alpha feature gate HPAScaleToZero is enabled and at least one Object or External metric is configured_ Scaling is active as long as at least one metric value is available_'}
+                        optional
+                            HORIZONTALPODAUTOSCALERSPEC_metrics    {doc 'metrics contains the specifications for which to use to calculate the desired replica count (the maximum replica count across all metrics will be used)_ The desired replica count is calculated multiplying the ratio between the target value and the current value by the current number of pods_ Ergo, metrics used must decrease as the pod count is increased, and vice-versa_ See the individual metric source types for more information about how each type of metric must respond_ If not set, the default metric will be set to 80% average CPU utilization_'}
+                                mandatory   
+                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_type {doc 'type is the type of metric source_ It should be one of "ContainerResource", "External", "Object", "Pods" or "Resource", each mapping to a matching field in the object_ Note: "ContainerResource" type is available on when the feature-gate HPAContainerMetrics is enabled'}
+                                        alternative   
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_TYPE_containerResource {doc 'containerResource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing a single container in each pod of the current scale target (e_g_ CPU or memory)_ Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source_ This is an alpha feature and can be enabled by the HPAContainerMetrics feature flag_'}
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_TYPE_external {doc 'external refers to a global metric that is not associated with any Kubernetes object_ It allows autoscaling based on information coming from components running outside of cluster (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster)_'}
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_TYPE_object {doc 'object refers to a metric describing a single kubernetes object (for example, hits-per-second on an Ingress object)_'}
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_TYPE_pods {doc 'pods refers to a metric describing each pod in the current scale target (for example, transactions-processed-per-second)_ The values will be averaged together before being compared to the target value_'}
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_TYPE_resource {doc 'resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing each pod in the current scale target (e_g_ CPU or memory)_ Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source_'}
+                                alternative
+                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_containerResource {doc 'containerResource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing a single container in each pod of the current scale target (e_g_ CPU or memory)_ Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source_ This is an alpha feature and can be enabled by the HPAContainerMetrics feature flag_'}
+                                        mandatory   
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_CONTAINERRESOURCE_container {doc 'container is the name of the container in the pods of the scaling target'}
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_CONTAINERRESOURCE_name {doc 'name is the name of the resource in question_'}
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_CONTAINERRESOURCE_target {doc 'target specifies the target value for the given metric'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_CONTAINERRESOURCE_TARGET_type {doc 'ype represents whether the metric type is Utilization, Value, or AverageValue'}
+                                                        alternative
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_CONTAINERRESOURCE_TARGET_TYPE_AverageValue
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_CONTAINERRESOURCE_TARGET_TYPE_Utilization
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_CONTAINERRESOURCE_TARGET_TYPE_Value
+                                                optional   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_CONTAINERRESOURCE_TARGET_averageUtilization {doc 'averageUtilization is the target value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods_ Currently only valid for Resource metric source type'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_CONTAINERRESOURCE_TARGET_averageValue {doc 'averageValue is the target value of the average of the metric across all relevant pods (as a quantity)'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_CONTAINERRESOURCE_TARGET_value {doc 'value is the target value of the metric (as a quantity)_'}
+                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_external {doc 'external refers to a global metric that is not associated with any Kubernetes object_ It allows autoscaling based on information coming from components running outside of cluster (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster)_'}
+                                        mandatory   
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_metric {doc 'metric identifies the target metric by name and selector'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_name {doc 'name is the name of the given metric'}
+                                                optional    
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_selector {doc 'selector is the string-encoded form of a standard kubernetes label selector for the given metric When set, it is passed as an additional parameter to the metrics server for more specific metrics scoping_ When unset, just the metricName will be used to gather metrics_'}
+                                                        mandatory
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_SELECTOR_matchlabels    {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                                                mandatory   
+                                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_SELECTOR_MATCHLABELS_key
+                                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_SELECTOR_MATCHLABELS_value
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_target {doc 'target specifies the target value for the given metric'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_TARGET_type {doc 'ype represents whether the metric type is Utilization, Value, or AverageValue'}
+                                                        alternative
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_TARGET_TYPE_AverageValue
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_TARGET_TYPE_Utilization
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_TARGET_TYPE_Value
+                                                optional   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_TARGET_averageUtilization {doc 'averageUtilization is the target value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods_ Currently only valid for Resource metric source type'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_TARGET_averageValue {doc 'averageValue is the target value of the average of the metric across all relevant pods (as a quantity)'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_EXTERNAL_TARGET_value {doc 'value is the target value of the metric (as a quantity)_'}
+                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_object {doc 'object refers to a metric describing a single kubernetes object (for example, hits-per-second on an Ingress object)_'}
+                                        mandatory   
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_describedObject {doc 'describedObject specifies the descriptions of a object,such as kind,name apiVersion'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_DESCRIBEDOBJECT_kind {doc 'kind is the kind of the referent; More info: https://git_k8s_io/community/contributors/devel/sig-architecture/api-conventions_md#types-kinds'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_DESCRIBEDOBJECT_name {doc 'name is the name of the referent; More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/names/#names'}
+                                                optional
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_DESCRIBEDOBJECT_apiVersion {doc 'apiVersion is the API version of the referent'}
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_metric {doc 'metric identifies the target metric by name and selector'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_name {doc 'name is the name of the given metric'}
+                                                optional    
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_selector {doc 'selector is the string-encoded form of a standard kubernetes label selector for the given metric When set, it is passed as an additional parameter to the metrics server for more specific metrics scoping_ When unset, just the metricName will be used to gather metrics_'}
+                                                        mandatory
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_SELECTOR_matchlabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                                                mandatory   
+                                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_SELECTOR_MATCHLABELS_key
+                                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_SELECTOR_MATCHLABELS_value
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_target {doc 'target specifies the target value for the given metric'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_TARGET_type {doc 'ype represents whether the metric type is Utilization, Value, or AverageValue'}
+                                                        alternative
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_TARGET_TYPE_AverageValue
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_TARGET_TYPE_Utilization
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_TARGET_TYPE_Value
+                                                optional   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_TARGET_averageUtilization {doc 'averageUtilization is the target value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods_ Currently only valid for Resource metric source type'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_TARGET_averageValue {doc 'averageValue is the target value of the average of the metric across all relevant pods (as a quantity)'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_OBJECT_TARGET_value {doc 'value is the target value of the metric (as a quantity)_'}
+                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_pods {doc 'pods refers to a metric describing each pod in the current scale target (for example, transactions-processed-per-second)_ The values will be averaged together before being compared to the target value_'}
+                                        mandatory   
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_metric {doc 'metric identifies the target metric by name and selector'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_name {doc 'name is the name of the given metric'}
+                                                optional    
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_selector {doc 'selector is the string-encoded form of a standard kubernetes label selector for the given metric When set, it is passed as an additional parameter to the metrics server for more specific metrics scoping_ When unset, just the metricName will be used to gather metrics_'}
+                                                        mandatory
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_SELECTOR_matchlabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                                                mandatory   
+                                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_SELECTOR_MATCHLABELS_key
+                                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_SELECTOR_MATCHLABELS_value
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_target {doc 'target specifies the target value for the given metric'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_TARGET_type {doc 'ype represents whether the metric type is Utilization, Value, or AverageValue'}
+                                                        alternative
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_TARGET_TYPE_AverageValue
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_TARGET_TYPE_Utilization
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_TARGET_TYPE_Value
+                                                optional   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_TARGET_averageUtilization {doc 'averageUtilization is the target value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods_ Currently only valid for Resource metric source type'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_TARGET_averageValue {doc 'averageValue is the target value of the average of the metric across all relevant pods (as a quantity)'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_PODS_TARGET_value {doc 'value is the target value of the metric (as a quantity)_'}
+                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_resource {doc 'resource refers to a resource metric (such as those specified in requests and limits) known to Kubernetes describing each pod in the current scale target (e_g_ CPU or memory)_ Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the "pods" source_'}
+                                        mandatory
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_RESOURCE_name {doc 'name is the name of the resource in question_'}
+                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_RESOURCE_target {doc 'target specifies the target value for the given metric'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_RESOURCE_TARGET_type {doc 'type represents whether the metric type is Utilization, Value, or AverageValue'}
+                                                        alternative
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_RESOURCE_TARGET_TYPE_AverageValue
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_RESOURCE_TARGET_TYPE_Utilization
+                                                            HORIZONTALPODAUTOSCALERSPEC_METRICS_RESOURCE_TARGET_TYPE_Value
+                                                optional   
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_RESOURCE_TARGET_averageUtilization {doc 'averageUtilization is the target value of the average of the resource metric across all relevant pods, represented as a percentage of the requested value of the resource for the pods_ Currently only valid for Resource metric source type'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_RESOURCE_TARGET_averageValue {doc 'averageValue is the target value of the average of the metric across all relevant pods (as a quantity)'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_METRICS_RESOURCE_TARGET_value {doc 'value is the target value of the metric (as a quantity)_'}
+                            HORIZONTALPODAUTOSCALERSPEC_behavior {doc 'behavior configures the scaling behavior of the target in both Up and Down directions (scaleUp and scaleDown fields respectively)_ If not set, the default HPAScalingRules for scale up and scale down are used_'}
+                                or   
+                                    HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_scaleDown {doc 'scaleDown is scaling policy for scaling Down_ If not set, the default value is to allow to scale down to minReplicas pods, with a 300 second stabilization window (i_e_, the highest recommendation for the last 300sec is used)_'}
+                                        mandatory 
+                                            HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEDOWN_policies   {doc 'policies is a list of potential scaling polices which can be used during scaling_ At least one policy must be specified, otherwise the HPAScalingRules will be discarded as invalid'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEDOWN_POLICIES_periodSeconds {doc 'periodSeconds specifies the window of time for which the policy should hold true_ PeriodSeconds must be greater than zero and less than or equal to 1800 (30 min)_'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEDOWN_POLICIES_type {doc 'type is used to specify the scaling policy_'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEDOWN_POLICIES_value {doc 'value contains the amount of change which is permitted by the policy_ It must be greater than zero'}
+                                        optional   
+                                            HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEDOWN_selectPolicy {doc 'selectPolicy is used to specify which policy should be used_ If not set, the default value Max is used_'}
+                                            HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEDOWN_stabilizationWindowSeconds {default 300, doc 'stabilizationWindowSeconds is the number of seconds for which past recommendations should be considered while scaling up or scaling down_ StabilizationWindowSeconds must be greater than or equal to zero and less than or equal to 3600 (one hour)_ If not set, use the default values: - For scale up: 0 (i_e_ no stabilization is done)_ - For scale down: 300 (i_e_ the stabilization window is 300 seconds long)_'}
+                                    HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_scaleUp {doc 'scaleUp is scaling policy for scaling Up_ If not set, the default value is the higher of: * increase no more than 4 pods per 60 seconds * double the number of pods per 60 seconds No stabilization is used_'}
+                                        mandatory 
+                                            HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEUP_policies   {doc 'policies is a list of potential scaling polices which can be used during scaling_ At least one policy must be specified, otherwise the HPAScalingRules will be discarded as invalid'}
+                                                mandatory   
+                                                    HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEUP_POLICIES_periodSeconds {doc 'periodSeconds specifies the window of time for which the policy should hold true_ PeriodSeconds must be greater than zero and less than or equal to 1800 (30 min)_'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEUP_POLICIES_type {doc 'type is used to specify the scaling policy_'}
+                                                    HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEUP_POLICIES_value {doc 'value contains the amount of change which is permitted by the policy_ It must be greater than zero'}
+                                        optional   
+                                            HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEUP_selectPolicy {doc 'selectPolicy is used to specify which policy should be used_ If not set, the default value Max is used_'}
+                                            HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEUP_stabilizationWindowSeconds {default 0, doc 'stabilizationWindowSeconds is the number of seconds for which past recommendations should be considered while scaling up or scaling down_ StabilizationWindowSeconds must be greater than or equal to zero and less than or equal to 3600 (one hour)_ If not set, use the default values: - For scale up: 0 (i_e_ no stabilization is done)_ - For scale down: 300 (i_e_ the stabilization window is 300 seconds long)_'}
             binaryData   {doc 'BinaryData contains the binary data_ Each key must consist of alphanumeric characters, "-", "_" or "_"_ BinaryData can contain byte sequences that are not in the UTF-8 range_ The keys stored in BinaryData must not overlap with the ones in the Data field, this is enforced during validation process_ Using this field will require 1_10+ apiserver and kubelet_'}
                 mandatory
                     BINARYDATA_binaryFile_name
@@ -1215,7 +1932,7 @@ constraints
     GROUP_autoscaling => VERSION_v2 | VERSION_v1 
     GROUP_flowcontrol => VERSION_v1beta3 | VERSION_v1
     GROUP_resource => VERSION_v1alpha2 | VERSION_v1
-    (KIND_DaemonSet | KIND_Deployment | KIND_ReplicaSet | KIND_StatefullSet | KIND_ControllerRevision) => GROUP_apps
+    (KIND_DaemonSet | KIND_Deployment | KIND_ReplicaSet | KIND_StatefulSet | KIND_ControllerRevision) => GROUP_apps
     (KIND_Container | KIND_Pod | KIND_ReplicationController | KIND_Service | KIND_Endpoints | KIND_ConfigMap | KIND_Secret | KIND_PersistentVolumeClaim | KIND_Volume | KIND_LimitRange | KIND_PodTemplate | KIND_Binding | KIND_ComponentStatus | KIND_Namespace | KIND_Node | KIND_PersistentVolume | KIND_ResourceQuota | KIND_ServiceAccount) => GROUP_core
     (KIND_CronJob | KIND_Job) => GROUP_batch
     KIND_EndpointSlice => GROUP_discovery
@@ -1237,16 +1954,25 @@ constraints
     (KIND_SelfSubjectReview | KIND_TokenRequest | KIND_TokenReview) => GROUP_authentication
     KIND_StorageVersion => GROUP_internal
     (KIND_ClusterRole | KIND_ClusterRoleBinding | KIND_Role | KIND_RoleBinding)=> GROUP_rbac
-    DeploymentSpec & PodSpec & ServiceSpec & CronJobSpec & JobSpec & CustomResourceDefinitionSpec & IngressSpec => spec
+    DeploymentSpec & PodSpec & ServiceSpec & CronJobSpec & JobSpec & CustomResourceDefinitionSpec & IngressSpec & PersistentVolumeClaimSpec & PersistentVolumeSpec & StatefulSetSpec & NetworkPolicySpec & DaemonSetSpec & ReplicationControllerSpec & HorizontalPodAutoscalerSpec=> spec
     KIND_ConfigMap => binaryData | data 
     KIND_Endpoints => subsets
     KIND_Role => rules
     KIND_ClusterRole => rules
     KIND_ClusterRoleBinding => subjects & roleRef
+    KIND_RoleBinding => subjects & roleRef
     KIND_CronJob => CronJobSpec 
     KIND_Job => JobSpec
     KIND_Namespace => NamespaceSpec
     KIND_Ingress => IngressSpec
+    KIND_PersistentVolumeClaim => PersistentVolumeClaimSpec
+    KIND_ServiceAccount => automountServiceAccountToken & imagePullSecrets & secrets
+    KIND_PersistentVolume => PersistentVolumeSpec
+    KIND_StatefulSet => StatefulSetSpec
+    KIND_NetworkPolicy => NetworkPolicySpec
+    KIND_DaemonSet => DaemonSetSpec
+    KIND_ReplicationController => ReplicationControllerSpec
+    KIND_HorizontalPodAutoscaler => HorizontalPodAutoscalerSpec
     immutable => KIND_ConfigMap | KIND_Secret
     stringData => KIND_Secret
     KIND_CustomResourceDefinition => CustomResourceDefinitionSpec
@@ -1261,6 +1987,11 @@ constraints
     SERVICESPEC_ipFamilyPolicy => !TYPE_ExternalName
     SERVICESPEC_ipFamilies => TYPE_ClusterIP | TYPE_NodePort | TYPE_LoadBalancer
     DEPLOYMENTSPEC_TEMPLATE_podspec => PodSpec
+    STATEFULSETSPEC_TEMPLATE_podSpecReference => PodSpec
+    JOBSPEC_TEMPLATE_podSpecReference => PodSpec
+    DAEMONSETSPEC_TEMPLATE_podSpecReference => PodSpec
+    REPLICATIONCONTROLLERSPEC_TEMPLATE_podSpecReference => PodSpec
+    JOBTEMPLATE_jobSpecReference => JobSpec
     CONTAINERS_tty => CONTAINERS_stdin
     SERVICESPEC_allocateLoadBalancerNodePorts => TYPE_LoadBalancer
     ServiceSpec => KIND_Service
@@ -1268,6 +1999,5 @@ constraints
     RULES_apiGroups => RULES_verbs
     CONVERSION_STRATEGY_Webhook => CONVERSION_webhook
     aggregationRule => KIND_ClusterRole
-    subjects & roleRef => KIND_ClusterRoleBinding
-    automountServiceAccountToken & imagePullSecrets & secrets => KIND_ServiceAccount
+    subjects & roleRef => KIND_ClusterRoleBinding | KIND_RoleBinding
     JOBSPEC_backoffLimitPerIndex => COMPLETIONMODE_Indexed
