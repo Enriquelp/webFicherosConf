@@ -1,0 +1,13 @@
+
+subjects:
+{%for s in subjects%}
+  - kind: {{s.SUBJECTS_KIND_User}}{{s.SUBJECTS_KIND_Group}}{{s.SUBJECTS_KIND_ServiceAccount}}
+    name: {{s.SUBJECTS_name}}
+    {%if s.SUBJECTS_apiGroup%}apiGroup: {{s.SUBJECTS_apiGroup}}{%endif%}
+    {%if s.SUBJECTS_namespace%}namespace: {{s.SUBJECTS_namespace}}{%endif%}
+{%endfor%}
+
+roleRef:
+  kind: {{ROLEREF_kind}}
+  name: {{ROLEREF_name}}
+  apiGroup: {{ROLEREF_apiGroup}}

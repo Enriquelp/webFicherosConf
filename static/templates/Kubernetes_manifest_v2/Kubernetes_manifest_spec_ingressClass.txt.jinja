@@ -1,0 +1,10 @@
+
+{%if INGRESSCLASSSPEC_controller%}controller: {{INGRESSCLASSSPEC_controller}}{%endif%}
+
+{%if INGRESSCLASSSPEC_parameters%}parameters:
+  {%if INGRESSCLASSSPEC_PARAMETERS_kind%}kind: {{INGRESSCLASSSPEC_PARAMETERS_kind}}{%endif%}
+  {%if INGRESSCLASSSPEC_PARAMETERS_name%}name: {{INGRESSCLASSSPEC_PARAMETERS_name}}{%endif%}
+  {%if INGRESSCLASSSPEC_PARAMETERS_scope%}scope: {{INGRESSCLASSSPEC_PARAMETERS_SCOPE_Cluster}}{{INGRESSCLASSSPEC_PARAMETERS_SCOPE_Namespace}}{%endif%}
+  {%if INGRESSCLASSSPEC_PARAMETERS_namespace%}namespace: {{INGRESSCLASSSPEC_PARAMETERS_namespace}}{%endif%}
+  {%if INGRESSCLASSSPEC_PARAMETERS_apiGroup%}apiGroup: {{INGRESSCLASSSPEC_PARAMETERS_apiGroup}}{%endif%}
+{%endif%}

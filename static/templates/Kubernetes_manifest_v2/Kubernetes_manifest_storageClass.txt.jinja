@@ -1,0 +1,36 @@
+parameters:
+{%for p in parameters%}
+  {{p.PARAMETERS_key}}: {{p.PARAMETERS_value}}
+{%endfor%}
+
+
+{%if allowVolumeExpansion%}allowVolumeExpansion: true{%else%}allowVolumeExpansion: false{%endif%}
+
+{%if allowedTopologies%}allowedTopologies:
+{%for a in allowedTopologies%}
+  - matchLabelExpressions: 
+  {%for m in a.ALLOWEDTOPOLOGIES_matchLabelExpressions%}
+    - key: {{m.ALLOWEDTOPOLOGIES_MATCHLABELEXPRESSIONS_key}}
+      values:
+      {%for v in m.ALLOWEDTOPOLOGIES_MATCHLABELEXPRESSIONS_values%}
+        - {{v.ALLOWEDTOPOLOGIES_MATCHLABELEXPRESSIONS_VALUES_value}}
+      {%endfor%} 
+  {%endfor%}
+{%endfor%}
+{%endif%}
+
+{%if mountOptions%}mountOptions:
+{%for m in mountOptions%}
+  - {{m.MOUNTOPTIONS_value}}
+{%endfor%}
+{%endif%}
+
+{%if provisioner%}provisioner: {{provisioner}}{%endif%}
+
+{%if reclaimPolicy%}reclaimPolicy: {{reclaimPolicy}}{%endif%}
+
+{%if volumeBindingMode%}volumeBindingMode: {{volumeBindingMode}}{%endif%}
+
+
+
+

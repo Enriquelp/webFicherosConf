@@ -1,0 +1,146 @@
+
+{%if NETWORKPOLICYSPEC_podSelector%}podSelector:
+  {%if NETWORKPOLICYSPEC_PODSELECTOR_matchExpressions%}matchExpressions:
+  {%for ex in NETWORKPOLICYSPEC_PODSELECTOR_matchExpressions%}
+    - key: {{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_key}}
+      operator: {{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_In}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist}}
+      values:
+      {%for v in ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_values%}
+        - {{v.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_VALUES_value}}
+      {%endfor%}
+  {%endfor%}
+  {%endif%}
+  {%if NETWORKPOLICYSPEC_PODSELECTOR_matchLabels%}matchLabels:
+  {%for l in NETWORKPOLICYSPEC_PODSELECTOR_matchLabels%}
+    {{l.NETWORKPOLICYSPEC_PODSELECTOR_MATCHLABELS_key}}: {{l.NETWORKPOLICYSPEC_PODSELECTOR_MATCHLABELS_value}}
+  {%endfor%}
+  {%endif%}
+{%endif%}
+
+{%if NETWORKPOLICYSPEC_policyTypes%}policyTypes: [{{NETWORKPOLICYSPECEgress}}{{NETWORKPOLICYSPECIngress}}{{NETWORKPOLICYSPECIngressAndEgress}}]{%endif%}
+
+{%if NETWORKPOLICYSPEC_egress%}egress:
+{%for e in NETWORKPOLICYSPEC_egress%}
+
+  {%if e.NETWORKPOLICYSPEC_EGRESS_ports%}- ports:
+  {%for p in e.NETWORKPOLICYSPEC_EGRESS_ports%}
+      - port: {{p.NETWORKPOLICYSPEC_EGRESS_PORTS_port}}
+        protocol: {{p.NETWORKPOLICYSPEC_EGRESS_PORTS_PROTOCOL_TCP}}{{p.NETWORKPOLICYSPEC_EGRESS_PORTS_PROTOCOL_UDP}}{{p.NETWORKPOLICYSPEC_EGRESS_PORTS_PROTOCOL_SCTP}}
+        {%if p.NETWORKPOLICYSPEC_EGRESS_PORTS_endPort%}endPort: {{p.NETWORKPOLICYSPEC_EGRESS_PORTS_endPort}}{%endif%}
+  {%endfor%}
+  {%endif%}
+
+    {%if e.NETWORKPOLICYSPEC_EGRESS_to%}to: 
+    {%for to in e.NETWORKPOLICYSPEC_EGRESS_to%}
+      {%if to.NETWORKPOLICYSPEC_EGRESS_TO_ipBlock%}- ipBlock: 
+          cidr: {{to.NETWORKPOLICYSPEC_EGRESS_TO_IPBLOCK_cidr}}
+          {%if to.NETWORKPOLICYSPEC_EGRESS_TO_IPBLOCK_except%}except:
+          {%for ex in to.NETWORKPOLICYSPEC_EGRESS_TO_IPBLOCK_except%}
+            - {{ex.NETWORKPOLICYSPEC_EGRESS_TO_IPBLOCK_EXCEPT_value}}
+          {%endfor%}
+          {%endif%}
+      {%endif%}
+
+      {%if to.NETWORKPOLICYSPEC_EGRESS_TO_namespaceSelector%}- namespaceSelector:
+          {%if to.NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_matchExpressions%}matchExpressions:
+          {%for ex in to.NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_matchExpressions%}
+            - key: {{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_key}}
+              operator: {{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_In}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist}}
+              values:
+              {%for v in ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_values%}
+                - {{v.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_VALUES_value}}
+              {%endfor%}
+          {%endfor%}
+          {%endif%}
+          {%if to.NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_matchLabels%}matchLabels:
+          {%for l in to.NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_matchLabels%}
+            {{l.NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHLABELS_key}}: {{l.NETWORKPOLICYSPEC_EGRESS_TO_NAMESPACESELECTOR_MATCHLABELS_value}}
+          {%endfor%}
+          {%endif%}
+      {%endif%}
+
+      {%if to.NETWORKPOLICYSPEC_EGRESS_TO_podSelector%}- podSelector:
+        {%if to.NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_matchExpressions%}matchExpressions:
+          {%for ex in to.NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTORR_matchExpressions%}
+            - key: {{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_key}}
+              operator: {{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_In}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist}}
+              values:
+              {%for v in ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_values%}
+                - {{v.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_VALUES_value}}
+              {%endfor%}
+          {%endfor%}
+          {%endif%}
+          {%if to.NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_matchLabels%}matchLabels:
+          {%for l in to.NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_matchLabels%}
+            {{l.NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHLABELS_key}}: {{l.NETWORKPOLICYSPEC_EGRESS_TO_PODSELECTOR_MATCHLABELS_value}}
+          {%endfor%}
+          {%endif%}
+      {%endif%}
+
+    {%endfor%}
+    {%endif%} 
+{%endfor%}
+{%endif%}
+
+{%if NETWORKPOLICYSPEC_ingress%}ingress:
+{%for i in NETWORKPOLICYSPEC_ingress%}
+
+  {%if i.NETWORKPOLICYSPEC_INGRESS_ports%}- ports:
+  {%for p in i.NETWORKPOLICYSPEC_INGRESS_ports%}
+      - port: {{p.NETWORKPOLICYSPEC_INGRESS_PORTS_port}}
+        protocol: {{p.NETWORKPOLICYSPEC_INGRESS_PORTS_PROTOCOL_TCP}}{{p.NETWORKPOLICYSPEC_INGRESS_PORTS_PROTOCOL_UDP}}{{p.NETWORKPOLICYSPEC_INGRESS_PORTS_PROTOCOL_SCTP}}
+        {%if p.NETWORKPOLICYSPEC_INGRESS_PORTS_endPort%}endPort: {{p.NETWORKPOLICYSPEC_INGRESS_PORTS_endPort}}{%endif%}
+  {%endfor%}
+  {%endif%}
+
+    {%if i.NETWORKPOLICYSPEC_INGRESS_from%}from: 
+    {%for f in i.NETWORKPOLICYSPEC_INGRESS_from%}
+      {%if f.NETWORKPOLICYSPEC_INGRESS_FROM_ipBlock%}- ipBlock: 
+          cidr: {{f.NETWORKPOLICYSPEC_INGRESS_FROM_IPBLOCK_cidr}}
+          {%if f.NETWORKPOLICYSPEC_INGRESS_FROM_IPBLOCK_except%}except:
+          {%for ex in f.NETWORKPOLICYSPEC_INGRESS_FROM_IPBLOCK_except%}
+            - {{ex.NETWORKPOLICYSPEC_INGRESS_FROM_IPBLOCK_EXCEPT_value}}
+          {%endfor%}
+          {%endif%}
+      {%endif%}
+
+      {%if f.NETWORKPOLICYSPEC_INGRESS_FROM_namespaceSelector%}- namespaceSelector:
+          {%if f.NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_matchExpressions%}matchExpressions:
+          {%for ex in f.NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_matchExpressions%}
+            - key: {{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_key}}
+              operator: {{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_In}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist}}
+              values:
+              {%for v in ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_values%}
+                - {{v.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_VALUES_value}}
+              {%endfor%}
+          {%endfor%}
+          {%endif%}
+          {%if f.NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_matchLabels%}matchLabels:
+          {%for l in f.NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_matchLabels%}
+            {{l.NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHLABELS_key}}: {{l.NETWORKPOLICYSPEC_INGRESS_FROM_NAMESPACESELECTOR_MATCHLABELS_value}}
+          {%endfor%}
+          {%endif%}
+      {%endif%}
+
+      {%if f.NETWORKPOLICYSPEC_INGRESS_FROM_podSelector%}- podSelector:
+        {%if f.NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_matchExpressions%}matchExpressions:
+          {%for ex in f.NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTORR_matchExpressions%}
+            - key: {{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_key}}
+              operator: {{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_In}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist}}{{ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist}}
+              values:
+              {%for v in ex.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_values%}
+                - {{v.NETWORKPOLICYSPEC_PODSELECTOR_MATCHEXPRESSIONS_VALUES_value}}
+              {%endfor%}
+          {%endfor%}
+          {%endif%}
+          {%if f.NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_matchLabels%}matchLabels:
+          {%for l in NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_matchLabels%}
+            {{l.NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHLABELS_key}}: {{l.NETWORKPOLICYSPEC_INGRESS_FROM_PODSELECTOR_MATCHLABELS_value}}
+          {%endfor%}
+          {%endif%}
+      {%endif%}
+
+    {%endfor%}
+    {%endif%} 
+{%endfor%}
+{%endif%}

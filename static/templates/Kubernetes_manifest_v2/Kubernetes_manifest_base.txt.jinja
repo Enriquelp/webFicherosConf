@@ -1,5 +1,5 @@
-apiVersion: {{GROUP_admissionregistration}}{{GROUP_apiextensions}}{{GROUP_apiregistration}}{{GROUP_apps}}{{GROUP_authentication}}{{GROUP_authorization}}{{GROUP_autoscaling}}{{GROUP_batch}}{{GROUP_certificates}}{{GROUP_coordination}}{{GROUP_discovery}}{{GROUP_events}}{{GROUP_flowcontrol_apiserver}}{{GROUP_internal_apiserver}}{{GROUP_networking}}{{GROUP_node}}{{GROUP_policy}}{{GROUP_rbac_authorization}}{{GROUP_resource}}{{GROUP_scheduling}}{{GROUP_storage}}{%if GROUP_core%}{%else%}/{%endif%}{{VERSION_v1}}{{VERSION_v2}}{{VERSION_v1beta1}}{{VERSION_v1beta3}}{{VERSION_v1alpha1}}{{VERSION_v1alpha2}}
-kind: {{KIND_Container}}{{KIND_CronJob}}{{KIND_DaemonSet}}{{KIND_Deployment}}{{KIND_Job}}{{KIND_Pod}}{{KIND_ReplicaSet}}{{KIND_ReplicationController}}{{KIND_StatefullSet}}{{KIND_Endpoints}}{{KIND_EndpintSlice}}{{KIND_Ingress}}{{KIND_IngressClass}}{{KIND_Service}}{{KIND_ConfigMap}}{{KIND_CSIDriver}}{{KIND_CSINode}}{{KIND_Secret}}{{KIND_PersistentVolumeClaim}}{{KIND_StorageClass}}{{KIND_CSIStorageCapacity}}{{KIND_Volume}}{{KIND_VolumeAttachment}}{{KIND_VolumeAttributesClass}}{{KIND_ClusterTrustBundle}}{{KIND_ControllerRevision}}{{KIND_CustomResourceDefinition}}{{KIND_Event}}{{KIND_LimitRange}}{{KIND_HorizontalPodAutoscaler}}{{KIND_MutatingWebhookConfiguration}}{{KIND_ValidatingWebhookConfiguration}}{{KIND_PodSchedulingContext}}{{KIND_PodTemplate}}{{KIND_PodDisruptionBudget}}{{KIND_PriorityClass}}{{KIND_ResourceClaim}}{{KIND_ResourceClaimTemplate}}{{KIND_ResourceClass}}{{KIND_ValidatingAdmissionPolicy}}{{KIND_ValidatingAdmissionPolicyBinding}}{{KIND_APIService}}{{KIND_Binding}}{{KIND_CertificateSigningRequest}}{{KIND_ClusterRole}}{{KIND_ClusterRoleBinding}}{{KIND_ComponentStatus}}{{KIND_FlowSchema}}{{KIND_IPAddress}}{{KIND_Lease}}{{KIND_LocalSubjectAccessReview}}{{KIND_Namespace}}{{KIND_Node}}{{KIND_PersistentVolume}}{{KIND_PriorityLevelConfiguration}}{{KIND_ResourceQuota}}{{KIND_Role}}{{KIND_RoleBinding}}{{KIND_RuntimeClass}}{{KIND_SelfSubjectAccessReview}}{{KIND_SelfSubjectReview}}{{KIND_SelfSubjectRulesReview}}{{KIND_ServiceAccount}}{{KIND_ServiceCIDR}}{{KIND_StorageVersion}}{{KIND_SubjectAccessReview}}{{KIND_TokenRequest}}{{KIND_TokenReview}}{{KIND_NetworkPolicy}}{{KIND_ResourceClaimParameters}}{{KIND_ResourceSlice}}
+apiVersion: {{GROUP_admissionregistration}}{{GROUP_apiextensions}}{{GROUP_apiregistration}}{{GROUP_apps}}{{GROUP_authentication}}{{GROUP_authorization}}{{GROUP_autoscaling}}{{GROUP_batch}}{{GROUP_certificates}}{{GROUP_coordination}}{{GROUP_discovery}}{{GROUP_events}}{{GROUP_flowcontrol}}{{GROUP_internal}}{{GROUP_networking}}{{GROUP_node}}{{GROUP_policy}}{{GROUP_rbac}}{{GROUP_resource}}{{GROUP_scheduling}}{{GROUP_storage}}{%if GROUP_core%}{%else%}/{%endif%}{{VERSION_v1}}{{VERSION_v2}}{{VERSION_v1beta1}}{{VERSION_v1beta3}}{{VERSION_v1alpha1}}{{VERSION_v1alpha2}}
+kind: {{KIND_Container}}{{KIND_CronJob}}{{KIND_DaemonSet}}{{KIND_Deployment}}{{KIND_Job}}{{KIND_Pod}}{{KIND_ReplicaSet}}{{KIND_ReplicationController}}{{KIND_StatefulSet}}{{KIND_Endpoints}}{{KIND_EndpintSlice}}{{KIND_Ingress}}{{KIND_IngressClass}}{{KIND_Service}}{{KIND_ConfigMap}}{{KIND_CSIDriver}}{{KIND_CSINode}}{{KIND_Secret}}{{KIND_PersistentVolumeClaim}}{{KIND_StorageClass}}{{KIND_CSIStorageCapacity}}{{KIND_Volume}}{{KIND_VolumeAttachment}}{{KIND_VolumeAttributesClass}}{{KIND_ClusterTrustBundle}}{{KIND_ControllerRevision}}{{KIND_CustomResourceDefinition}}{{KIND_Event}}{{KIND_LimitRange}}{{KIND_HorizontalPodAutoscaler}}{{KIND_MutatingWebhookConfiguration}}{{KIND_ValidatingWebhookConfiguration}}{{KIND_PodSchedulingContext}}{{KIND_PodTemplate}}{{KIND_PodDisruptionBudget}}{{KIND_PriorityClass}}{{KIND_ResourceClaim}}{{KIND_ResourceClaimTemplate}}{{KIND_ResourceClass}}{{KIND_ValidatingAdmissionPolicy}}{{KIND_ValidatingAdmissionPolicyBinding}}{{KIND_APIService}}{{KIND_Binding}}{{KIND_CertificateSigningRequest}}{{KIND_ClusterRole}}{{KIND_ClusterRoleBinding}}{{KIND_ComponentStatus}}{{KIND_FlowSchema}}{{KIND_IPAddress}}{{KIND_Lease}}{{KIND_LocalSubjectAccessReview}}{{KIND_Namespace}}{{KIND_Node}}{{KIND_PersistentVolume}}{{KIND_PriorityLevelConfiguration}}{{KIND_ResourceQuota}}{{KIND_Role}}{{KIND_RoleBinding}}{{KIND_RuntimeClass}}{{KIND_SelfSubjectAccessReview}}{{KIND_SelfSubjectReview}}{{KIND_SelfSubjectRulesReview}}{{KIND_ServiceAccount}}{{KIND_ServiceCIDR}}{{KIND_StorageVersion}}{{KIND_SubjectAccessReview}}{{KIND_TokenRequest}}{{KIND_TokenReview}}{{KIND_NetworkPolicy}}{{KIND_ResourceClaimParameters}}{{KIND_ResourceSlice}}
 
 
 {%if metadata%}metadata:  
@@ -21,11 +21,56 @@ kind: {{KIND_Container}}{{KIND_CronJob}}{{KIND_DaemonSet}}{{KIND_Deployment}}{{K
 {%elif KIND_Secret%}
 {% include 'Kubernetes_manifest_secret.txt.jinja'%}
 
+{%elif KIND_ClusterRole%}
+{% include 'Kubernetes_manifest_clusterRole.txt.jinja'%}
+
+{%elif KIND_ClusterRoleBinding%}
+{% include 'Kubernetes_manifest_clusterRoleBinding.txt.jinja'%}
+
+{%elif KIND_RoleBinding%}
+{% include 'Kubernetes_manifest_roleBinding.txt.jinja'%}
+
+{%elif KIND_ServiceAccount%}
+{% include 'Kubernetes_manifest_serviceAccount.txt.jinja'%}
+
+{%elif KIND_StorageClass%}
+{% include 'Kubernetes_manifest_storageClass.txt.jinja'%}
+
+{%elif KIND_ValidatingWebhookConfiguration%}
+{% include 'Kubernetes_manifest_validatingWebhookConfiguration.txt.jinja'%}
+
+{%elif KIND_MutatingWebhookConfiguration%}
+{% include 'Kubernetes_manifest_mutatingWebhookConfiguration.txt.jinja'%}
+
 {%elif spec%}spec:
 
-  {%if DeploymentSpec and PodSpec%}
+  {%if StatefulSetSpec and PodSpec%}
+  {% macro indent_statefulSet() %}{% include 'Kubernetes_manifest_spec_statefulSet.txt.jinja'%}{% endmacro %}
+  {{ indent_statefulSet()|indent(first=false) }}
+
+  {%elif CronJobSpec and JobSpec%}
+  {% macro indent_cronjob() %}{% include 'Kubernetes_manifest_spec_cronJob.txt.jinja'%}{% endmacro %}
+  {{ indent_cronjob()|indent(first=false) }}
+
+  {%elif JobSpec%}
+  {% macro indent_cronjob() %}{% include 'Kubernetes_manifest_spec_job.txt.jinja'%}{% endmacro %}
+  {{ indent_cronjob()|indent(first=false) }}
+
+  {%elif DaemonSetSpec and PodSpec%}
+  {% macro indent_daemonSet() %}{% include 'Kubernetes_manifest_spec_daemonSet.txt.jinja'%}{% endmacro %}
+  {{ indent_daemonSet()|indent(first=false) }}
+
+  {%elif ReplicationControllerSpec and PodSpec%}
+  {% macro indent_replicationController() %}{% include 'Kubernetes_manifest_spec_replicationController.txt.jinja'%}{% endmacro %}
+  {{ indent_replicationController()|indent(first=false) }}
+
+  {%elif DeploymentSpec and PodSpec%}
   {% macro indent_deployment() %}{% include 'Kubernetes_manifest_spec_deployment.txt.jinja' %}{% endmacro %}
   {{ indent_deployment()|indent(first=false) }}
+
+  {%elif ReplicaSetSpec%}
+  {% macro indent_replicaSetSpec() %}{% include 'Kubernetes_manifest_spec_replicaSet.txt.jinja'%}{% endmacro %}
+  {{ indent_replicaSetSpec()|indent(first=false) }}
   
   {%elif PodSpec%}
   {% macro indent_pod() %}{% include 'Kubernetes_manifest_spec_pod.txt.jinja'%}{% endmacro %}
@@ -35,10 +80,50 @@ kind: {{KIND_Container}}{{KIND_CronJob}}{{KIND_DaemonSet}}{{KIND_Deployment}}{{K
   {% macro indent_service() %}{% include 'Kubernetes_manifest_spec_service.txt.jinja'%}{% endmacro %}
   {{ indent_service()|indent(first=false) }}
 
-
   {%elif CustomResourceDefinitionSpec%}
   {% macro indent_customResourceDefinition() %}{% include 'Kubernetes_manifest_spec_customResourceDefinition.txt.jinja'%}{% endmacro %}
   {{ indent_customResourceDefinition()|indent(first=false) }}
+
+  {%elif NamespaceSpec%}
+  {% macro indent_namespace() %}{% include 'Kubernetes_manifest_spec_namespace.txt.jinja'%}{% endmacro %}
+  {{ indent_namespace()|indent(first=false) }}
+
+  {%elif IngressSpec%}
+  {% macro indent_ingress() %}{% include 'Kubernetes_manifest_spec_ingress.txt.jinja'%}{% endmacro %}
+  {{ indent_ingress()|indent(first=false) }}
+
+  {%elif PersistentVolumeClaimSpec%}
+  {% macro indent_persistentVolumeClaim() %}{% include 'Kubernetes_manifest_spec_persistentVolumeClaim.txt.jinja'%}{% endmacro %}
+  {{ indent_persistentVolumeClaim()|indent(first=false) }}
+
+  {%elif PersistentVolumeSpec%}
+  {% macro indent_persistentVolume() %}{% include 'Kubernetes_manifest_spec_persistentVolume.txt.jinja'%}{% endmacro %}
+  {{ indent_persistentVolume()|indent(first=false) }}
+
+  {%elif NetworkPolicySpec%}
+  {% macro indent_networkPolicy() %}{% include 'Kubernetes_manifest_spec_networkPolicy.txt.jinja'%}{% endmacro %}
+  {{ indent_networkPolicy()|indent(first=false) }}
+
+  {%elif HorizontalPodAutoscalerSpec%}
+  {% macro indent_horizontalPodAutoscaler() %}{% include 'Kubernetes_manifest_spec_horizontalPodAutoscaler.txt.jinja'%}{% endmacro %}
+  {{ indent_horizontalPodAutoscaler()|indent(first=false) }}
+
+  {%elif PodDisruptionBudgetSpec%}
+  {% macro indent_podDisruptionBudget() %}{% include 'Kubernetes_manifest_spec_podDisruptionBudget.txt.jinja'%}{% endmacro %}
+  {{ indent_podDisruptionBudget()|indent(first=false) }}
+
+  {%elif ResourceQuotaSpec%}
+  {% macro indent_resourceQuota() %}{% include 'Kubernetes_manifest_spec_resourceQuota.txt.jinja'%}{% endmacro %}
+  {{ indent_resourceQuota()|indent(first=false) }}
+
+  {%elif IngressClassSpec%}
+  {% macro indent_ingressClass() %}{% include 'Kubernetes_manifest_spec_ingressClass.txt.jinja'%}{% endmacro %}
+  {{ indent_ingressClass()|indent(first=false) }}
+
+  {%elif APIServiceSpec%}
+  {% macro indent_apiService() %}{% include 'Kubernetes_manifest_spec_apiService.txt.jinja'%}{% endmacro %}
+  {{ indent_apiService()|indent(first=false) }}
+
   {%endif%}
 
 {%endif%}

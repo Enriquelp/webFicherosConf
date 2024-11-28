@@ -1,0 +1,25 @@
+
+{%if CRONJOBSPEC_schedule%}schedule: "{{CRONJOBSPEC_schedule}}" {%endif%}
+
+{%if CRONJOBSPEC_concurrencyPolicy%}concurrencyPolicy: {{CRONJOBSPEC_CONCURRENCYPOLICY_Allow}}{{CRONJOBSPEC_CONCURRENCYPOLICY_Forbid}}{{CRONJOBSPEC_CONCURRENCYPOLICY_Replace}}{%endif%}
+
+{%if CRONJOBSPEC_failedJobsHistoryLimit%}failedJobsHistoryLimit: {{CRONJOBSPEC_failedJobsHistoryLimit}}{%endif%}
+
+{%if CRONJOBSPEC_successfulJobHistoryLimit%}successfulJobHistoryLimit: {{CRONJOBSPEC_successfulJobHistoryLimit}}{%endif%}
+
+{%if CRONJOBSPEC_suspend%}suspend: true {%else%}suspend: false{%endif%}
+
+{%if CRONJOBSPEC_timezone%}timezone: {{CRONJOBSPEC_timezone}}{%endif%}
+
+{%if CRONJOBSPEC_startingDeadlineSeconds%}startingDeadlineSeconds: {{CRONJOBSPEC_startingDeadlineSeconds}}{%endif%}
+
+{%if CRONJOBSPEC_jobTemplate%}jobTemplate:
+  {%if JOBTEMPLATE_metadataReference%}metadata:{%endif%}
+
+  {%if JOBTEMPLATE_jobSpecReference%}spec:
+    {%if JobSpec%}
+    {% macro indent_cronjob() %}{% include 'Kubernetes_manifest_spec_job.txt.jinja'%}{% endmacro %}
+    {{ indent_cronjob()|indent(first=false) }}
+    {%endif%}
+  {%endif%}
+{%endif%}

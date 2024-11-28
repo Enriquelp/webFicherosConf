@@ -1799,6 +1799,115 @@ features
                                         optional   
                                             HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEUP_selectPolicy {doc 'selectPolicy is used to specify which policy should be used_ If not set, the default value Max is used_'}
                                             HORIZONTALPODAUTOSCALERSPEC_BEHAVIOR_SCALEUP_stabilizationWindowSeconds {default 0, doc 'stabilizationWindowSeconds is the number of seconds for which past recommendations should be considered while scaling up or scaling down_ StabilizationWindowSeconds must be greater than or equal to zero and less than or equal to 3600 (one hour)_ If not set, use the default values: - For scale up: 0 (i_e_ no stabilization is done)_ - For scale down: 300 (i_e_ the stabilization window is 300 seconds long)_'}
+                    ReplicaSetSpec {doc 'Spec defines the specification of the desired behavior of the ReplicaSet_'}
+                        mandatory
+                            REPLICASETSPEC_replicas {default 1, doc 'Replicas is the number of desired replicas_ This is a pointer to distinguish between explicit zero and unspecified_ Defaults to 1_ More info: https://kubernetes_io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller'}
+                            REPLICASETSPEC_selector {doc 'Selector is a label query over pods that should match the replica count_ Label keys and values that must match in order to be controlled by this replica set_ It must match the pod template`s labels_ More info: https://kubernetes_io/docs/concepts/overview/working-with-objects/labels/#label-selectors'}
+                                or   
+                                    REPLICASETSPEC_SELECTOR_matchExpressions    {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                        mandatory   
+                                            REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                            REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                                alternative
+                                                    REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                                    REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                    REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                    REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist
+                                            REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                mandatory   
+                                                    REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_VALUES_value
+                                    REPLICASETSPEC_SELECTOR_matchLabels    {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                        mandatory   
+                                            REPLICASETSPEC_SELECTOR_MATCHLABELS_key
+                                            REPLICASETSPEC_SELECTOR_MATCHLABELS_value
+                        optional   
+                            REPLICASETSPEC_minReadySeconds {default 0, doc 'Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for it to be considered available_ Defaults to 0 (pod will be considered available as soon as it is ready)'}
+                            REPLICASETSPEC_template {doc 'Template is the object that describes the pod that will be created if insufficient replicas are detected_ More info: https://kubernetes_io/docs/concepts/workloads/controllers/replicationcontroller#pod-template'}
+                                mandatory   
+                                    REPLICASETSPEC_TEMPLATE_metadataReference {doc 'Reference to metadata object to not duplicate it'}
+                                    REPLICASETSPEC_TEMPLATE_podSpecReference {doc 'Reference to Pod spec object to not duplicate it'}
+                    PodDisruptionBudgetSpec {doc 'Specification of the desired behavior of the PodDisruptionBudget_'}
+                        mandatory   
+                            PODDISRUPTIONBUDGETSPEC_unhealthyPodEvictionPolicy {doc 'UnhealthyPodEvictionPolicy defines the criteria for when unhealthy pods should be considered for eviction_ Current implementation considers healthy pods, as pods that have status_conditions item with type="Ready",status="True"_ Valid policies are IfHealthyBudget and AlwaysAllow_ If no policy is specified, the default behavior will be used, which corresponds to the IfHealthyBudget policy_ IfHealthyBudget policy means that running pods (status_phase="Running"), but not yet healthy can be evicted only if the guarded application is not disrupted (status_currentHealthy is at least equal to status_desiredHealthy)_ Healthy pods will be subject to the PDB for eviction_ AlwaysAllow policy means that all running pods (status_phase="Running"), but not yet healthy are considered disrupted and can be evicted regardless of whether the criteria in a PDB is met_ This means perspective running pods of a disrupted application might not get a chance to become healthy_ Healthy pods will be subject to the PDB for eviction_ Additional policies may be added in the future_ Clients making eviction decisions should disallow eviction of unhealthy pods if they encounter an unrecognized policy in this field_ This field is beta-level_ The eviction API uses this field when the feature gate PDBUnhealthyPodEvictionPolicy is enabled (enabled by default)_'}
+                                alternative
+                                    PODDISRUPTIONBUDGETSPEC_UNHEALTHYPODEVICTIONPOLICY_IfHealthyBudget 
+                                    PODDISRUPTIONBUDGETSPEC_UNHEALTHYPODEVICTIONPOLICY_AlwaysAllow 
+                        alternative   
+                            PODDISRUPTIONBUDGETSPEC_maxUnavailable {doc 'An eviction is allowed if at most "maxUnavailable" pods selected by "selector" are unavailable after the eviction, i_e_ even in absence of the evicted pod_ For example, one can prevent all voluntary evictions by specifying 0_ This is a mutually exclusive setting with "minAvailable"_'}
+                            PODDISRUPTIONBUDGETSPEC_minAvailable {doc 'An eviction is allowed if at least "minAvailable" pods selected by "selector" will still be available after the eviction, i_e_ even in the absence of the evicted pod_ So for example you can prevent all voluntary evictions by specifying "100%"_'}
+                        optional
+                            PODDISRUPTIONBUDGETSPEC_selector {doc 'Label query over pods whose evictions are managed by the disruption budget_ A null selector will match no pods, while an empty selector will select all pods within the namespace_'}
+                                or
+                                    PODDISRUPTIONBUDGETSPEC_SELECTOR_matchExpressions    {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                        mandatory   
+                                            PODDISRUPTIONBUDGETSPEC_SELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                            PODDISRUPTIONBUDGETSPEC_SELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                                alternative
+                                                    PODDISRUPTIONBUDGETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                                    PODDISRUPTIONBUDGETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                    PODDISRUPTIONBUDGETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                    PODDISRUPTIONBUDGETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_DoesNotExist
+                                            PODDISRUPTIONBUDGETSPEC_SELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                mandatory   
+                                                    PODDISRUPTIONBUDGETSPEC_SELECTOR_MATCHEXPRESSIONS_VALUES_value   
+                                    PODDISRUPTIONBUDGETSPEC_SELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                        mandatory   
+                                            PODDISRUPTIONBUDGETSPEC_SELECTOR_MATCHLABELS_key
+                                            PODDISRUPTIONBUDGETSPEC_SELECTOR_MATCHLABELS_value
+                    ResourceQuotaSpec {doc 'Spec defines the desired quota_'}
+                        mandatory  
+                            RESOURCEQUOTASPEC_hard  {doc 'hard is the set of desired hard limits for each named resource_ More info: https://kubernetes_io/docs/concepts/policy/resource-quotas/'}
+                                or   
+                                    RESOURCEQUOTASPEC_HARD_cpu 
+                                    RESOURCEQUOTASPEC_HARD_memory 
+                                    RESOURCEQUOTASPEC_HARD_pods     
+                        optional
+                            RESOURCEQUOTASPEC_scopeSelector {doc 'scopeSelector is also a collection of filters like scopes that must match each object tracked by a quota but expressed using ScopeSelectorOperator in combination with possible values_ For a resource to match, both scopes AND scopeSelector (if specified in spec), must be matched_'}
+                                mandatory   
+                                    RESOURCEQUOTASPEC_SCOPESELECTOR_matchExpressions   {doc 'matchExpressions is a list of scope selector requirements_ The requirements are ANDed_'}
+                                        mandatory   
+                                            RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_scopeName {doc 'The name of the scope that the selector applies to_'}
+                                            RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_operator {doc 'Represents a scope`s relationship to a set of values_ Valid operators are In, NotIn, Exists, DoesNotExist_'}
+                                                alternative
+                                                    RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                                    RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                                    RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist
+                                                    RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_OPERATOR_DoesNotExist
+                                            RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_values   {doc 'An array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                                mandatory   
+                                                    RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_VALUES_value
+                            RESOURCEQUOTASPEC_scopes   {doc 'A collection of filters that must match each object tracked by a quota_ If not specified, the quota matches all objects_'}
+                                mandatory   
+                                    RESOURCEQUOTASPEC_SCOPES_scope
+                    IngressClassSpec {doc 'spec is the desired state of the IngressClass_'}
+                        mandatory   
+                            INGRESSCLASSSPEC_controller {doc 'controller refers to the name of the controller that should handle this class_ This allows for different "flavors" that are controlled by the same controller_ For example, you may have different parameters for the same implementing controller_ This should be specified as a domain-prefixed path no more than 250 characters in length, e_g_ "acme_io/ingress-controller"_ This field is immutable_'}
+                        optional
+                            INGRESSCLASSSPEC_parameters {doc 'parameters is a link to a custom resource containing additional configuration for the controller_ This is optional if the controller does not require extra parameters_'}
+                                mandatory   
+                                    INGRESSCLASSSPEC_PARAMETERS_kind {doc 'kind is the type of resource being referenced_'}
+                                    INGRESSCLASSSPEC_PARAMETERS_name {doc 'name is the name of resource being referenced_'}
+                                    INGRESSCLASSSPEC_PARAMETERS_scope {doc 'scope represents if this refers to a cluster or namespace scoped resource_ This may be set to "Cluster" (default) or "Namespace"_'}
+                                        alternative   
+                                            INGRESSCLASSSPEC_PARAMETERS_SCOPE_Cluster {default}
+                                            INGRESSCLASSSPEC_PARAMETERS_SCOPE_Namespace
+                                optional   
+                                    INGRESSCLASSSPEC_PARAMETERS_namespace {doc 'namespace is the namespace of the resource being referenced_ This field is required when scope is set to "Namespace" and must be unset when scope is set to "Cluster"_'}
+                                    INGRESSCLASSSPEC_PARAMETERS_apiGroup {doc 'apiGroup is the group for the resource being referenced_ If APIGroup is not specified, the specified Kind must be in the core API group_ For any other third-party types, APIGroup is required_'}
+                    APIServiceSpec {doc 'Spec contains information for locating and communicating with a server'}
+                        mandatory 
+                            APISERVICESPEC_groupPriorityMinimum {doc 'GroupPriorityMinimum is the priority this group should have at least_ Higher priority means that the group is preferred by clients over lower priority ones_ Note that other versions of this group might specify even higher GroupPriorityMinimum values such that the whole group gets a higher priority_ The primary sort is based on GroupPriorityMinimum, ordered highest number to lowest (20 before 10)_ The secondary sort is based on the alphabetical comparison of the name of the object_ (v1_bar before v1_foo) We`d recommend something like: *_k8s_io (except extensions) at 18000 and PaaSes (OpenShift, Deis) are recommended to be in the 2000s'}
+                            APISERVICESPEC_versionPriority {doc 'VersionPriority controls the ordering of this API version inside of its group_ Must be greater than zero_ The primary sort is based on VersionPriority, ordered highest to lowest (20 before 10)_ Since it`s inside of a group, the number can be small, probably in the 10s_ In case of equal version priorities, the version string will be used to compute the order inside a group_ If the version string is "kube-like", it will sort above non "kube-like" version strings, which are ordered lexicographically_ "Kube-like" versions start with a "v", then are followed by a number (the major version), then optionally the string "alpha" or "beta" and another number (the minor version)_ These are sorted first by GA > beta > alpha (where GA is a version with no suffix such as beta or alpha), and then by comparing major version, then minor version_ An example sorted list of versions: v10, v2, v1, v11beta2, v10beta3, v3beta1, v12alpha1, v11alpha2, foo1, foo10_'}
+                        optional   
+                            APISERVICESPEC_caBundle {doc 'CABundle is a PEM encoded CA bundle which will be used to validate an API server`s serving certificate_ If unspecified, system trust roots on the apiserver are used_'}
+                            APISERVICESPEC_group {doc 'Group is the API group name this server hosts'}
+                            APISERVICESPEC_insecureSkipTLSVerify {doc 'InsecureSkipTLSVerify disables TLS certificate verification when communicating with this server_ This is strongly discouraged_ You should use the CABundle instead_'}
+                            APISERVICESPEC_service {doc 'Service is a reference to the service for this API server_ It must communicate on port 443_ If the Service is nil, that means the handling for the API groupversion is handled locally on this server_ The call will simply delegate to the normal handler chain to be fulfilled_'}
+                                mandatory
+                                    APISERVICESPEC_SERVICE_name {doc 'Name is the name of the service'}
+                                    APISERVICESPEC_SERVICE_namespace {doc 'Namespace is the namespace of the service'} 
+                                    APISERVICESPEC_SERVICE_port {default 443, doc 'If specified, the port on the service that hosting webhook_ Default to 443 for backward compatibility_ `port` should be a valid port number (1-65535, inclusive)_'}   
+                            APISERVICESPEC_version {doc 'Version is the API version this server hosts_ For example, "v1"'}
             binaryData   {doc 'BinaryData contains the binary data_ Each key must consist of alphanumeric characters, "-", "_" or "_"_ BinaryData can contain byte sequences that are not in the UTF-8 range_ The keys stored in BinaryData must not overlap with the ones in the Data field, this is enforced during validation process_ Using this field will require 1_10+ apiserver and kubelet_'}
                 mandatory
                     BINARYDATA_binaryFile_name
@@ -1925,6 +2034,119 @@ features
             secrets   {doc 'Secrets is a list of the secrets in the same namespace that pods running using this ServiceAccount are allowed to use_ Pods are only limited to this list if this service account has a "kubernetes_io/enforce-mountable-secrets" annotation set to "true"_ This field should not be used to find auto-generated service account token secrets for use outside of pods_ Instead, tokens can be requested directly using the TokenRequest API, or service account token secrets can be manually created_ More info: https://kubernetes_io/docs/concepts/configuration/secret'} 
                 mandatory
                     SECRETS_name {doc 'Name of the referent_ '}
+            allowVolumeExpansion {doc 'allowVolumeExpansion shows whether the storage class allow volume expand_'}
+            allowedTopologies   {doc 'allowedTopologies restrict the node topologies where volumes can be dynamically provisioned_ Each volume plugin defines its own supported topology specifications_ An empty TopologySelectorTerm list means there is no topology restriction_ This field is only honored by servers that enable the VolumeScheduling feature_'}
+                mandatory   
+                    ALLOWEDTOPOLOGIES_matchLabelExpressions   {doc 'A list of topology selector requirements by labels_'}
+                        mandatory   
+                            ALLOWEDTOPOLOGIES_MATCHLABELEXPRESSIONS_key {doc 'The label key that the selector applies to_'}
+                            ALLOWEDTOPOLOGIES_MATCHLABELEXPRESSIONS_values    {doc 'An array of string values_ One value must match the label to be selected_ Each entry in Values is ORed_'}
+                                mandatory   
+                                    ALLOWEDTOPOLOGIES_MATCHLABELEXPRESSIONS_VALUES_value
+            mountOptions   {doc 'mountOptions controls the mountOptions for dynamically provisioned PersistentVolumes of this storage class_ e_g_ ["ro", "soft"]_ Not validated - mount of the PVs will simply fail if one is invalid_'}
+                mandatory   
+                    MOUNTOPTIONS_value
+            parameters    {doc 'parameters holds the parameters for the provisioner that should create volumes of this storage class_'}
+                mandatory   
+                    PARAMETERS_key
+                    PARAMETERS_value
+            provisioner {doc 'provisioner indicates the type of the provisioner_'}
+            reclaimPolicy {default 'Delete', doc 'reclaimPolicy controls the reclaimPolicy for dynamically provisioned PersistentVolumes of this storage class_ Defaults to Delete_'}
+            volumeBindingMode {doc 'volumeBindingMode indicates how PersistentVolumeClaims should be provisioned and bound_ When unset, VolumeBindingImmediate is used_ This field is only honored by servers that enable the VolumeScheduling feature_'}
+            webhooks   {doc 'Webhooks is a list of webhooks and the affected resources and operations_'}
+                mandatory   
+                    WEBHOOKS_name {doc 'The name of the admission webhook_ Name should be fully qualified, e_g_, imagepolicy_kubernetes_io, where "imagepolicy" is the name of the webhook, and kubernetes_io is the name of the organization_ Required_'}
+                    WEBHOOKS_clientConfig {doc 'ClientConfig defines how to communicate with the hook_ Required'}
+                        alternative   
+                            WEBHOOKS_CLIENTCONFIG_service {doc '`service` is a reference to the service for this webhook_ Either `service` or `url` must be specified_ If the webhook is running within the cluster, then you should use `service`_'} 
+                                mandatory   
+                                    WEBHOOKS_CLIENTCONFIG_SERVICE_name {doc '`name` is the name of the service_ Required'}
+                                    WEBHOOKS_CLIENTCONFIG_SERVICE_namespace {doc '`namespace` is the namespace of the service_ Required'}
+                                optional
+                                    WEBHOOKS_CLIENTCONFIG_SERVICE_path {doc '`path` is an optional URL path which will be sent in any request to this service_'}
+                                    WEBHOOKS_CLIENTCONFIG_SERVICE_port {default 443, doc 'If specified, the port on the service that hosting webhook_ Default to 443 for backward compatibility_ `port` should be a valid port number (1-65535, inclusive)_'}
+                            WEBHOOKS_CLIENTCONFIG_url {doc '`url` gives the location of the webhook, in standard URL form (`scheme://host:port/path`)_ Exactly one of `url` or `service` must be specified_ The `host` should not refer to a service running in the cluster; use the `service` field instead_ The host might be resolved via external DNS in some apiservers (e_g_, `kube-apiserver` cannot resolve in-cluster DNS as that would be a layering violation)_ `host` may also be an IP address_ Please note that using `localhost` or `127_0_0_1` as a `host` is risky unless you take great care to run this webhook on all hosts which run an apiserver which might need to make calls to this webhook_ Such installs are likely to be non-portable, i_e_, not easy to turn up in a new cluster_ The scheme must be "https"; the URL must begin with "https://"_ A path is optional, and if present may be any string permissible in a URL_ You may use the path to pass an arbitrary string to the webhook, for example, a cluster identifier_ Attempting to use a user or basic auth e_g_ "user:password@" is not allowed_ Fragments ("#___") and query parameters ("?___") are not allowed, either_'}
+                        optional
+                            WEBHOOKS_CLIENTCONFIG_caBundle {doc '`caBundle` is a PEM encoded CA bundle which will be used to validate the webhook`s server certificate_ If unspecified, system trust roots on the apiserver are used_'}
+                    WEBHOOKS_admissionReviewVersions    {doc 'AdmissionReviewVersions is an ordered list of preferred `AdmissionReview` versions the Webhook expects_ API server will try to use first version in the list which it supports_ If none of the versions specified in this list supported by API server, validation will fail for this object_ If a persisted webhook configuration specifies allowed versions and does not include any versions known to the API Server, calls to the webhook will fail and be subject to the failure policy_'}
+                        mandatory   
+                            WEBHOOKS_ADMISSIONREVIEWVERSIONS_value
+                    WEBHOOKS_sideEffects {doc 'SideEffects states whether this webhook has side effects_ Acceptable values are: None, NoneOnDryRun (webhooks created via v1beta1 may also specify Some or Unknown)_ Webhooks with side effects MUST implement a reconciliation system, since a request may be rejected by a future step in the admission chain and the side effects therefore need to be undone_ Requests with the dryRun attribute will be auto-rejected if they match a webhook with sideEffects == Unknown or Some_'}
+                        alternative
+                            WEBHOOKS_SIDEEFFECTS_None {default}
+                            WEBHOOKS_SIDEEFFECTS_NoneOnDryRun
+                            WEBHOOKS_SIDEEFFECTS_Some
+                            WEBHOOKS_SIDEEFFECTS_Unknown
+                optional
+                    WEBHOOKS_failurePolicy {doc 'FailurePolicy defines how unrecognized errors from the admission endpoint are handled - allowed values are Ignore or Fail_ Defaults to Fail_'}
+                        alternative   
+                            WEBHOOKS_FAILUREPOLICY_Ignore
+                            WEBHOOKS_FAILUREPOLICY_Fail {default}
+                    WEBHOOKS_rules    {doc 'Rules describes what operations on what resources/subresources the webhook cares about_ The webhook cares about an operation if it matches _any_ Rule_ However, in order to prevent ValidatingAdmissionWebhooks and MutatingAdmissionWebhooks from putting the cluster in a state which cannot be recovered from without completely disabling the plugin, ValidatingAdmissionWebhooks and MutatingAdmissionWebhooks are never called on admission requests for ValidatingWebhookConfiguration and MutatingWebhookConfiguration objects_'}
+                        mandatory   
+                            WEBHOOKS_RULES_apigroups   {doc 'APIGroups is the API groups the resources belong to_ `*` is all groups_ If `*` is present, the length of the slice must be one_ Required_'}
+                                mandatory   
+                                    WEBHOOKS_RULES_APIGROUPS_value 
+                            WEBHOOKS_RULES_apiVersions   {doc 'APIVersions is the API versions the resources belong to_ `*` is all versions_ If `*` is present, the length of the slice must be one_ Required_'}
+                                mandatory   
+                                    WEBHOOKS_RULES_APIVERSIONS_value
+                            WEBHOOKS_RULES_operations   {doc 'Operations is the operations the admission hook cares about - CREATE, UPDATE, DELETE, CONNECT or * for all of those operations and any future admission operations that are added_ If `*` is present, the length of the slice must be one_ Required_'}
+                                mandatory   
+                                    WEBHOOKS_RULES_OPERATIONS_value
+                            WEBHOOKS_RULES_resources   {doc  'Resources is a list of resources this rule applies to_ For example: `pods` means pods_ `pods/log` means the log subresource of pods_ `*` means all resources, but not subresources_ `pods/*` means all subresources of pods_ `*/scale` means all scale subresources_ `*/*` means all resources and their subresources_ If wildcard is present, the validation rule will ensure resources do not overlap with each other_ Depending on the enclosing object, subresources might not be allowed_ Required_'}
+                                mandatory   
+                                    WEBHOOKS_RULES_RESOURCES_value
+                        optional
+                            WEBHOOKS_RULES_scope {doc 'scope specifies the scope of this rule_ Valid values are "Cluster", "Namespaced", and "*" "Cluster" means that only cluster-scoped resources will match this rule_ Namespace API objects are cluster-scoped_ "Namespaced" means that only namespaced resources will match this rule_ "*" means that there are no scope restrictions_ Subresources match the scope of their parent resource_ Default is "*"_'}
+                                alternative   
+                                    WEBHOOKS_RULES_SCOPE_Cluster
+                                    WEBHOOKS_RULES_SCOPE_Namespaced
+                                    WEBHOOKS_RULES_SCOPE_NoRestrictions {default}
+                    WEBHOOKS_matchConditions    {doc 'MatchConditions is a list of conditions that must be met for a request to be sent to this webhook_ Match conditions filter requests that have already been matched by the rules, namespaceSelector, and objectSelector_ An empty list of matchConditions matches all requests_ There are a maximum of 64 match conditions allowed_ The exact matching logic is (in order): 1_ If ANY matchCondition evaluates to FALSE, the webhook is skipped_ 2_ If ALL matchConditions evaluate to TRUE, the webhook is called_ 3_ If any matchCondition evaluates to an error (but none are FALSE): - If failurePolicy=Fail, reject the request - If failurePolicy=Ignore, the error is ignored and the webhook is skipped'}
+                        mandatory  
+                            WEBHOOKS_MATCHCONDITIONS_expression {doc 'Expression represents the expression which will be evaluated by CEL_ Must evaluate to bool_ CEL expressions have access to the contents of the AdmissionRequest and Authorizer, organized into CEL variables: `object` - The object from the incoming request_ The value is null for DELETE requests_ `oldObject` - The existing object_ The value is null for CREATE requests_ `request` - Attributes of the admission request(/pkg/apis/admission/types_go#AdmissionRequest)_ `authorizer` - A CEL Authorizer_ May be used to perform authorization checks for the principal (user or service account) of the request_ See https://pkg_go_dev/k8s_io/apiserver/pkg/cel/library#Authz `authorizer_requestResource` - A CEL ResourceCheck constructed from the `authorizer` and configured with the request resource_ Documentation on CEL: https://kubernetes_io/docs/reference/using-api/cel/ Required'}
+                            WEBHOOKS_MATCHCONDITIONS_name {doc 'Name is an identifier for this match condition, used for strategic merging of MatchConditions, as well as providing an identifier for logging purposes_ A good name should be descriptive of the associated expression_ Name must be a qualified name consisting of alphanumeric characters, `-`, `_` or `_`, and must start and end with an alphanumeric character (e_g_ `MyName`, or `my_name`, or `123-abc`, regex used for validation is `([A-Za-z0-9][-A-Za-z0-9__]*)?[A-Za-z0-9]`) with an optional DNS subdomain prefix and `/` (e_g_ `example_com/MyName`) Required_'}
+                    WEBHOOKS_matchPolicy {doc 'matchPolicy defines how the "rules" list is used to match incoming requests_ Allowed values are "Exact" or "Equivalent"_ - Exact: match a request only if it exactly matches a specified rule_ For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, but "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would not be sent to the webhook_ - Equivalent: match a request if modifies a resource listed in rules, even via another API group or version_ For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, and "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would be converted to apps/v1 and sent to the webhook_ Defaults to "Equivalent"'}
+                        alternative
+                            WEBHOOKS_MATCHPOLICY_Exact
+                            WEBHOOKS_MATCHPOLICY_Equivalent {default}
+                    WEBHOOKS_namespaceSelector {doc 'NamespaceSelector decides whether to run the webhook on an object based on whether the namespace for that object matches the selector_ If the object itself is a namespace, the matching is performed on object_metadata_labels_ If the object is another cluster scoped resource, it never skips the webhook_ For example, to run the webhook on any objects whose namespace is not associated with "runlevel" of "0" or "1"; you will set the selector as follows: "namespaceSelector": { "matchExpressions": [ { "key": "runlevel", "operator": "NotIn", "values": [ "0", "1" ] } ] } If instead you want to only run the webhook on any objects whose namespace is associated with the "environment" of "prod" or "staging"; you will set the selector as follows: "namespaceSelector": { "matchExpressions": [ { "key": "environment", "operator": "In", "values": [ "prod", "staging" ] } ] } See https://kubernetes_io/docs/concepts/overview/working-with-objects/labels for more examples of label selectors_ Default to the empty LabelSelector, which matches everything_'}
+                        alternative   
+                            WEBHOOKS_NAMESPACESELECTOR_matchExpressions   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                mandatory   
+                                    WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                    WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                        alternative
+                                            WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                            WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                            WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_Exists
+                                            WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_DoesNotExist
+                                    WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                        mandatory   
+                                            WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_VALUES_value
+                            WEBHOOKS_NAMESPACESELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                mandatory   
+                                    WEBHOOKS_NAMESPACESELECTOR_MATCHLABELS_key
+                                    WEBHOOKS_NAMESPACESELECTOR_MATCHLABELS_value
+                    WEBHOOKS_objectSelector {doc 'ObjectSelector decides whether to run the webhook based on if the object has matching labels_ objectSelector is evaluated against both the oldObject and newObject that would be sent to the webhook, and is considered to match if either object matches the selector_ A null object (oldObject in the case of create, or newObject in the case of delete) or an object that cannot have labels (like a DeploymentRollback or a PodProxyOptions object) is not considered to match_ Use the object selector only if the webhook is opt-in, because end users may skip the admission webhook by setting the labels_ Default to the empty LabelSelector, which matches everything_'}
+                        alternative   
+                            WEBHOOKS_OBJECTSELECTOR_matchExpressions   {doc 'matchExpressions is a list of label selector requirements_ The requirements are ANDed_'}
+                                mandatory   
+                                    WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_key {doc 'key is the label key that the selector applies to_'}
+                                    WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_operator {doc 'operator represents a key`s relationship to a set of values_ Valid operators are In, NotIn, Exists and DoesNotExist_'}
+                                        alternative
+                                            WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_OPERATOR_In
+                                            WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn
+                                            WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_OPERATOR_Exists
+                                            WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_OPERATOR_DoesNotExist
+                                    WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_values   {doc 'values is an array of string values_ If the operator is In or NotIn, the values array must be non-empty_ If the operator is Exists or DoesNotExist, the values array must be empty_ This array is replaced during a strategic merge patch_'}
+                                        mandatory   
+                                            WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_VALUES_value
+                            WEBHOOKS_OBJECTSELECTOR_matchLabels   {doc 'matchLabels is a map of {key,value} pairs_ A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value"_ The requirements are ANDed_'}
+                                mandatory   
+                                    WEBHOOKS_OBJECTSELECTOR_MATCHLABELS_key
+                                    WEBHOOKS_OBJECTSELECTOR_MATCHLABELS_value
+                    WEBHOOKS_timeoutSeconds {default 10, doc 'TimeoutSeconds specifies the timeout for this webhook_ After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy_ The timeout value must be between 1 and 30 seconds_ Default to 10 seconds_'}
 constraints
     (GROUP_apiextensions | GROUP_apiregistration | GROUP_apps | GROUP_authorization | GROUP_batch | GROUP_coordination | GROUP_core | GROUP_discovery | GROUP_events | GROUP_node | GROUP_policy | GROUP_rbac | GROUP_scheduling) => VERSION_v1
     (GROUP_admissionregistration | GROUP_authentication) => VERSION_v1 | VERSION_v1beta1 | VERSION_v1alpha1
@@ -1954,7 +2176,7 @@ constraints
     (KIND_SelfSubjectReview | KIND_TokenRequest | KIND_TokenReview) => GROUP_authentication
     KIND_StorageVersion => GROUP_internal
     (KIND_ClusterRole | KIND_ClusterRoleBinding | KIND_Role | KIND_RoleBinding)=> GROUP_rbac
-    DeploymentSpec & PodSpec & ServiceSpec & CronJobSpec & JobSpec & CustomResourceDefinitionSpec & IngressSpec & PersistentVolumeClaimSpec & PersistentVolumeSpec & StatefulSetSpec & NetworkPolicySpec & DaemonSetSpec & ReplicationControllerSpec & HorizontalPodAutoscalerSpec=> spec
+    DeploymentSpec & PodSpec & ServiceSpec & CronJobSpec & JobSpec & CustomResourceDefinitionSpec & IngressSpec & PersistentVolumeClaimSpec & PersistentVolumeSpec & StatefulSetSpec & NetworkPolicySpec & DaemonSetSpec & ReplicationControllerSpec & HorizontalPodAutoscalerSpec & ReplicaSetSpec & PodDisruptionBudgetSpec & ResourceQuotaSpec & APIServiceSpec => spec
     KIND_ConfigMap => binaryData | data 
     KIND_Endpoints => subsets
     KIND_Role => rules
@@ -1973,6 +2195,12 @@ constraints
     KIND_DaemonSet => DaemonSetSpec
     KIND_ReplicationController => ReplicationControllerSpec
     KIND_HorizontalPodAutoscaler => HorizontalPodAutoscalerSpec
+    KIND_ReplicaSet => ReplicaSetSpec
+    KIND_ValidatingWebhookConfiguration => webhooks
+    KIND_MutatingWebhookConfiguration => webhooks
+    KIND_PodDisruptionBudget => PodDisruptionBudgetSpec
+    KIND_ResourceQuota => ResourceQuotaSpec
+    KIND_APIService => APIServiceSpec
     immutable => KIND_ConfigMap | KIND_Secret
     stringData => KIND_Secret
     KIND_CustomResourceDefinition => CustomResourceDefinitionSpec
@@ -1991,6 +2219,7 @@ constraints
     JOBSPEC_TEMPLATE_podSpecReference => PodSpec
     DAEMONSETSPEC_TEMPLATE_podSpecReference => PodSpec
     REPLICATIONCONTROLLERSPEC_TEMPLATE_podSpecReference => PodSpec
+    REPLICASETSPEC_TEMPLATE_podSpecReference => PodSpec
     JOBTEMPLATE_jobSpecReference => JobSpec
     CONTAINERS_tty => CONTAINERS_stdin
     SERVICESPEC_allocateLoadBalancerNodePorts => TYPE_LoadBalancer
@@ -2001,3 +2230,5 @@ constraints
     aggregationRule => KIND_ClusterRole
     subjects & roleRef => KIND_ClusterRoleBinding | KIND_RoleBinding
     JOBSPEC_backoffLimitPerIndex => COMPLETIONMODE_Indexed
+    RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_OPERATOR_In | RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn => RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_values
+    RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist | RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_OPERATOR_DoesNotExist => !RESOURCEQUOTASPEC_SCOPESELECTOR_MATCHEXPRESSIONS_values

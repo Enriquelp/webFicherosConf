@@ -1,0 +1,21 @@
+
+{%if REPLICATIONCONTROLLERSPEC_selector%}selector: 
+  {%if REPLICATIONCONTROLLERSPEC_SELECTOR_matchLabels%}matchLabels:
+  {%for l in REPLICATIONCONTROLLERSPEC_SELECTOR_matchLabels%}
+    {{l.REPLICATIONCONTROLLERSPEC_SELECTOR_MATCHLABELS_key}}: {{l.REPLICATIONCONTROLLERSPEC_SELECTOR_MATCHLABELS_value}}
+  {%endfor%}
+  {%endif%}
+{%endif%}
+
+{%if REPLICATIONCONTROLLERSPEC_template%}template:
+  {%if REPLICATIONCONTROLLERSPEC_TEMPLATE_metadataReference%}metadata:
+  {%endif%}
+
+  {%if REPLICATIONCONTROLLERSPEC_TEMPLATE_podSpecReference%}spec: 
+    {% macro indent_pod() %}{% include 'Kubernetes_manifest_spec_pod.txt.jinja'%}{% endmacro %}
+    {{ indent_pod()|indent(first=false) }}
+  {%endif%} 
+{%endif%}
+
+{%if REPLICATIONCONTROLLERSPEC_minReadySeconds%}minReadySeconds: {{REPLICATIONCONTROLLERSPEC_minReadySeconds}}{%endif%}
+{%if REPLICATIONCONTROLLERSPEC_replicas%}replicas: {{REPLICATIONCONTROLLERSPEC_replicas}}{%endif%}

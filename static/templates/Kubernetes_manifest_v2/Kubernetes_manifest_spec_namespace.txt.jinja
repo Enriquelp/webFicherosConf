@@ -1,0 +1,6 @@
+
+{%if NAMESPACE_SPEC_finalizers%}finalizers:
+{%for f in NAMESPACE_SPEC_finalizers%}
+  - {%if f.FINALIZERS_finalizer%}{{f.FINALIZERS_finalizer}}{%endif%}
+{%endfor%}
+{%endif%}

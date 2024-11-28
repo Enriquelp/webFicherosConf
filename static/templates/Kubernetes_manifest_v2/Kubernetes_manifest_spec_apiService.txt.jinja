@@ -1,0 +1,18 @@
+
+{%if APISERVICESPEC_groupPriorityMinimum%}groupPriorityMinimum: {{APISERVICESPEC_groupPriorityMinimum}}{%endif%}
+
+{%if APISERVICESPEC_versionPriority%}versionPriority: {{APISERVICESPEC_versionPriority}}{%endif%}
+
+{%if APISERVICESPEC_caBundle%}caBundle: {{APISERVICESPEC_caBundle}}{%endif%}
+
+{%if APISERVICESPEC_group%}group: {{APISERVICESPEC_group}}{%endif%}
+
+{%if APISERVICESPEC_insecureSkipTLSVerify%}insecureSkipTLSVerify: true{%endif%}
+
+{%if APISERVICESPEC_service%}service:
+  {%if APISERVICESPEC_SERVICE_name%}name: {{APISERVICESPEC_SERVICE_name}}{%endif%}
+  {%if APISERVICESPEC_SERVICE_namespace%}namespace: {{APISERVICESPEC_SERVICE_namespace}}{%endif%}
+  {%if APISERVICESPEC_SERVICE_port%}port: {{APISERVICESPEC_SERVICE_port}}{%endif%}
+{%endif%}
+
+{%if APISERVICESPEC_version%}version: {{APISERVICESPEC_version}}{%endif%}

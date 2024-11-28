@@ -20,7 +20,7 @@
   {%if SELECTOR_matchExpressions%}matchExpressions:
     {%for matchExpressions in SELECTOR_matchExpressions%}  
     - key: {{matchExpressions.MATCHEXPRESSIONS_key}}
-      operator: {{matchExpressions.OPERATOR_in}}{{matchExpressions.OPERATOR_notIn}}{{matchExpressions.OPERATOR_exist}}{{matchExpressions.OPERATOR_doesNotExist}}{{matchExpressions.OPERATOR_gt}}{{OPERATOR_lt}}
+      operator: {{matchExpressions.OPERATOR_in}}{{matchExpressions.OPERATOR_notIn}}{{matchExpressions.OPERATOR_exist}}{{matchExpressions.OPERATOR_doesNotExist}}{{matchExpressions.OPERATOR_gt}}{{matchExpressions.OPERATOR_lt}}
     {%if matchExpressions.MATCHEXPRESSIONS_values%}  values:
     {%for value in matchExpressions.MATCHEXPRESSIONS_values%}
         - {{value.MATCHEXPRESSIONS_value}}
@@ -62,6 +62,29 @@
     {%if TEMPLATE_METADATA_finalizers%}finalizers: {{METADATA_finalizers}}{%endif%}
 
     {%if TEMPLATE_METADATA_generateName%}generateName: {{TEMPLATE_METADATA_generateName}}{%endif%}
+
+    {%if TEMPLATE_METADATA_managedFields%}managedFields:
+      {%for m in TEMPLATE_METADATA_managedFields%}
+      - apiVersion: {{m.TEMPLATE_METADATA_MANAGEFIELDS_apiversion}}
+        {%if m.TEMPLATE_METADATA_MANAGEFIELDS_fieldsType%}fieldsType: {{m.TEMPLATE_METADATA_MANAGEFIELDS_fieldsType}}{%endif%}
+        {%if m.TEMPLATE_METADATA_MANAGEFIELDS_fieldsV1%}fieldsV1: {{m.TEMPLATE_METADATA_MANAGEFIELDS_fieldsV1}}{%endif%}
+        {%if m.TEMPLATE_METADATA_MANAGEFIELDS_manager%}manager: {{m.TEMPLATE_METADATA_MANAGEFIELDS_manager}}{%endif%}
+        {%if m.TEMPLATE_METADATA_MANAGEFIELDS_operation%}operation: "{{m.TEMPLATE_METADATA_MANAGEFIELDS_OPERATION_apply}}{{m.TEMPLATE_METADATA_MANAGEFIELDS_OPERATION_update}}"{%endif%}
+        {%if m.TEMPLATE_METADATA_MANAGEFIELDS_subresource%}subresource: {{m.TEMPLATE_METADATA_MANAGEFIELDS_subresource}}{%endif%}
+        {%if m.TEMPLATE_METADATA_MANAGEFIELDS_time%}time: "{{m.TEMPLATE_METADATA_MANAGEFIELDS_time}}"{%endif%}
+      {%endfor%}
+    {%endif%}
+
+    {%if TEMPLATE_METADATA_ownerReferences%}ownerReferences:
+      {%for o in TEMPLATE_METADATA_ownerReferences%}
+      - apiVersion: {{o.TEMPLATE_METADATA_OWNERREFERENCES_apiVersion}}
+        kind: {{o.TEMPLATE_METADATA_OWNERREFERENCES_kind}}
+        name: {{o.TEMPLATE_METADATA_OWNERREFERENCES_name}}
+        uid: {{o.TEMPLATE_METADATA_OWNERREFERENCES_uid}}
+        {%if o.TEMPLATE_METADATA_OWNERREFERENCES_blockOwnerDeletion%}blockOwnerDeletion: {{o.TEMPLATE_METADATA_OWNERREFERENCES_blockOwnerDeletion}}{%endif%}
+        {%if o.TEMPLATE_METADATA_OWNERREFERENCES_controller%}controller: {{o.TEMPLATE_METADATA_OWNERREFERENCES_controller}}{%endif%}
+      {%endfor%}
+    {%endif%}
 
   {%endif%}
 

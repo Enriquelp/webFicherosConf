@@ -1,0 +1,73 @@
+
+{%if STATEFULSETSPEC_serviceName%}serviceName: {{STATEFULSETSPEC_serviceName}}{%endif%}
+
+{%if STATEFULSETSPEC_selector%}selector:
+
+{%if STATEFULSETSPEC_SELECTOR_matchExpressions%}matchExpressions:
+{%for ex in STATEFULSETSPEC_SELECTOR_matchExpressions%}
+  - {%if ex.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_key%}key: {{ex.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_key}}{%endif%}
+    {%if ex.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_operator%}operator: {{ex.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_In}}{{ex.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn}}{{ex.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist}}{{ex.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist}} {%endif%} 
+    {%if ex.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_values%}values:
+    {%for v in ex.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_values%}
+      {%if v.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_VALUES_value%}- {{v.STATEFULSETSPEC_SELECTOR_MATCHEXPRESSIONS_VALUES_value}}{%endif%}
+    {%endfor%}
+    {%endif%}
+{%endfor%}
+{%endif%}
+
+{%if STATEFULSETSPEC_SELECTOR_matchLabels%}matchLabels:
+{%for l in STATEFULSETSPEC_SELECTOR_matchLabels%}
+  {%if l.STATEFULSETSPEC_SELECTOR_MATCHLABELS_key%}{{l.STATEFULSETSPEC_SELECTOR_MATCHLABELS_key}}: {{l.STATEFULSETSPEC_SELECTOR_MATCHLABELS_value}}{%endif%}
+{%endfor%}
+{%endif%}
+{%endif%}
+
+{%if STATEFULSETSPEC_template%}template:
+  {%if STATEFULSETSPEC_TEMPLATE_metadataReference%}metadata:
+  {%endif%}
+
+  {%if STATEFULSETSPEC_TEMPLATE_podSpecReference%}spec: 
+  {% macro indent_pod() %}{% include 'Kubernetes_manifest_spec_pod.txt.jinja'%}{% endmacro %}
+  {{ indent_pod()|indent(first=false) }}
+  {%endif%} 
+{%endif%}
+
+{%if STATEFULSETSPEC_replicas%}replicas: {{STATEFULSETSPEC_replicas}}{%endif%}
+
+{%if STATEFULSETSPEC_revisionHistoryLimit%}revisionHistoryLimit: {{STATEFULSETSPEC_revisionHistoryLimit}}{%endif%}
+
+{%if STATEFULSETSPEC_updateStrategy%}updateStrategy: 
+  {%if STATEFULSETSPEC_UPDATESTRATEGY_type%}type: {{STATEFULSETSPEC_UPDATESTRATEGY_type}}{%endif%}
+  {%if STATEFULSETSPEC_UPDATESTRATEGY_rollingUpdate%}rollingUpdate:
+    {%if STATEFULSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_partition%}partition: {{STATEFULSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_partition}}{%endif%}
+    {%if STATEFULSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_maxUnavailable%}maxUnavailable: {{STATEFULSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_maxUnavailable}}{%endif%}
+  {%endif%}
+{%endif%}
+
+{%if STATEFULSETSPEC_volumeClaimTemplates%}volumeClaimTemplates:
+{%for vol in STATEFULSETSPEC_volumeClaimTemplates%}
+  - {%if vol.STATEFULSETSPEC_VOLUMECLAIMTEMPLATES_metadataReference%}metadata:
+    {%endif%}
+
+    {%if vol.STATEFULSETSPEC_VOLUMECLAIMTEMPLATES_persistentVolumeClaimReference%}spec: 
+        {% macro indent_persistentVolumeClaim() %}{% include 'Kubernetes_manifest_spec_persistentVolumeClaim.txt.jinja'%}{% endmacro %}
+        {{ indent_persistentVolumeClaim()|indent(first=false) }}
+    {%endif%} 
+{%endfor%}
+{%endif%}
+
+{%if STATEFULSETSPEC_minReadySeconds%}minReadySeconds: {{STATEFULSETSPEC_minReadySeconds}}{%endif%}
+
+{%if STATEFULSETSPEC_ordinals%}ordinals:
+  {%if STATEFULSETSPEC_ORDINALS_start%}start: {{STATEFULSETSPEC_ORDINALS_start}}{%endif%}
+{%endif%}
+
+{%if STATEFULSETSPEC_persistentVolumeClaimRetentionPolicy%}persistentVolumeClaimRetentionPolicy:
+  {%if STATEFULSETSPEC_PERSISTENTVOLUMECLAIMRETENTIONPOLICY_whenDeleted%}whenDeleted: {{STATEFULSETSPEC_PERSISTENTVOLUMECLAIMRETENTIONPOLICY_whenDeleted}}{%endif%}
+  {%if STATEFULSETSPEC_PERSISTENTVOLUMECLAIMRETENTIONPOLICY_whenScaled%}whenScaled: {{STATEFULSETSPEC_PERSISTENTVOLUMECLAIMRETENTIONPOLICY_whenScaled}}{%endif%}
+{%endif%}
+
+{%if STATEFULSETSPEC_podManagementPolicy%}podManagementPolicy: {{STATEFULSETSPEC_podManagementPolicy}}{%endif%}
+
+
+

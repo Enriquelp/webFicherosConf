@@ -1,0 +1,83 @@
+
+webhooks:
+{%for w in webhooks%}
+  - name: {{w.WEBHOOKS_name}}
+
+    {%if w.WEBHOOKS_clientConfig%}clientConfig: 
+      {%if w.WEBHOOKS_CLIENTCONFIG_service%}service:
+        {%if w.WEBHOOKS_CLIENTCONFIG_SERVICE_name%}name: {{w.WEBHOOKS_CLIENTCONFIG_SERVICE_name}}{%endif%}
+        {%if w.WEBHOOKS_CLIENTCONFIG_SERVICE_namespace%}namespace: {{w.WEBHOOKS_CLIENTCONFIG_SERVICE_namespace}}{%endif%}
+        {%if w.WEBHOOKS_CLIENTCONFIG_SERVICE_path%}path: "{{w.WEBHOOKS_CLIENTCONFIG_SERVICE_path}}"{%endif%}
+        {%if w.WEBHOOKS_CLIENTCONFIG_SERVICE_port%}port: {{w.WEBHOOKS_CLIENTCONFIG_SERVICE_port}}{%endif%}
+      {%endif%}
+      {%if w.WEBHOOKS_CLIENTCONFIG_url%}url: {{w.WEBHOOKS_CLIENTCONFIG_url}}{%endif%}
+      {%if w.WEBHOOKS_CLIENTCONFIG_caBundle%}caBundle: "{{w.WEBHOOKS_CLIENTCONFIG_caBundle}}"{%endif%}
+    {%endif%}
+
+    {%if w.WEBHOOKS_admissionReviewVersions%}admissionReviewVersions: [{%for ad in w.WEBHOOKS_admissionReviewVersions%}"{{ad.WEBHOOKS_ADMISSIONREVIEWVERSIONS_value}}",{%endfor%}]{%endif%}
+
+    {%if w.WEBHOOKS_sideEffects%}sideEffects: {{w.WEBHOOKS_SIDEEFFECTS_None}}{{w.WEBHOOKS_SIDEEFFECTS_NoneOnDryRun}}{{w.WEBHOOKS_SIDEEFFECTS_Some}}{{WEBHOOKS_SIDEEFFECTS_Unknown}}{%endif%}
+
+    {%if w.WEBHOOKS_failurePolicy%}failurePolicy: {{w.WEBHOOKS_FAILUREPOLICY_Ignore}}{{w.WEBHOOKS_FAILUREPOLICY_Fail}}{%endif%}
+
+    {%if w.WEBHOOKS_rules%}rules:
+    {%for r in w.WEBHOOKS_rules%}
+      - {%if r.WEBHOOKS_RULES_apigroups%}apiGroups: [{%for v in r.WEBHOOKS_RULES_apigroups%}"{{v.WEBHOOKS_RULES_APIGROUPS_value}}",{%endfor%}]{%endif%}
+        {%if r.WEBHOOKS_RULES_apiVersions%}apiversion: [{%for v in r.WEBHOOKS_RULES_apiVersions%}"{{v.WEBHOOKS_RULES_APIVERSIONS_value}}",{%endfor%}]{%endif%}
+        {%if r.WEBHOOKS_RULES_operations%}operations: [{%for v in r.WEBHOOKS_RULES_operations%}"{{v.WEBHOOKS_RULES_OPERATIONS_value}}",{%endfor%}]{%endif%}
+        {%if r.WEBHOOKS_RULES_resources%}resources: [{%for v in r.WEBHOOKS_RULES_resources%}"{{v.WEBHOOKS_RULES_RESOURCES_value}}",{%endfor%}]{%endif%}
+        {%if r.WEBHOOKS_RULES_scope%}scope: {{r.WEBHOOKS_RULES_SCOPE_Cluster}}{{r.WEBHOOKS_RULES_SCOPE_Namespaced}}{{r.WEBHOOKS_RULES_SCOPE_NoRestrictions}}{%endif%}
+    {%endfor%}
+    {%endif%}
+
+    {%if w.WEBHOOKS_matchConditions%}matchConditions:
+    {%for c in w.WEBHOOKS_matchConditions%}
+      - {%if c.WEBHOOKS_MATCHCONDITIONS_name%}name: {{c.WEBHOOKS_MATCHCONDITIONS_name}}{%endif%}
+        {%if c.WEBHOOKS_MATCHCONDITIONS_expression%}expression: "{{c.WEBHOOKS_MATCHCONDITIONS_expression}}"{%endif%}
+    {%endfor%}
+    {%endif%}
+
+    {%if w.WEBHOOKS_matchPolicy%}matchPolicy: {{w.WEBHOOKS_MATCHPOLICY_Exact}}{{w.WEBHOOKS_MATCHPOLICY_Equivalent}}{%endif%}
+
+    {%if w.WEBHOOKS_namespaceSelector%}namespaceSelector:
+      {%if w.WEBHOOKS_NAMESPACESELECTOR_matchExpressions%}matchExpressions:
+      {%for ex in w.WEBHOOKS_NAMESPACESELECTOR_matchExpressions%}
+        - {%if ex.WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_key%}key: {{ex.WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_key}}{%endif%}
+          {%if ex.WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_operator%}operator: {{ex.WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_In}}{{ex.WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn}}{{ex.WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_Exists}}{{ex.WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_OPERATOR_DoesNotExist}}{%endif%}
+          {%if ex.WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_values%}values: 
+          {%for v in ex.WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_values%}
+            - {{v.WEBHOOKS_NAMESPACESELECTOR_MATCHEXPRESSIONS_VALUES_value}}
+          {%endfor%}
+          {%endif%}
+      {%endfor%}
+      {%endif%}
+
+      {%if w.WEBHOOKS_NAMESPACESELECTOR_matchLabels%}matchLabels:
+      {%for l in w.WEBHOOKS_NAMESPACESELECTOR_matchLabels%}
+        {{l.WEBHOOKS_NAMESPACESELECTOR_MATCHLABELS_key}}: {{l.WEBHOOKS_NAMESPACESELECTOR_MATCHLABELS_value}}
+      {%endfor%}
+      {%endif%}
+    {%endif%}
+
+    {%if w.WEBHOOKS_objectSelector%}objectSelector:
+      {%if w.WEBHOOKS_OBJECTSELECTOR_matchExpressions%}matchExpressions:
+      {%for ex in w.WEBHOOKS_OBJECTSELECTOR_matchExpressions%}
+        - {%if ex.WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_key%}key: {{ex.WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_key}}{%endif%}
+          {%if ex.WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_operator%}operator: {{ex.WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_OPERATOR_In}}{{ex.WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn}}{{ex.WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_OPERATOR_Exists}}{{ex.WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_OPERATOR_DoesNotExist}}{%endif%}
+          {%if ex.WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_values%}values: 
+          {%for v in ex.WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_values%}
+            - {{v.WEBHOOKS_OBJECTSELECTOR_MATCHEXPRESSIONS_VALUES_value}}
+          {%endfor%}
+          {%endif%}
+      {%endfor%}
+      {%endif%}
+
+      {%if w.WEBHOOKS_OBJECTSELECTOR_matchLabels%}matchLabels:
+      {%for l in w.WEBHOOKS_OBJECTSELECTOR_matchLabels%}
+        {{l.WEBHOOKS_OBJECTSELECTOR_MATCHLABELS_key}}: {{l.WEBHOOKS_OBJECTSELECTOR_MATCHLABELS_value}}
+      {%endfor%}
+      {%endif%}
+    {%endif%}
+
+    {%if w.WEBHOOKS_timeoutSeconds%}timeoutSeconds: {{w.WEBHOOKS_timeoutSeconds}} {%endif%}
+{%endfor%}

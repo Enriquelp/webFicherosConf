@@ -1,0 +1,30 @@
+
+{%if REPLICASETSPEC_replicas%}replicas: {{REPLICASETSPEC_replicas}}{%endif%}
+
+{%if REPLICASETSPEC_selector%}selector:
+  {%if REPLICASETSPEC_SELECTOR_matchExpressions%}matchExpressions:
+  {%for ex in REPLICASETSPEC_SELECTOR_matchExpressions%}
+    - {%if ex.REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_key%}key: {{ex.REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_key}}{%endif%}
+      {%if ex.REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_operator%}operator: {{ex.REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_In}}{{ex.REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn}}{{ex.REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist}}{{ex.REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist}}{%endif%}
+      {%if ex.REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_values%}values:
+      {%for v in ex.REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_values%}
+        - {{v.REPLICASETSPEC_SELECTOR_MATCHEXPRESSIONS_VALUES_value}}
+      {%endfor%}
+      {%endif%}
+  {%endfor%}
+  {%endif%}
+
+  {%if REPLICASETSPEC_SELECTOR_matchLabels%}matchLabels:
+  {%for l in REPLICASETSPEC_SELECTOR_matchLabels%}
+    {{l.REPLICASETSPEC_SELECTOR_MATCHLABELS_key}}: {{l.REPLICASETSPEC_SELECTOR_MATCHLABELS_value}}
+  {%endfor%}
+  {%endif%}
+{%endif%}
+
+{%if REPLICASETSPEC_minReadySeconds%}minReadySeconds: {{REPLICASETSPEC_minReadySeconds}}{%endif%}
+
+{%if REPLICASETSPEC_template%}template: 
+  {%if REPLICASETSPEC_TEMPLATE_metadataReference%}metadata: {%endif%}
+  {%if REPLICASETSPEC_TEMPLATE_podSpecReference%}Spec: {%endif%}
+{%endif%}
+

@@ -1,0 +1,45 @@
+
+{%if DAEMONSETSPEC_selector%}selector:
+
+  {%if DAEMONSETSPEC_SELECTOR_matchExpressions%}matchExpressions:
+  {%for ex in DAEMONSETSPEC_SELECTOR_matchExpressions%}
+    - key: {{ex.DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_key}}
+      operator: {{ex.DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_In}}{{ex.DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotIn}}{{ex.DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_Exist}}{{ex.DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_OPERATOR_NotExist}}
+      values:
+      {%for v in ex.DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_values%}
+        - {{v.DAEMONSETSPEC_SELECTOR_MATCHEXPRESSIONS_VALUES_value}}
+      {%endfor%}
+  {%endfor%}
+  {%endif%}
+
+  {%if DAEMONSETSPEC_SELECTOR_matchLabels%}matchLabels:
+  {%for l in DAEMONSETSPEC_SELECTOR_matchLabels%}
+    {{l.DAEMONSETSPEC_SELECTOR_MATCHLABELS_key}}: {{l.DAEMONSETSPEC_SELECTOR_MATCHLABELS_value}}
+  {%endfor%}
+  {%endif%}
+{%endif%}
+
+{%if DAEMONSETSPEC_template%}template:
+  {%if DAEMONSETSPEC_TEMPLATE_metadataReference%}metadata:
+  {%endif%}
+
+  {%if DAEMONSETSPEC_TEMPLATE_podSpecReference%}spec: 
+    {% macro indent_pod() %}{% include 'Kubernetes_manifest_spec_pod.txt.jinja'%}{% endmacro %}
+    {{ indent_pod()|indent(first=false) }}
+  {%endif%} 
+{%endif%}
+
+{%if DAEMONSETSPEC_minReadySeconds%}minReadySeconds: {{DAEMONSETSPEC_minReadySeconds}}{%endif%}
+
+{%if DAEMONSETSPEC_revisionHistoryLimit%}revisionHistoryLimit: {{DAEMONSETSPEC_revisionHistoryLimit}}{%endif%}
+
+{%if DAEMONSETSPEC_updateStrategy%}updateStrategy:
+  type: {{DAEMONSETSPEC_UPDATESTRATEGY_type}}
+  {%if DAEMONSETSPEC_UPDATESTRATEGY_rollingUpdate%}rollingUpdate: 
+    {%if DAEMONSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_maxUnavailable%}maxUnavailable: {{DAEMONSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_maxUnavailable}}{%endif%}
+    {%if DAEMONSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_maxSurge%}maxSurge: {{DAEMONSETSPEC_UPDATESTRATEGY_ROLLINGUPDATE_maxSurge}}{%endif%}
+  {%endif%}
+{%endif%}
+
+
+

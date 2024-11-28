@@ -1,0 +1,85 @@
+
+{%if JOBSPEC_activeDeadlineSeconds%}activeDeadlineSeconds: {{JOBSPEC_activeDeadlineSeconds}} {%endif%}
+
+{%if JOBSPEC_backoffLimit%}backoffLimit: {{JOBSPEC_backoffLimit}} {%endif%}
+
+{%if JOBSPEC_backoffLimitPerIndex%}backoffLimitPerIndex: {{BACKOFFLIMITPERINDEX_value}} {%endif%}
+
+{%if JOBSPEC_completionMode%}completionMode: {{COMPLETIONMODE_NonIndexed}}{{COMPLETIONMODE_Indexed}} {%endif%}
+
+{%if JOBSPEC_completions%}completions: {{JOBSPEC_completions}} {%endif%}
+
+{%if JOBSPEC_managedBy%}managedBy: {{JOBSPEC_managedBy}} {%endif%}
+
+{%if JOBSPEC_manualSelector%}manualSelector: {{JOBSPEC_manualSelector}} {%endif%}
+
+{%if JOBSPEC_failedIndexes%}failedIndexes: {{JOBSPEC_failedIndexes}} {%endif%}
+
+{%if JOBSPEC_parallelism%}parallelism: {{JOBSPEC_parallelism}} {%endif%}
+
+{%if JOBSPEC_podFailurePolicy%}podFailurePolicy: 
+  {%if JOBSPEC_PODFAILUREPOLICY_rules%}rules:
+  {%for r in JOBSPEC_PODFAILUREPOLICY_rules%}
+    - {%if r.PODFAILUREPOLICY_RULES_action%}action: {{r.PODFAILUREPOLICY_RULES_FailJob}}{{r.PODFAILUREPOLICY_RULES_FailIndex}}{{r.PODFAILUREPOLICY_RULES_Ignore}}{{r.PODFAILUREPOLICY_RULES_Count}}{%endif%}
+      
+      {%if r.PODFAILUREPOLICY_RULES_onPodConditions%}onPodConditions:
+      {%for cond in r.PODFAILUREPOLICY_RULES_onPodConditions%}
+        - {%if cond.ONPODCONDITIONS_type%}type: {{cond.ONPODCONDITIONS_type}} {%endif%}
+          {%if cond.ONPODCONDITIONS_status%}status: "{{cond.ONPODCONDITIONS_status}}" {%endif%}
+      {%endfor%}
+      {%endif%}
+
+      {%if r.PODFAILUREPOLICY_RULES_onExitCodes%}onExitCodes: 
+        {%if r.ONEXITCODES_containerName%}containerName: {{r.ONEXITCODES_containerName}}{%endif%}
+        {%if r.ONEXITCODES_operator%}operator: {{r.ONEXITCODES_In}}{{r.ONEXITCODES_NotIn}}{%endif%}
+        {%if r.ONEXITCODES_values%}values: [{%for v in r.ONEXITCODES_values%}{{v.ONEXITCODES_VALUES_value}},{%endfor%}]{%endif%}
+      {%endif%}
+  
+  {%endfor%}
+  {%endif%}
+{%endif%}
+
+{%if JOBSPEC_podReplacementPolicy%}podReplacementPolicy: {{PODREPLACEMENTPOLICY_TerminatingOrFailed}}{%endif%}
+
+{%if JOBSPEC_selector%}selector: 
+  {%if JOBSPEC_SELECTOR_matchLabels%}matchLabels:
+    {%for matchlabel in JOBSPEC_SELECTOR_matchLabels%}  
+    {{matchlabel.JOBSPEC_SELECTOR_MATCHLABELS_key}}: {{matchlabel.JOBSPEC_SELECTOR_MATCHLABELS_value}}
+    {%endfor%}
+  {%endif%}
+
+  {%if JOBSPEC_SELECTOR_matchExpressions%}matchExpressions:
+    {%for matchExpressions in JOBSPEC_SELECTOR_matchExpressions%}  
+    - key: {{matchExpressions.JOBSPEC_SELECTOR_MATCHEXPRESSIONS_key}}
+      operator: {{matchExpressions.JOBSPEC_OPERATOR_in}}{{matchExpressions.JOBSPEC_OPERATOR_notIn}}{{matchExpressions.JOBSPEC_OPERATOR_exist}}{{matchExpressions.JOBSPEC_OPERATOR_doesNotExist}}{{matchExpressions.JOBSPEC_OPERATOR_gt}}{{matchExpressions.JOBSPEC_OPERATOR_lt}}
+    {%if matchExpressions.JOBSPEC_SELECTOR_MATCHEXPRESSIONS_values%}  values:
+    {%for value in matchExpressions.JOBSPEC_SELECTOR_MATCHEXPRESSIONS_values%}
+        - {{value.JOBSPEC_SELECTOR_MATCHEXPRESSIONS_value}}
+    {%endfor%}
+    {%endif%}
+    {%endfor%}
+  {%endif%}
+{%endif%}
+
+{%if JOBSPEC_successPolicy%}successPolicy:
+  {%if JOBSPEC_SUCCESSPOLICY_rules%}rules: 
+  {%for r in JOBSPEC_SUCCESSPOLICY_rules%}
+    - {%if r.SUCCESSPOLICY_RULES_succededCount%}succededCount: {{r.SUCCESSPOLICY_RULES_succededCount}}{%endif%}
+      {%if r.SUCCESSPOLICY_RULES_succededIndexes%}succededIndexes: {{r.SUCCESSPOLICY_RULES_succededIndexes}}{%endif%}
+  {%endfor%}
+  {%endif%}
+{%endif%}
+
+{%if JOBSPEC_suspend%}suspend: true{%endif%}
+
+{%if JOBSPEC_ttlSecondsAfterFinished%}ttlSecondsAfterFinished: {{JOBSPEC_ttlSecondsAfterFinished}}{%endif%}
+
+{%if JOBSPEC_template%}template:
+  {%if JOBSPEC_TEMPLATE_metadata%}metadata:{%endif%}
+
+  {%if JOBSPEC_TEMPLATE_podSpecReference%}spec:
+    {% macro indent_pod() %}{% include 'Kubernetes_manifest_spec_pod.txt.jinja'%}{% endmacro %}
+    {{ indent_pod()|indent(first=false) }}
+  {%endif%}
+{%endif%}
+

@@ -1,45 +1,99 @@
+
+{%if CUSTOMRESOURCEDEFINITIONSPEC_conversion%}conversion:
+
+  {%if CONVERSION_strategy%}strategy: {{CONVERSION_STRATEGY_None}}{{CONVERSION_STRATEGY_Webhook}}{%endif%}
+
+  {%if CONVERSION_webhook%}webhook:
+    {%if WEBHOOK_clientConfig%}clientConfig:
+      {%if CLIENTCONFIG_URL_service%}service:
+        {%if CLIENTCONFIG_URL_SERVICE_name%}name: {{CLIENTCONFIG_URL_SERVICE_name}}{%endif%}
+
+        {%if CLIENTCONFIG_URL_SERVICE_namespace%}namespace: {{CLIENTCONFIG_URL_SERVICE_namespace}}{%endif%}
+
+        {%if CLIENTCONFIG_URL_port%}port: {{CLIENTCONFIG_URL_port}}{%endif%}
+
+        {%if CLIENTCONFIG_URL_SERVICE_path%}path: {{CLIENTCONFIG_URL_SERVICE_path}}{%endif%}
+      {%endif%}
+
+      {%if CLIENTCONFIG_URL_caBundle%}caBundle: <{{CLIENTCONFIG_URL_caBundle}}>{%endif%}
+    {%endif%}
+
+    {%if WEEBHOOK_conversionReviewVersions%}conversionReviewVersions: 
+    {%for c in WEEBHOOK_conversionReviewVersions%}
+      - {{c.CONVERSIONREVIEWVERSIONS_version}}
+    {%endfor%}
+    {%endif%}
+
+  {%endif%}
+{%endif%}
+
+{%if CUSTOMRESOURCEDEFINITIONSPEC_names%}names: 
+  {%if CUSTOMRESOURCEDEFINITIONSPEC_NAMES_categories%}categories:
+  {%for c in CUSTOMRESOURCEDEFINITIONSPEC_NAMES_categories%}
+    - {{c.NAMES_CATEGORIES_resource}}
+  {%endfor%}
+  {%endif%}
+
+  {%if CUSTOMRESOURCEDEFINITIONSPEC_NAMES_kind%}kind: {{CUSTOMRESOURCEDEFINITIONSPEC_NAMES_kind}}{%endif%}
+
+  {%if CUSTOMRESOURCEDEFINITIONSPEC_NAMES_listKind%}listKind: {{CUSTOMRESOURCEDEFINITIONSPEC_NAMES_listKind}}{%endif%}
+
+  {%if CUSTOMRESOURCEDEFINITIONSPEC_NAMES_plural%}plural: {{CUSTOMRESOURCEDEFINITIONSPEC_NAMES_plural}}{%endif%}
+
+  {%if CUSTOMRESOURCEDEFINITIONSPEC_NAMES_singular%}singular: {{CUSTOMRESOURCEDEFINITIONSPEC_NAMES_singular}}{%endif%}
+
+  {%if CUSTOMRESOURCEDEFINITIONSPEC_NAMES_shortNames%}shortNames:
+  {%for c in CUSTOMRESOURCEDEFINITIONSPEC_NAMES_shortNames%}
+    - {{c.SHORTNAMES_shortName}}
+  {%endfor%}
+  {%endif%}
+{%endif%}
+
 {%if CUSTOMRESOURCEDEFINITIONSPEC_group%}group: {{CUSTOMRESOURCEDEFINITIONSPEC_group}}{%endif%}
 
 {%if CUSTOMRESOURCEDEFINITIONSPEC_scope%}scope: {{CUSTOMRESOURCEDEFINITIONSPEC_SCOPE_Cluster}}{{CUSTOMRESOURCEDEFINITIONSPEC_SCOPE_Namespaced}}{%endif%}
+
 
 {%if CUSTOMRESOURCEDEFINITIONSPEC_versions%}versions:
 {%for v in CUSTOMRESOURCEDEFINITIONSPEC_versions%}
 
   - name: {{v.VERSIONS_name}}
-  {%if v.VERSIONS_served%}served: {{v.VERSIONS_served}}{%endif%}
+    {%if v.VERSIONS_served%}served: {{v.VERSIONS_served}}{%endif%}
 
-  {%if v.VERSIONS_storage%}storage: {{v.VERSIONS_storage}}{%endif%}
+    {%if v.VERSIONS_storage%}storage: {{v.VERSIONS_storage}}{%endif%}
 
-  {%if v.VERSIONS_subresources%}subresources:
-  {%for sub in v.VERSIONS_subresources%}
-    {%if sub.SUBRESOURCES_status%}status: {{sub.SUBRESOURCES_status}}{%endif%}
-    {%if sub.SUBRESOURCES_scale%}scale: {{sub.SUBRESOURCES_scale}}{%endif%}
-  {%endfor%}
-  {%endif%}
+    {%if v.VERSIONS_subresources%}subresources:
+      {%if v.SUBRESOURCES_status%}status: {{v.SUBRESOURCES_status}} {%endif%}
 
-  {%if v.VERSIONS_schema%}schema:
-  {%for sch in v.VERSIONS_schema%}
-    openAPIV3Schema:
-      {%if sch.OPENAPIV3SCHEMA_type%}type: {{sch.OPENAPIV3SCHEMA_type}}{%endif%}
-      {%if sch.OPENAPIV3SCHEMA_properties%}properties: {%endif%}
-      {%if sch.OPENAPIV3SCHEMA_description%}description: {{sch.OPENAPIV3SCHEMA_description}}{%endif%}
-      {%if sch.OPENAPIV3SCHEMA_required%}required: {{sch.OPENAPIV3SCHEMA_required}}{%endif%}
-  {%endfor%}
-  {%endif%}
+      {%if v.SUBRESOURCES_scale%}scale: 
+          {%if v.SUBRESOURCES_SCALE_specReplicasPath%}specReplicasPath: {{v.SUBRESOURCES_SCALE_specReplicasPath}}{%endif%}
+          {%if v.SUBRESOURCES_SCALE_statusReplicasPath%}statusReplicasPath: {{v.SUBRESOURCES_SCALE_statusReplicasPath}}{%endif%}
+          {%if v.SUBRESOURCES_SCALE_labelSelectorPath%}labelSelectorPath: {{v.SUBRESOURCES_SCALE_labelSelectorPath}}{%endif%}
+        {%endif%}
+      {%endif%}
 
-  {%if v.VERSIONS_additionalPrinterColumns%}additionalPrinterColumns:
-  {%for addit in v.VERSIONS_additionalPrinterColumns%}
-    - name: {{addit.ADDITIONALPRINTERCOLUMNS_name}}
-      {%if addit.ADDITIONALPRINTERCOLUMNS_type%}type: {{addit.ADDITIONALPRINTERCOLUMNS_type}}{%endif%}
-      {%if addit.ADDITIONALPRINTERCOLUMNS_JSONPath%}JSONPath: {{addit.ADDITIONALPRINTERCOLUMNS_JSONPath}}{%endif%}
-      {%if addit.description%}description: {{addit.ADDITIONALPRINTERCOLUMNS_description}}{%endif%}
-      {%if addit.ADDITIONALPRINTERCOLUMNS_priority%}priority: {{addit.ADDITIONALPRINTERCOLUMNS_priority}}{%endif%}
-      {%if addit.ADDITIONALPRINTERCOLUMNS_format%}format: {{addit.ADDITIONALPRINTERCOLUMNS_format}}{%endif%}
-  {%endfor%}
-  {%endif%}
-  
+    {%if v.VERSIONS_schema%}schema:
+    {%for sch in v.VERSIONS_schema%}
+      openAPIV3Schema:
+        {%if sch.OPENAPIV3SCHEMA_type%}type: {{sch.OPENAPIV3SCHEMA_type}}{%endif%}
+        {%if sch.OPENAPIV3SCHEMA_description%}description: {{sch.OPENAPIV3SCHEMA_description}}{%endif%}
+        {%if sch.OPENAPIV3SCHEMA_properties%}properties: {%endif%}
+        {%if sch.OPENAPIV3SCHEMA_required%}required: 
+          - {{sch.OPENAPIV3SCHEMA_required}}
+        {%endif%}
+    {%endfor%}
+    {%endif%}
+
+    {%if v.VERSIONS_additionalPrinterColumns%}additionalPrinterColumns:
+    {%for addit in v.VERSIONS_additionalPrinterColumns%}
+      - name: {{addit.ADDITIONALPRINTERCOLUMNS_name}}
+        {%if addit.ADDITIONALPRINTERCOLUMNS_type%}type: {{addit.ADDITIONALPRINTERCOLUMNS_type}}{%endif%}
+        {%if addit.ADDITIONALPRINTERCOLUMNS_JSONPath%}JSONPath: {{addit.ADDITIONALPRINTERCOLUMNS_JSONPath}}{%endif%}
+        {%if addit.description%}description: {{addit.ADDITIONALPRINTERCOLUMNS_description}}{%endif%}
+        {%if addit.ADDITIONALPRINTERCOLUMNS_priority%}priority: {{addit.ADDITIONALPRINTERCOLUMNS_priority}}{%endif%}
+        {%if addit.ADDITIONALPRINTERCOLUMNS_format%}format: {{addit.ADDITIONALPRINTERCOLUMNS_format}}{%endif%}
+    {%endfor%}
+    {%endif%}
+    
 {%endfor%} 
 {%endif%}
-
-
-

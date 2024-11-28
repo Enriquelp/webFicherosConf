@@ -1,0 +1,61 @@
+
+{%if INGRESSSPEC_defaultBackend%}defaultBackend:
+  {%if INGRESSSPEC_DEFAULTBACKEND_resource%}resource:
+    {%if INGRESSSPEC_DEFAULTBACKEND_RESOURCE_name%}name: {{INGRESSSPEC_DEFAULTBACKEND_RESOURCE_name}}{%endif%}
+    {%if INGRESSSPEC_DEFAULTBACKEND_RESOURCE_kind%}kind: {{INGRESSSPEC_DEFAULTBACKEND_RESOURCE_kind}}{%endif%}
+    {%if INGRESSSPEC_DEFAULTBACKEND_RESOURCE_apiGroup%}apiGroup: {{INGRESSSPEC_DEFAULTBACKEND_RESOURCE_apiGroup}}{%endif%}
+  {%endif%}
+
+  {%if INGRESSSPEC_DEFAULTBACKEND_service%}service: 
+    {%if INGRESSSPEC_DEFAULTBACKEND_SERVICE_name%}name: {{INGRESSSPEC_DEFAULTBACKEND_SERVICE_name}}{%endif%}
+    {%if INGRESSSPEC_DEFAULTBACKEND_port%}port: 
+      {%if INGRESSSPEC_DEFAULTBACKEND_SERVICE_PORT_number%}number: {{INGRESSSPEC_DEFAULTBACKEND_SERVICE_PORT_number}}{%endif%}
+      {%if INGRESSSPEC_DEFAULTBACKEND_SERVICE_PORT_name%}name: {{INGRESSSPEC_DEFAULTBACKEND_SERVICE_PORT_name}}{%endif%}
+    {%endif%}
+  {%endif%}
+{%endif%}
+
+{%if INGRESSSPEC_ingressClassName%}ingressClassName: {{INGRESSSPEC_ingressClassName}}{%endif%}
+
+{%if INGRESSSPEC_tls%}tls:
+  - hosts:
+  {%for h in INGRESSSPEC_TLS_hosts%}
+    {%if h.INGRESSSPEC_TLS_HOSTS_host%}- {{h.INGRESSSPEC_TLS_HOSTS_host}}{%endif%}
+  {%endfor%}
+    {%if INGRESSSPEC_TLS_secretName%}secretName: {{INGRESSSPEC_TLS_secretName}}{%endif%}
+{%endif%}
+
+{%if INGRESSSPEC_rules%}rules:
+{%for r in INGRESSSPEC_rules%}
+  - {%if r.INGRESSSPEC_RULES_host%}host: {{r.INGRESSSPEC_RULES_host}}{%endif%}
+
+    {%if r.INGRESSSPEC_RULES_http%}http: 
+      {%if r.INGRESSSPEC_RULES_HTTP_paths%}paths:
+      {%for p in r.INGRESSSPEC_RULES_HTTP_paths%}
+        - {%if p.HTTP_PATHS_path%}path: {{p.HTTP_PATHS_path}}{%endif%}
+          {%if p.HTTP_PATHS_pathType%}pathType: {{p.HTTP_PATHS_PATHTYPE_Exact}}{{p.HTTP_PATHS_PATHTYPE_Prefix}}{{p.HTTP_PATHS_PATHTYPE_ImplementationSpecific}} {%endif%}
+          
+          {%if p.HTTP_PATHS_backend%}backend:
+
+            {%if p.INGRESSSPEC_RULES_HTTP_PATHS_resource%}resource:
+              {%if p.INGRESSSPEC_RULES_HTTP_PATHS_RESOURCE_kind%}kind: {{p.INGRESSSPEC_RULES_HTTP_PATHS_RESOURCE_kind}}{%endif%}
+              {%if p.INGRESSSPEC_RULES_HTTP_PATHS_RESOURCE_name%}name: {{p.INGRESSSPEC_RULES_HTTP_PATHS_RESOURCE_name}}{%endif%}
+              {%if p.INGRESSSPEC_RULES_HTTP_PATHS_RESOURCE_apiGroup%}apiGroup: {{p.INGRESSSPEC_RULES_HTTP_PATHS_RESOURCE_apiGroup}}{%endif%}
+            {%endif%}
+
+            {%if p.INGRESSSPEC_RULES_HTTP_PATHS_service%}service:
+              {%if p.INGRESSSPEC_RULES_HTTP_PATHS_SERVICE_name%}name: {{p.INGRESSSPEC_RULES_HTTP_PATHS_SERVICE_name}}{%endif%}
+              {%if p.INGRESSSPEC_RULES_HTTP_PATHS_port%}port: 
+                {%if p.INGRESSSPEC_RULES_HTTP_PATHS_SERVICE_PORT_name%}name: {{p.INGRESSSPEC_RULES_HTTP_PATHS_SERVICE_PORT_name}}{%endif%}
+                {%if p.INGRESSSPEC_RULES_HTTP_PATHS_SERVICE_PORT_number%}number: {{p.INGRESSSPEC_RULES_HTTP_PATHS_SERVICE_PORT_number}}{%endif%}
+              {%endif%}
+            {%endif%}
+
+          {%endif%} 
+
+      {%endfor%}
+      {%endif%}
+    {%endif%}
+
+{%endfor%}
+{%endif%}
